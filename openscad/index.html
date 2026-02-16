@@ -101,6 +101,7 @@
     .OpenScadConsole {
         overflow: scroll;
         grid-area: OpenScadConsole;
+        display: none;
     }
 
 
@@ -115,6 +116,7 @@
         width: 97%;
         height: 99%;
         border: 1px solid yellow;
+        border-radius: 2rem;
     }
 </style>
 
@@ -122,35 +124,20 @@
 
 <div class="container">
     <div class="toolbar1">
-        <button onclick="goBackToPartPage()">◄ Back to part details</button>
-        <button id="Save" onclick="storeOpenSCADfileToCloud();">💾</button>
+        <!-- <button onclick="goBackToPartPage()">◄ Back to part details</button> -->
+        <!-- <button id="Save" onclick="storeOpenSCADfileToCloud();">💾</button> -->
         <button id="runOpenSCAD">▶</button>
         <button onclick="download('export-'+ openPartID+openPartRev+'.stl', window.currentSTL);">Export STL</button>
-        <button onclick="makeShareLink();">Share Link</button>
+        <button onclick="window.location.reload();" class="refreshButton">🔄</button>
+        <!-- <button onclick="makeShareLink();">Share Link</button>
         <button onclick="$('#CheatSheet').toggle()">Cheat Sheet</button>
-        <button onclick="setup_Configurator();">Customizer</button>
-
-
-
-
+        <button onclick="setup_Configurator();">Customizer</button> -->
     </div>
     <div class="toolbar2">
         <button onclick="meshWire.visible = (meshWire.visible === true ? false : true)" style="display: inline-block;">Wireframe</button>
         <button onclick="meshSolid.visible = (meshSolid.visible === true ? false : true)" style="display: inline-block;">Solid</button>
         <input id="transparancy" type="range" min=".1" max="1" step=".05" value=".9" oninput="meshSolid.material.opacity = this.value;" style="display: inline-block;height:22px;">
-
         <button onclick="doLogin();" style="float:right;">Login</button>
-
-    </div>
-    <div class="toolbar3">
-
-        <select id="fileSelector" class="toolBarItem">
-            <option>main.scad</option>
-        </select>
-        <button onclick="createFile();" class="toolBarItem">＋</button>
-        <button onclick="deleteFile();" class="toolBarItem">🗑</button>
-        <button onclick="renameFile();" class="toolBarItem">Rename</button>
-
     </div>
     <div class="openScadCode">
         <div id="monacoEditor" style="height:100%;width:100%;  resize: horizontal;"></div>
@@ -225,7 +212,7 @@ difference() {
         }
     }
 
-    // 4. THE MISSING RENDERER (This draws the STL)
+    // 4. This draws the STL
     async function ShowMeThatStinkingStlFile(currentSTL) {
         window.currentSTL = currentSTL;
         try {
@@ -269,12 +256,32 @@ difference() {
         window.firstRenderDone = true;
     }
 
+    function download(filename, content) {
+        // Create a blob from the content (works for both text and binary)
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        
+        // Create a temporary link to trigger the download
+        const element = document.createElement('a');
+        element.href = url;
+        element.download = filename;
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        
+        element.click();
+        
+        // Cleanup
+        document.body.removeChild(element);
+        URL.revokeObjectURL(url);
+    }
+    
     // 5. Dummy helpers
     function storeOpenSCADfileToCloud() { alert("Cloud save disabled."); }
     function doLogin() { alert("No login required!"); }
     
     // Initialize Scene
     Engine.createScene({ containerId: 'canvas-container', showGrid: false });
+    
 </script>
 
 
