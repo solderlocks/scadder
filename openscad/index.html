@@ -551,26 +551,24 @@
 
   <!-- Model view -->
   <div id="modelView" style="display:none">
-
-    <!-- Title row -->
+    <!-- GitHub meta chips -->
     <div class="model-meta">
       <div>
         <div class="model-title" id="modelTitle">Untitled Model</div>
         <div class="model-subtitle" id="modelSubtitle"></div>
       </div>
-    </div>
-
-    <!-- GitHub meta chips -->
-    <div class="github-meta" id="githubMeta" style="display:none">
-      <div class="gh-chip" id="ghAuthor"></div>
-      <div class="gh-chip" id="ghLicense"></div>
-      <div class="gh-chip" id="ghStars"></div>
-
+      
       <div class="model-actions">
         <a id="githubSourceBtn" href="#" target="_blank" class="btn btn-ghost">⎇ Source</a>
         <a id="githubForkBtn" href="#" target="_blank" class="btn btn-ghost">Fork ↗</a>
         <button class="btn btn-primary" id="downloadBtn" onclick="downloadSTL()" disabled>↓ Export STL</button>
       </div>
+    </div>
+
+    <div class="github-meta" id="githubMeta" style="display:none">
+      <div class="gh-chip" id="ghAuthor"></div>
+      <div class="gh-chip" id="ghLicense"></div>
+      <div class="gh-chip" id="ghStars"></div>
     </div>
 
     <!-- 3D Viewport -->
@@ -693,8 +691,16 @@ function toRawUrl(url) {
 }
 
 function toBlobUrl(rawUrl) {
-  const m = rawUrl.match(/raw\.githubusercontent\.com\/([^/]+\/[^/]+)\/([^/]+)\/(.+)/);
-  if (m) return `https://github.com/${m[1]}/blob/${m[2]}/${m[3]}`;
+  // Handle the "refs/heads/" format (which you are seeing)
+  let cleanUrl = rawUrl.replace('/refs/heads/', '/');
+  
+  // Now parse standard format: raw.githubusercontent.com/user/repo/branch/path
+  const m = cleanUrl.match(/raw\.githubusercontent\.com\/([^/]+\/[^/]+)\/([^/]+)\/(.+)/);
+  
+  if (m) {
+      // Reconstruct as: github.com/user/repo/blob/branch/path
+      return `https://github.com/${m[1]}/blob/${m[2]}/${m[3]}`;
+  }
   return rawUrl;
 }
 
@@ -1036,29 +1042,36 @@ function buildModifiedScad(originalCode) {
 // ── GitHub metadata fetch ─────────────────────────────────────────────────────
 async function loadGithubMeta(rawUrl) {
   const blobUrl = toBlobUrl(rawUrl);
-  document.getElementById('githubSourceBtn').href = blobUrl;
+  
+  // 1. Setup buttons immediately (Before API check)
+  const sourceBtn = document.getElementById('githubSourceBtn');
+  const forkBtn = document.getElementById('githubForkBtn');
+  
+  // Debugging: Check if we are finding the buttons
+  if (!sourceBtn) console.error("Could not find source button!");
+  
+  if (sourceBtn) sourceBtn.href = blobUrl;
+  
   const repoMatch = blobUrl.match(/github\.com\/([^/]+\/[^/]+)\//);
-  if (repoMatch) {
-    document.getElementById('githubForkBtn').href = `https://github.com/${repoMatch[1]}/fork`;
+  if (repoMatch && forkBtn) {
+    forkBtn.href = `https://github.com/${repoMatch[1]}/fork`;
   }
 
+  // 2. API Call (Rate limited part)
   const apiBase = rawUrl.match(/raw\.githubusercontent\.com\/([^/]+\/[^/]+)\//);
   if (!apiBase) return;
 
   try {
     const res = await fetch(`https://api.github.com/repos/${apiBase[1]}`);
+    if (res.status === 403) return; // Rate limit - just exit, buttons already set
     if (!res.ok) return;
-    const d = await res.json();
 
+    const d = await res.json();
     document.getElementById('githubMeta').style.display = 'flex';
-    document.getElementById('ghAuthor').innerHTML =
-      `<span style="color:var(--text-dim)">by</span> <a href="https://github.com/${d.owner?.login}" target="_blank">${d.owner?.login || '—'}</a>`;
+    document.getElementById('ghAuthor').innerHTML = `<span style="color:var(--text-dim)">by</span> <a href="https://github.com/${d.owner?.login}" target="_blank">${d.owner?.login}</a>`;
     document.getElementById('ghStars').textContent = `★ ${(d.stargazers_count||0).toLocaleString()}`;
     document.getElementById('ghLicense').textContent = d.license?.spdx_id || 'No license';
-
-    if (d.description && !document.getElementById('modelSubtitle').textContent) {
-      document.getElementById('modelSubtitle').textContent = d.description;
-    }
+    if (d.description) document.getElementById('modelSubtitle').textContent = d.description;
   } catch(e) {}
 }
 
@@ -1098,6 +1111,7 @@ async function loadSidecars(rawUrl) {
 }
 
 // ── Load model from URL ───────────────────────────────────────────────────────
+// ── Load model from URL ───────────────────────────────────────────────────────
 async function loadScadFromUrl(url) {
   const rawUrl = toRawUrl(url);
 
@@ -1126,22 +1140,25 @@ async function loadScadFromUrl(url) {
       .map((l, i) => `<span class="src-ln">${String(i+1).padStart(3,' ')}</span>${esc(l)}`)
       .join('\n');
 
-    // Inside loadScadFromUrl...
+    // ⬇️⬇️⬇️ ADD THESE TWO LINES BACK ⬇️⬇️⬇️
+    loadGithubMeta(rawUrl);
+    loadSidecars(rawUrl);
+    // ⬆️⬆️⬆️ ------------------------- ⬆️⬆️⬆️
 
-      // 1. Parse the file
-      const groups = parseScadParams(text);
+    // 1. Parse the file
+    const groups = parseScadParams(text);
 
-      // 2. Flatten params so we can search them
-      parsedParams = groups.flatMap(g => g.params);
+    // 2. Flatten params so we can search them
+    parsedParams = groups.flatMap(g => g.params);
 
-      // 3. APPLY URL STATE NOW (Override defaults with URL values)
-      applyUrlState(); 
+    // 3. APPLY URL STATE NOW (Override defaults with URL values)
+    applyUrlState(); 
 
-      // 4. Build UI (Now the sliders will generate with the URL values)
-      buildParamUI(groups);
+    // 4. Build UI (Now the sliders will generate with the URL values)
+    buildParamUI(groups);
 
-      // 5. Render
-      await window.runAndShowScad();
+    // 5. Render
+    await window.runAndShowScad();
 
   } catch(e) {
     document.getElementById('renderStatus').textContent = `Error: ${e.message}`;
