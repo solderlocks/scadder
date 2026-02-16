@@ -806,13 +806,15 @@ function parseScadParams(code) {
 }
 
 // ── Build param UI ────────────────────────────────────────────────────────────
+// ── Build param UI ────────────────────────────────────────────────────────────
 function buildParamUI(groups) {
   const grid = document.getElementById('paramGrid');
   grid.innerHTML = '';
+  // Flatten groups for global search
   parsedParams = groups.flatMap(g => g.params);
 
   if (parsedParams.length === 0) {
-    grid.innerHTML = '<p class="no-params">No top-level parameters detected. Add OpenSCAD Customizer annotations to expose parameters here.</p>';
+    grid.innerHTML = '<p class="no-params">No configurable parameters found.</p>';
     return;
   }
 
@@ -833,9 +835,11 @@ function buildParamUI(groups) {
 
       const lbl = document.createElement('label');
       lbl.className = 'param-label';
-      lbl.innerHTML = `${p.label} <span class="param-varname">${p.name}</span>`;
+      // Show cleaner label for magic numbers
+      lbl.innerHTML = `${p.label} <span class="param-varname">${p.isMagic ? '' : p.name}</span>`;
       item.appendChild(lbl);
 
+      // ── RANGE SLIDER ──
       if (p.type === 'range') {
         const row = document.createElement('div');
         row.className = 'param-range-row';
@@ -845,22 +849,31 @@ function buildParamUI(groups) {
         slider.className = 'param-slider';
         slider.min = p.min; slider.max = p.max;
         slider.step = p.step || 1;
-        slider.value = p.defaultVal;
+        slider.value = p.value; // Use p.value (might come from URL)
 
         const numbox = document.createElement('input');
         numbox.type = 'number';
         numbox.className = 'param-numbox';
         numbox.min = p.min; numbox.max = p.max;
         numbox.step = p.step || 1;
-        numbox.value = p.defaultVal;
+        numbox.value = p.value;
 
-        slider.oninput = () => { numbox.value = slider.value; p.value = parseFloat(slider.value); };
-        numbox.oninput = () => { slider.value = numbox.value; p.value = parseFloat(numbox.value); };
+        slider.oninput = () => { 
+            numbox.value = slider.value; 
+            p.value = parseFloat(slider.value); 
+            updateUrlState(); // <--- SYNC URL
+        };
+        numbox.oninput = () => { 
+            slider.value = numbox.value; 
+            p.value = parseFloat(numbox.value); 
+            updateUrlState(); // <--- SYNC URL
+        };
 
         row.appendChild(slider);
         row.appendChild(numbox);
         item.appendChild(row);
 
+      // ── CHECKBOX ──
       } else if (p.type === 'boolean') {
         const row = document.createElement('div');
         row.className = 'param-check-row';
@@ -868,45 +881,105 @@ function buildParamUI(groups) {
         const cb = document.createElement('input');
         cb.type = 'checkbox';
         cb.className = 'param-checkbox';
-        cb.checked = p.defaultVal;
+        cb.checked = p.value;
 
         const lbl2 = document.createElement('span');
         lbl2.style.cssText = 'font-family:var(--mono);font-size:0.78rem;color:var(--text-mid)';
-        lbl2.textContent = p.defaultVal ? 'true' : 'false';
+        lbl2.textContent = p.value ? 'true' : 'false';
 
-        cb.onchange = () => { p.value = cb.checked; lbl2.textContent = cb.checked ? 'true' : 'false'; };
+        cb.onchange = () => { 
+            p.value = cb.checked; 
+            lbl2.textContent = cb.checked ? 'true' : 'false'; 
+            updateUrlState(); // <--- SYNC URL
+        };
 
         row.appendChild(cb); row.appendChild(lbl2);
         item.appendChild(row);
 
+      // ── DROPDOWN ──
       } else if (p.type === 'select') {
         const sel = document.createElement('select');
         sel.className = 'param-select';
         for (const opt of p.options) {
           const o = document.createElement('option');
           o.value = opt; o.textContent = opt;
-          if (opt === p.defaultVal) o.selected = true;
+          if (opt === p.value) o.selected = true;
           sel.appendChild(o);
         }
-        sel.onchange = () => { p.value = sel.value; };
+        sel.onchange = () => { 
+            p.value = sel.value; 
+            updateUrlState(); // <--- SYNC URL
+        };
         item.appendChild(sel);
 
+      // ── STANDARD INPUT (Number/Text/Magic) ──
       } else {
         const inp = document.createElement('input');
-        // FIX: Use 'text' type for strings AND raw formulas (so "size/2" shows up)
+        // Use text for 'raw' (formulas) or 'string', number for rest
         inp.type = (p.type === 'string' || p.type === 'raw') ? 'text' : 'number';
         inp.className = 'param-input';
-        inp.value = p.defaultVal;
+        inp.value = p.value;
         
         inp.oninput = () => { 
-            // If it's a number field, parse it. If it's text (raw/string), keep as string.
-            p.value = inp.type === 'number' ? parseFloat(inp.value) : inp.value; 
+            // Update internal state
+            p.value = inp.type === 'number' ? parseFloat(inp.value) : inp.value;
+            updateUrlState(); // <--- SYNC URL
         };
         item.appendChild(inp);
       }
 
       grid.appendChild(item);
     }
+  }
+}
+
+// ── State Management (URL Sync) ───────────────────────────────────────────────
+function updateUrlState() {
+  const state = {};
+  let hasChanges = false;
+
+  for (const p of parsedParams) {
+    if (p.value !== p.defaultVal) {
+      state[p.name] = p.value;
+      hasChanges = true;
+    }
+  }
+
+  const u = new URL(window.location.href);
+  if (hasChanges) {
+    u.searchParams.set('vars', JSON.stringify(state));
+  } else {
+    u.searchParams.delete('vars');
+  }
+  window.history.replaceState({}, '', u.toString());
+}
+
+function applyUrlState() {
+  // FIX: Use URLSearchParams. It automatically turns "Line+36" back into "Line 36"
+  const params = new URLSearchParams(window.location.search);
+  const varsParam = params.get('vars'); 
+
+  if (!varsParam) return;
+
+  try {
+    const state = JSON.parse(varsParam);
+    console.log("Applying URL State:", state);
+
+    for (const p of parsedParams) {
+      if (state.hasOwnProperty(p.name)) {
+        console.log(`Overriding ${p.name}: ${p.value} -> ${state[p.name]}`);
+        
+        if (p.type === 'number' || p.type === 'range') {
+             p.value = parseFloat(state[p.name]);
+        } else if (p.type === 'boolean') {
+             p.value = (state[p.name] === true || state[p.name] === "true");
+        } else {
+             p.value = state[p.name];
+        }
+      }
+    }
+  } catch (e) {
+    console.error("Failed to parse URL vars:", e);
   }
 }
 
@@ -1053,17 +1126,22 @@ async function loadScadFromUrl(url) {
       .map((l, i) => `<span class="src-ln">${String(i+1).padStart(3,' ')}</span>${esc(l)}`)
       .join('\n');
 
-    // Params
-    const groups = parseScadParams(text);
-    buildParamUI(groups);
+    // Inside loadScadFromUrl...
 
-    // Sidecars + GitHub meta (non-blocking)
-    loadGithubMeta(rawUrl);
-    loadSidecars(rawUrl);
+      // 1. Parse the file
+      const groups = parseScadParams(text);
 
-    // Render
-    document.getElementById('renderStatus').textContent = 'Compiling model…';
-    await window.runAndShowScad();
+      // 2. Flatten params so we can search them
+      parsedParams = groups.flatMap(g => g.params);
+
+      // 3. APPLY URL STATE NOW (Override defaults with URL values)
+      applyUrlState(); 
+
+      // 4. Build UI (Now the sliders will generate with the URL values)
+      buildParamUI(groups);
+
+      // 5. Render
+      await window.runAndShowScad();
 
   } catch(e) {
     document.getElementById('renderStatus').textContent = `Error: ${e.message}`;
