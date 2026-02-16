@@ -1,1 +1,2 @@
-# Scadder - A tool for visualizing, modifying, and exporting OpenScad models
+# Scadder
+A tool for visualizing, modifying, and exporting OpenScad models
