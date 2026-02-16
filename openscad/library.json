@@ -1,0 +1,20 @@
+[
+  {
+    "id": "rotate-extrude-demo",
+    "title": "Rotate Extrude Demo",
+    "description": "A simple demonstration of rotational geometry.",
+    "author": "openscad",
+    "url": "https://raw.githubusercontent.com/openscad/openscad/master/examples/Basics/rotate_extrude.scad",
+    "image": "assets/previews/rotate-extrude.png", 
+    "tags": ["demo", "basics"]
+  },
+  {
+    "id": "logo-demo",
+    "title": "OpenSCAD Logo",
+    "description": "The classic parametric logo.",
+    "author": "openscad",
+    "url": "https://raw.githubusercontent.com/openscad/openscad/master/examples/Basics/logo.scad",
+    "image": "assets/previews/logo.png",
+    "tags": ["logo", "complex"]
+  }
+]
