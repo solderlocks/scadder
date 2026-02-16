@@ -1,0 +1,74 @@
+<title>OpenSCAD Cloud from Autodrop3d</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="logo.png">
+<link id="mainStyleSheet" rel="stylesheet" type="text/css" href="./openscad/css/mvp.css">
+<link id="mainStyleSheet" rel="stylesheet" type="text/css" href="./openscad/css/dark.css">
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SWE7HZBGBR"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-SWE7HZBGBR');
+</script>
+
+<style>
+    .container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        grid-template-rows: 0.1fr 1fr .1fr;
+        gap: 0px 0px;
+        grid-auto-flow: row;
+        align-items: center;
+        grid-template-areas:
+            "top top"
+            "left right"
+            "footer footer";
+    }
+
+    .footer {
+        grid-area: footer;
+    }
+
+    .top {
+        grid-area: top;
+    }
+
+    .left {
+        grid-area: left;
+    }
+
+    .right {
+        grid-area: right;
+    }
+</style>
+
+
+<div class="container">
+    <div class="top">
+        <H1>OpenSCAD cloud provided by <a href="https://autodrop3d.com">Autodrop3d</a> </H1>
+    </div>
+
+
+    <div class="left">
+        An online editor for OpenSCAD.
+        <br> powered by the WASM port of OpenSCAD by <a href="https://github.com/DSchroer/openscad-wasm" target="_blank">DSchroer</a>
+        <br><br><br><br>This is a place where you can make and share your openSCAD scripts.<br>
+        To learn more about OpenSCAD see <a href="https://openscad.org/index.html">OpenSCAD.org</a>
+        <br>
+
+        <div style="text-align: center;">
+            <a href="./openscad/">
+                <img src="./logo.png"></img><br>
+                Open the editor</a>
+        </div>
+    </div>
+    <div class="right" style="text-align: center;">
+        <iframe src="https://www.youtube.com/embed/izXq3d_rB9U" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" style="width:100%;height:300px;" allowfullscreen></iframe>
+    </div>
+    <div class="footer">
+
+    </div>
+</div>
