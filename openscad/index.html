@@ -1,26 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="utf-8">
-<title>OpenSCAD Cloud from Autodrop3d</title>
-<link rel="icon" type="image/x-icon" href="../logo.png">
-<!-- <script src="./login.js"></script> -->
-
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-SWE7HZBGBR"></script>
-<script src="./configurator.js"></script>
-<script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'G-SWE7HZBGBR');
-</script>
+<title>Scadder — Open Parametric Design Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-<link id="mainStyleSheet" rel="stylesheet" type="text/css" href="./css/mvp.css">
-<link id="mainStyleSheet" rel="stylesheet" type="text/css" href="./css/dark.css">
-
 <script src="./stlViewer/engine/threejs/three.min.js"></script>
 <script src="./stlViewer/engine/threejs/OrbitControls.js"></script>
 <script src="./stlViewer/engine/threejs/STLLoader.js"></script>
@@ -28,339 +16,1198 @@
 <script src="./stlViewer/engine/parts/engine-render/renderHandler.js"></script>
 <script src='./stlViewer/engine/engine.js'></script>
 
-<link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/editor/editor.main.min.css">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
-
-
-<div id="CheatSheet" style="top:10%;right:10%;left:10%;bottom:10%;position: absolute;z-index: 1000; background-color: rgb(52, 55, 55);">
-    <iframe style="width:100%;height:100%;" src="https://openscad.org/cheatsheet/"></iframe>
-</div>
-
-
-<div id="configurator" style="top:10%;right:50%;left:10%;bottom:10%;position: absolute;z-index: 1000; background-color: rgb(52, 55, 55);overflow-y: scroll;">
-    <span><button onclick="run_Configurator()">Generate </button> <button onclick="$('#configurator').hide()" style="float: right; color: red;">X</button></span>
-
-    <div id="container"></div>
-</div>
-
-<script>
-    $("#CheatSheet").hide();
-    $("#configurator").hide();
-</script>
-
-
-
 <style>
-    .container {
-        width: 100%;
-        height: 100%;
-        display: grid;
-        grid-template-columns: 1.2fr 1.2fr;
-        grid-template-rows: 0.1fr 0.1fr 2.3fr 0.4fr;
-        gap: 0px 0px;
-        grid-auto-flow: row;
-        grid-template-areas:
-            "toolbar1 toolbar2"
-            "toolbar3 view3d"
-            "openScadCode view3d"
-            "openScadCode OpenScadConsole";
-    }
+  :root {
+    --bg: #0e0c0a;
+    --surface: #161412;
+    --surface2: #1e1b17;
+    --border: #2a2520;
+    --amber: #c8922a;
+    --amber-dim: #7a5618;
+    --text: #e8e0d0;
+    --text-dim: #7a7060;
+    --text-mid: #a89880;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --serif: 'Playfair Display', serif;
+  }
 
-    .toolbar1 {
-        grid-area: toolbar1;
-    }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    .toolbar2 {
-        grid-area: toolbar2;
-    }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    min-height: 100vh;
+  }
 
-    .toolbar3 {
-        grid-area: toolbar3;
-        display: inline-block;
-    }
+  /* Header */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
 
-    .toolBarItem {
-        display: inline-block;
-    }
+  .logo {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    color: var(--amber);
+    letter-spacing: 0.02em;
+    text-decoration: none;
+  }
 
-    .openScadCode {
-        grid-area: openScadCode;
-    }
+  .logo-tag {
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    font-weight: 400;
+    margin-left: 0.5rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
 
-    .view3d {
-        grid-area: view3d;
-    }
+  /* URL Bar */
+  .url-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0.6rem 2rem;
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
 
-    .OpenScadConsole {
-        grid-area: OpenScadConsole;
-        height: 100%;
-    }
+  .url-bar label {
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    white-space: nowrap;
+  }
 
+  .url-bar input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    padding: 0.35rem 0.6rem;
+    outline: none;
+    transition: border-color 0.15s;
+  }
 
-    .OpenScadConsole {
-        overflow: scroll;
-        grid-area: OpenScadConsole;
-        display: none;
-    }
+  .url-bar input:focus { border-color: var(--amber-dim); }
 
+  /* Main */
+  .main {
+    /* max-width: 900px; */
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
 
+  /* Model meta */
+  .model-meta {
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+  }
 
-    select:focus,
-    input:focus,
-    textarea:focus {
-        background: white;
-    }
+  .model-title {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    color: var(--text);
+    line-height: 1.2;
+    text-transform: capitalize;
+  }
 
-    #canvas-container {
-        width: 97%;
-        height: 99%;
-        border: 1px solid yellow;
-        border-radius: 2rem;
-    }
+  .model-subtitle {
+    color: var(--text-dim);
+    font-size: 0.75rem;
+    margin-top: 0.3rem;
+    font-family: var(--mono);
+  }
+
+  .model-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+    align-items: flex-start;
+    padding-top: 0.2rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    position: absolute; 
+    right: 2rem;
+  }
+
+  /* GitHub chips */
+  .github-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+  }
+
+  .gh-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.25rem 0.6rem;
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--text-mid);
+  }
+
+  .gh-chip a { color: var(--amber); text-decoration: none; }
+  .gh-chip a:hover { text-decoration: underline; }
+
+  /* Viewport */
+  .viewport-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+    position: relative;
+  }
+
+  .viewport-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+
+  .vtb-left { display: flex; gap: 0.4rem; align-items: center; }
+  .vtb-right { display: flex; gap: 0.5rem; align-items: center; }
+
+  #canvas-container {
+    width: 100%;
+    height: 480px;
+  }
+
+  .render-overlay {
+    position: absolute;
+    inset: 44px 0 0 0;
+    background: rgba(14,12,10,0.88);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    z-index: 10;
+    transition: opacity 0.3s;
+  }
+
+  .render-overlay.hidden { opacity: 0; pointer-events: none; }
+
+  .spinner {
+    width: 36px; height: 36px;
+    border: 2px solid var(--border);
+    border-top-color: var(--amber);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .render-overlay p {
+    color: var(--text-mid);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+  }
+
+  /* Accordion */
+  .section {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+    background: var(--surface);
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.7rem 1rem;
+    cursor: pointer;
+    user-select: none;
+    background: var(--surface2);
+    border-bottom: 1px solid transparent;
+    transition: background 0.15s;
+  }
+
+  .section-header:hover { background: #222018; }
+  .section-header.open { border-bottom-color: var(--border); }
+
+  .shl { display: flex; align-items: center; gap: 0.6rem; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--amber);
+  }
+
+  .section-desc {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    font-family: var(--mono);
+  }
+
+  .chevron { color: var(--text-dim); font-size: 0.65rem; transition: transform 0.2s; }
+  .chevron.open { transform: rotate(180deg); }
+
+  .section-body { display: none; padding: 1rem; }
+  .section-body.open { display: block; }
+
+  /* Parameters */
+  .param-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .param-group-label {
+    grid-column: 1 / -1;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--amber-dim);
+    padding: 0.6rem 0 0.4rem;
+    border-bottom: 1px solid var(--border);
+    margin-top: 0.25rem;
+  }
+
+  .param-group-label:first-child { padding-top: 0; margin-top: 0; }
+
+  .param-item { display: flex; flex-direction: column; gap: 0.25rem; }
+
+  .param-label {
+    font-size: 0.72rem;
+    color: var(--text-mid);
+    font-family: var(--mono);
+  }
+
+  .param-varname {
+    color: var(--text-dim);
+    font-size: 0.62rem;
+    margin-left: 0.4rem;
+  }
+
+  .param-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    padding: 0.38rem 0.6rem;
+    outline: none;
+    transition: border-color 0.15s;
+    width: 100%;
+  }
+
+  .param-input:focus { border-color: var(--amber-dim); }
+
+  .param-range-row { display: flex; align-items: center; gap: 0.5rem; }
+
+  .param-slider { flex: 1; accent-color: var(--amber); cursor: pointer; }
+
+  .param-numbox {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    padding: 0.3rem 0.4rem;
+    width: 68px;
+    outline: none;
+    text-align: right;
+  }
+
+  .param-numbox:focus { border-color: var(--amber-dim); }
+
+  .param-check-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0; }
+
+  .param-checkbox { accent-color: var(--amber); width: 14px; height: 14px; cursor: pointer; }
+
+  .param-select {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    padding: 0.38rem 0.6rem;
+    outline: none;
+    width: 100%;
+  }
+
+  .param-select:focus { border-color: var(--amber-dim); }
+
+  .no-params {
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    grid-column: 1 / -1;
+  }
+
+  .render-hint {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* Source / console */
+  .source-view, .console-output {
+    background: var(--bg);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    font-family: var(--mono);
+    font-size: 0.73rem;
+    color: var(--text-mid);
+    overflow-x: auto;
+    white-space: pre;
+    max-height: 280px;
+    overflow-y: auto;
+    line-height: 1.6;
+  }
+
+  .console-output { color: var(--text-dim); white-space: pre-wrap; }
+
+  .src-ln { color: var(--border); user-select: none; margin-right: 0.75rem; }
+
+  /* Print settings */
+  .ps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 0.6rem;
+  }
+
+  .ps-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.55rem 0.7rem;
+  }
+
+  .ps-key {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.2rem;
+  }
+
+  .ps-val { font-family: var(--mono); font-size: 0.85rem; color: var(--amber); }
+
+  .empty-note {
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    line-height: 1.6;
+  }
+
+  .empty-note code { color: var(--text-mid); }
+
+  /* Landing */
+  .landing {
+    padding: 5rem 2rem;
+    text-align: center;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  .landing h1 {
+    font-family: var(--serif);
+    font-size: 2.6rem;
+    color: var(--amber);
+    margin-bottom: 0.75rem;
+    line-height: 1.15;
+  }
+
+  .landing p {
+    color: var(--text-mid);
+    line-height: 1.75;
+    margin-bottom: 1.25rem;
+    font-size: 0.88rem;
+  }
+
+  .landing code { color: var(--amber); font-family: var(--mono); }
+
+  /* Buttons */
+  .btn {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 4px;
+    padding: 0.42rem 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    white-space: nowrap;
+  }
+
+  .btn-primary { background: var(--amber); color: #0e0c0a; font-weight: 500; }
+  .btn-primary:hover { background: #d4a030; }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-mid);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover { border-color: var(--amber-dim); color: var(--text); }
+
+  /* BOM table */
+  .bom-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+  }
+
+  .bom-table th {
+    color: var(--text-dim);
+    text-align: left;
+    padding: 0.3rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .bom-table td {
+    padding: 0.4rem 0.5rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+
+  .bom-table td a { color: var(--amber); text-decoration: none; }
+  .bom-table td a:hover { text-decoration: underline; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--amber-dim); }
 </style>
+</head>
+<body>
 
+<header>
+  <a href="/" class="logo">Scadder</a>
+  <div style="display:flex;gap:0.5rem;align-items:center">
+    <button class="btn btn-ghost" onclick="showAbout()">About</button>
+  </div>
+</header>
 
-
-<div class="container">
-    <div class="toolbar1">
-        <!-- <button onclick="goBackToPartPage()">◄ Back to part details</button> -->
-        <!-- <button id="Save" onclick="storeOpenSCADfileToCloud();">💾</button> -->
-        <button id="runOpenSCAD">▶</button>
-        <button onclick="download('export-'+ openPartID+openPartRev+'.stl', window.currentSTL);">Export STL</button>
-        <button onclick="window.location.reload();" class="refreshButton">🔄</button>
-        <!-- <button onclick="makeShareLink();">Share Link</button>
-        <button onclick="$('#CheatSheet').toggle()">Cheat Sheet</button>
-        <button onclick="setup_Configurator();">Customizer</button> -->
-    </div>
-    <div class="toolbar2">
-        <button onclick="meshWire.visible = (meshWire.visible === true ? false : true)" style="display: inline-block;">Wireframe</button>
-        <button onclick="meshSolid.visible = (meshSolid.visible === true ? false : true)" style="display: inline-block;">Solid</button>
-        <input id="transparancy" type="range" min=".1" max="1" step=".05" value=".9" oninput="meshSolid.material.opacity = this.value;" style="display: inline-block;height:22px;">
-        <button onclick="doLogin();" style="float:right;">Login</button>
-    </div>
-    <div class="openScadCode">
-        <div id="monacoEditor" style="height:100%;width:100%;  resize: horizontal;"></div>
-    </div>
-    <div class="view3d">
-        <div id="canvas-container"></div>
-    </div>
-    <div class="OpenScadConsole">
-        <pre id="consoleOutput"></pre>
-    </div>
+<div class="url-bar">
+  <label>Source</label>
+  <input type="text" id="urlInput" placeholder="Paste a GitHub .scad URL (blob or raw)…" onkeydown="if(event.key==='Enter') loadFromInput()" />
+  <button class="btn btn-primary" onclick="loadFromInput()">Load ▶</button>
 </div>
 
+<div class="main">
 
+  <!-- Landing state -->
+  <div class="landing" id="landingState">
+    <h1>Open Parametric<br>Design Library</h1>
+    <p>Paste a GitHub URL to any <code>.scad</code> file to visualize it, adjust its parameters, and export a print-ready STL — no software required.</p>
+    <p style="font-size:0.78rem;color:var(--text-dim)">Designs live on GitHub · Fork everything · Built on OpenSCAD</p>
+  </div>
 
-<div id="globalDimmScreen" class="modal" onclick="if(event.target.id =='globalModalWindow') ModalWindowClose();">
-    <div class="modal" style="display: block;background:url(./images/loading.gif) center center no-repeat;">
+  <!-- Model view -->
+  <div id="modelView" style="display:none">
+
+    <!-- Title row -->
+    <div class="model-meta">
+      <div>
+        <div class="model-title" id="modelTitle">Untitled Model</div>
+        <div class="model-subtitle" id="modelSubtitle"></div>
+      </div>
     </div>
-</div>
+
+    <!-- GitHub meta chips -->
+    <div class="github-meta" id="githubMeta" style="display:none">
+      <div class="gh-chip" id="ghAuthor"></div>
+      <div class="gh-chip" id="ghLicense"></div>
+      <div class="gh-chip" id="ghStars"></div>
+
+      <div class="model-actions">
+        <a id="githubSourceBtn" href="#" target="_blank" class="btn btn-ghost">⎇ Source</a>
+        <a id="githubForkBtn" href="#" target="_blank" class="btn btn-ghost">Fork ↗</a>
+        <button class="btn btn-primary" id="downloadBtn" onclick="downloadSTL()" disabled>↓ Export STL</button>
+      </div>
+    </div>
+
+    <!-- 3D Viewport -->
+    <div class="viewport-card">
+      <div class="viewport-toolbar">
+        <div class="vtb-left">
+          <button class="btn btn-primary" id="runBtn" onclick="window.runAndShowScad()">▶ Render</button>
+          <button class="btn btn-ghost" onclick="if(meshWire) meshWire.visible=!meshWire.visible">Wireframe</button>
+          <button class="btn btn-ghost" onclick="if(meshSolid) meshSolid.visible=!meshSolid.visible">Solid</button>
+        </div>
+        <div class="vtb-right">
+          <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim)">Opacity</span>
+          <input id="opacitySlider" type="range" min="0.1" max="1" step="0.05" value="0.95"
+            oninput="if(meshSolid) meshSolid.material.opacity=this.value"
+            style="width:80px;accent-color:var(--amber)">
+        </div>
+      </div>
+      <div id="canvas-container"></div>
+      <div class="render-overlay" id="renderOverlay">
+        <div class="spinner"></div>
+        <p id="renderStatus">Initializing…</p>
+      </div>
+    </div>
+
+    <!-- Parameters accordion -->
+    <div class="section">
+      <div class="section-header open" onclick="toggleSection(this)">
+        <div class="shl">
+          <span class="section-label">Parameters</span>
+          <span class="section-desc" id="paramCount"></span>
+        </div>
+        <span class="chevron open">▼</span>
+      </div>
+      <div class="section-body open">
+        <div class="param-grid" id="paramGrid">
+          <p class="no-params">Loading…</p>
+        </div>
+        <div class="render-hint">Edit values above, then click <strong style="color:var(--amber)">▶ Render</strong> to preview changes.</div>
+      </div>
+    </div>
+
+    <!-- Print settings accordion -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="shl">
+          <span class="section-label">Print Settings</span>
+          <span class="section-desc">recommended slicer config</span>
+        </div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="section-body" id="printSettingsBody">
+        <p class="empty-note">No print settings provided. Add a <code>print-settings.json</code> alongside the .scad file to populate this section.</p>
+      </div>
+    </div>
+
+    <!-- BOM accordion -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="shl">
+          <span class="section-label">Bill of Materials</span>
+          <span class="section-desc">components &amp; hardware</span>
+        </div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="section-body" id="bomBody">
+        <p class="empty-note">No BOM provided. Add a <code>bom.json</code> alongside the .scad file.</p>
+      </div>
+    </div>
+
+    <!-- Source accordion -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="shl">
+          <span class="section-label">Source</span>
+          <span class="section-desc">.scad code</span>
+        </div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="source-view" id="sourceDisplay"></div>
+      </div>
+    </div>
+
+    <!-- Console accordion -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <div class="shl">
+          <span class="section-label">Console</span>
+          <span class="section-desc">renderer output</span>
+        </div>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="section-body">
+        <div class="console-output" id="consoleOutput"></div>
+      </div>
+    </div>
+
+  </div><!-- /modelView -->
+</div><!-- /main -->
 
 
 <script>
-    // 1. Initialize the Virtual File System
-    var virtualFileSystem = [{ name: "main.scad", txt: "// Loading..." }];
-    var currentVirtualFileName = "main.scad";
-    
-    // Globals for the 3D Engine
-    var meshWire;
-    var meshSolid;
-    var openPartID = "local"; 
-    var openPartRev = "1";
+// ── Globals ───────────────────────────────────────────────────────────────────
+var virtualFileSystem = [{ name: "main.scad", txt: "" }];
+var meshWire, meshSolid;
+var parsedParams = [];
 
-    // 2. Helper to get URL params
-    function param(name) {
-        return (location.search.split(name + '=')[1] || '').split('&')[0];
+// ── URL helpers ───────────────────────────────────────────────────────────────
+function urlParam(name) {
+  const val = (location.search.split(name + '=')[1] || '').split('&')[0];
+  return val ? decodeURIComponent(val) : '';
+}
+
+function toRawUrl(url) {
+  url = url.trim();
+  if (url.includes('raw.githubusercontent.com')) return url;
+  const m = url.match(/github\.com\/([^/]+\/[^/]+)\/blob\/(.+)/);
+  if (m) return `https://raw.githubusercontent.com/${m[1]}/${m[2]}`;
+  return url;
+}
+
+function toBlobUrl(rawUrl) {
+  const m = rawUrl.match(/raw\.githubusercontent\.com\/([^/]+\/[^/]+)\/([^/]+)\/(.+)/);
+  if (m) return `https://github.com/${m[1]}/blob/${m[2]}/${m[3]}`;
+  return rawUrl;
+}
+
+// ── OpenSCAD Customizer parameter parser ──────────────────────────────────────
+function parseScadParams(code) {
+  const groups = [];
+  
+  // 1. Keep the standard "Named Parameters" group (for variables)
+  const globalGroup = { name: "Named Variables", params: [] };
+  groups.push(globalGroup);
+
+  // 2. Create a new "Magic Numbers" group
+  const magicGroup = { name: "Raw Values (Magic Numbers)", params: [] };
+  groups.push(magicGroup);
+
+  const lines = code.split('\n');
+
+  // Helper for safe evaluation
+  const evaluate = (str) => {
+    try { return Function(`"use strict"; return (${str})`)(); } catch(e) { return null; }
+  };
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const t = line.trim();
+    if (t.startsWith('//') || t.length === 0) continue; // Skip comments/empty
+
+    // ── STRATEGY A: Named Variables ──
+    const varMatch = t.match(/^([ \t]*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*([^;]+?)\s*;(?:\s*\/\/\s*(.*))?/);
+    
+    if (varMatch) {
+       const [, indent, name, rawVal, comment] = varMatch;
+       
+       // Skip system vars
+       if (name === '$fn' || name === '$fa' || name === '$fs') continue; 
+       
+       let type = 'number';
+       let val = rawVal.trim();
+       let computedVal = val;
+
+       if (val === 'true' || val === 'false') {
+           type = 'boolean';
+           computedVal = (val === 'true');
+       } else if (val.startsWith('"') || val.startsWith("'")) {
+           type = 'string';
+           computedVal = val.replace(/^["']|["']$/g, '');
+       } else {
+           const mathResult = evaluate(val);
+           if (mathResult !== null && !isNaN(mathResult)) {
+               computedVal = mathResult;
+           } else {
+               type = 'raw'; 
+           }
+       }
+
+       // Range comments
+       let min, max, step;
+       if (comment) {
+           const range = comment.match(/\[(-?[\d.]+):(-?[\d.]+)\]/);
+           if (range) { min=parseFloat(range[1]); max=parseFloat(range[2]); step=1; type='range'; }
+       }
+
+       globalGroup.params.push({
+           name, type, 
+           value: computedVal, 
+           defaultVal: computedVal,
+           rawValue: val, 
+           min, max, step, 
+           lineIndex: i, 
+           label: name,
+           isMagic: false // Important flag!
+       });
+       
+       // If we found a named variable, we generally skip looking for magic numbers 
+       // on the same line to avoid double-parsing the assignment value.
+       continue; 
     }
 
-    // 3. The "Fetch from GitHub" Logic
-    async function loadFromURL() {
-        const targetFile = param("file");
-        const url = targetFile ? decodeURIComponent(targetFile) : null;
-
-        if (url) {
-            virtualFileSystem[0].txt = "// Fetching from GitHub...\n// Please wait.";
-            if (window.editor) window.editor.setValue(virtualFileSystem[0].txt);
-
-            try {
-                const response = await fetch(url);
-                if (!response.ok) throw new Error("Network response was not ok");
-                const text = await response.text();
-                
-                virtualFileSystem[0].txt = text;
-                if (window.editor) window.editor.setValue(text);
-
-                // Try to auto-run if the engine is ready
-                if (typeof window.runAndShowScad === 'function') {
-                    console.log("File loaded. Auto-running...");
-                    window.runAndShowScad();
-                }
-
-            } catch (error) {
-                console.error("Failed to load file:", error);
-                virtualFileSystem[0].txt = "// Error loading file:\n// " + error.message;
-                if (window.editor) window.editor.setValue(virtualFileSystem[0].txt);
-            }
-        } else {
-            virtualFileSystem[0].txt = `// Welcome to the BIFL Viewer!
-// Add ?file=RAW_GITHUB_URL to the URL to load a model.
-difference() {
-    cube(20, center=true);
-    sphere(12);
-}`;
-        }
-    }
-
-    // 4. This draws the STL
-    async function ShowMeThatStinkingStlFile(currentSTL) {
-        window.currentSTL = currentSTL;
-        try {
-            SceneHandler.getScene("scene-0").scene.children = [SceneHandler.getScene("scene-0").scene.children[0]];
-        } catch(e) { console.log("Scene clear error (harmless):", e); }
-
-        const loader = new THREE.STLLoader();
-        var geometry = loader.parse(currentSTL);
-
-        // Keep view settings if they exist
-        let oldOpacity = 0.95;
-        let oldWireVisible = true;
-        let oldSolidVisible = true;
+    // ── STRATEGY B: Magic Numbers ──
+    const numberPattern = /(?<![\w$])(-?\d+\.?\d*)(?![\w$])/g;
+    let match;
+    while ((match = numberPattern.exec(line)) !== null) {
+        const valStr = match[1];
+        const val = parseFloat(valStr);
         
-        if (typeof meshSolid !== 'undefined' && meshSolid.material) {
-             oldOpacity = meshSolid.material.opacity;
-             oldSolidVisible = meshSolid.visible;
-        }
-        if (typeof meshWire !== 'undefined') {
-             oldWireVisible = meshWire.visible;
-        }
+        if (isNaN(val)) continue;
+        if (val === 0 || val === 1) continue; 
+        if (val === 100 || val === 360) continue; 
 
-        meshWire = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true, }));
-        meshSolid = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial({ transparent: true, opacity: oldOpacity }));
+        const preStr = line.substring(0, match.index);
+        const contextMatch = preStr.match(/([a-zA-Z0-9_]+)\s*[(\[]\s*[^()\[\]]*$/); 
+        let contextLabel = contextMatch ? contextMatch[1] : "Value";
 
-        meshWire.visible = oldWireVisible;
-        meshSolid.visible = oldSolidVisible;
-
-        // Rotate to match OpenSCAD Z-up
-        meshWire.rotateX(-Math.PI / 2);
-        meshSolid.rotateX(-Math.PI / 2);
-
-        // Center it
-        var box = new THREE.Box3().setFromObject(meshSolid);
-        var meshTranslationInY = box.getSize().y / 2;
-        meshWire.translateZ(meshTranslationInY);
-        meshSolid.translateZ(meshTranslationInY);
-
-        await Engine.addToScene(meshWire, 'scene-0');
-        await Engine.addToScene(meshSolid, 'scene-0');
-        window.firstRenderDone = true;
-    }
-
-    function download(filename, content) {
-        // Create a blob from the content (works for both text and binary)
-        const blob = new Blob([content], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        
-        // Create a temporary link to trigger the download
-        const element = document.createElement('a');
-        element.href = url;
-        element.download = filename;
-        element.style.display = 'none';
-        document.body.appendChild(element);
-        
-        element.click();
-        
-        // Cleanup
-        document.body.removeChild(element);
-        URL.revokeObjectURL(url);
-    }
-    
-    // 5. Dummy helpers
-    function storeOpenSCADfileToCloud() { alert("Cloud save disabled."); }
-    function doLogin() { alert("No login required!"); }
-    
-    // Initialize Scene
-    Engine.createScene({ containerId: 'canvas-container', showGrid: false });
-    
-</script>
-
-
-<script type="module">
-    import OpenScad from "./openscad.js";
-    import { addFonts } from "./openscad.fonts.js";
-    import { registerOpenSCADLanguage } from './openscad-editor-config.js'
-
-    // 1. Setup Monaco Editor
-    async function setUpMonacoEditor() {
-        await loadFromURL(); 
-
-        await require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } });
-
-        await require(["vs/editor/editor.main"], async () => {
-            await registerOpenSCADLanguage();
-            window.editor = await monaco.editor.create(document.getElementById('monacoEditor'), {
-                value: virtualFileSystem[0].txt,
-                language: 'openscad',
-                theme: 'vs-dark',
-                automaticLayout: true 
-            });
-
-            window.editor.onDidChangeModelContent(() => {
-                virtualFileSystem[0].txt = window.editor.getValue();
-            });
+        magicGroup.params.push({
+            name: `Line ${i+1}: ${contextLabel}`,
+            type: 'number',
+            value: val,
+            defaultVal: val,
+            lineIndex: i,
+            charIndex: match.index,
+            strLength: valStr.length,
+            isMagic: true, // Flag for the injector
+            label: `${contextLabel} (L${i+1})`
         });
     }
+  }
 
-    await setUpMonacoEditor();
+  return groups.filter(g => g.params.length > 0);
+}
 
-    // 2. The Runner Function
-    const openSCADconsoleOutput = document.getElementById("consoleOutput");
+// ── Build param UI ────────────────────────────────────────────────────────────
+function buildParamUI(groups) {
+  const grid = document.getElementById('paramGrid');
+  grid.innerHTML = '';
+  parsedParams = groups.flatMap(g => g.params);
 
-    window.runAndShowScad = async function() {
-        // ERROR FIX: Manually sync instead of calling the missing function
-        if(window.editor) virtualFileSystem[0].txt = window.editor.getValue();
-        
-        openSCADconsoleOutput.innerHTML = "Processing..."; 
-        $("#globalDimmScreen").show();
+  if (parsedParams.length === 0) {
+    grid.innerHTML = '<p class="no-params">No top-level parameters detected. Add OpenSCAD Customizer annotations to expose parameters here.</p>';
+    return;
+  }
 
-        try {
-            const instance = await OpenScad({
-                noInitialRun: true,
-                'print': text => { openSCADconsoleOutput.innerHTML += text + "\n"; },
-                'printErr': text => { openSCADconsoleOutput.innerHTML += text + "\n"; },
-            });
+  document.getElementById('paramCount').textContent =
+    `${parsedParams.length} param${parsedParams.length !== 1 ? 's' : ''}`;
 
-            addFonts(instance);
-
-            await virtualFileSystem.forEach(async (item) => {
-                 await instance.FS.writeFile("/" + item.name, item.txt);
-            });
-
-            let openSCADarguments = ["/main.scad", "-o", "cube.stl"];
-            await instance.callMain(openSCADarguments);
-
-            const output = await new Blob([await instance.FS.readFile("/cube.stl")]).text();
-            
-            // This calls the function we restored in Fix 1
-            ShowMeThatStinkingStlFile(output);
-            
-            openSCADconsoleOutput.innerHTML += "\nDone!";
-
-        } catch (e) {
-            console.error(e);
-            openSCADconsoleOutput.innerHTML += "\nError: " + e;
-        }
-
-        $("#globalDimmScreen").hide();
+  for (const group of groups) {
+    if (group.name) {
+      const h = document.createElement('div');
+      h.className = 'param-group-label';
+      h.textContent = group.name;
+      grid.appendChild(h);
     }
 
-    // 3. Connect Buttons
-    document.getElementById("runOpenSCAD").onclick = function () { window.runAndShowScad() };
+    for (const p of group.params) {
+      const item = document.createElement('div');
+      item.className = 'param-item';
 
-    // 4. Auto-Run after 1 second
-    setTimeout(() => {
-        if(virtualFileSystem[0].txt.length > 50) { // Only run if we actually loaded something
-             window.runAndShowScad();
+      const lbl = document.createElement('label');
+      lbl.className = 'param-label';
+      lbl.innerHTML = `${p.label} <span class="param-varname">${p.name}</span>`;
+      item.appendChild(lbl);
+
+      if (p.type === 'range') {
+        const row = document.createElement('div');
+        row.className = 'param-range-row';
+
+        const slider = document.createElement('input');
+        slider.type = 'range';
+        slider.className = 'param-slider';
+        slider.min = p.min; slider.max = p.max;
+        slider.step = p.step || 1;
+        slider.value = p.defaultVal;
+
+        const numbox = document.createElement('input');
+        numbox.type = 'number';
+        numbox.className = 'param-numbox';
+        numbox.min = p.min; numbox.max = p.max;
+        numbox.step = p.step || 1;
+        numbox.value = p.defaultVal;
+
+        slider.oninput = () => { numbox.value = slider.value; p.value = parseFloat(slider.value); };
+        numbox.oninput = () => { slider.value = numbox.value; p.value = parseFloat(numbox.value); };
+
+        row.appendChild(slider);
+        row.appendChild(numbox);
+        item.appendChild(row);
+
+      } else if (p.type === 'boolean') {
+        const row = document.createElement('div');
+        row.className = 'param-check-row';
+
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'param-checkbox';
+        cb.checked = p.defaultVal;
+
+        const lbl2 = document.createElement('span');
+        lbl2.style.cssText = 'font-family:var(--mono);font-size:0.78rem;color:var(--text-mid)';
+        lbl2.textContent = p.defaultVal ? 'true' : 'false';
+
+        cb.onchange = () => { p.value = cb.checked; lbl2.textContent = cb.checked ? 'true' : 'false'; };
+
+        row.appendChild(cb); row.appendChild(lbl2);
+        item.appendChild(row);
+
+      } else if (p.type === 'select') {
+        const sel = document.createElement('select');
+        sel.className = 'param-select';
+        for (const opt of p.options) {
+          const o = document.createElement('option');
+          o.value = opt; o.textContent = opt;
+          if (opt === p.defaultVal) o.selected = true;
+          sel.appendChild(o);
         }
-    }, 1500);
+        sel.onchange = () => { p.value = sel.value; };
+        item.appendChild(sel);
+
+      } else {
+        const inp = document.createElement('input');
+        // FIX: Use 'text' type for strings AND raw formulas (so "size/2" shows up)
+        inp.type = (p.type === 'string' || p.type === 'raw') ? 'text' : 'number';
+        inp.className = 'param-input';
+        inp.value = p.defaultVal;
+        
+        inp.oninput = () => { 
+            // If it's a number field, parse it. If it's text (raw/string), keep as string.
+            p.value = inp.type === 'number' ? parseFloat(inp.value) : inp.value; 
+        };
+        item.appendChild(inp);
+      }
+
+      grid.appendChild(item);
+    }
+  }
+}
+
+// ── Inject current param values into SCAD source ──────────────────────────────
+function buildModifiedScad(originalCode) {
+  const lines = originalCode.split('\n');
+  const changesByLine = {}; 
+
+  for (const p of parsedParams) {
+    if (p.value !== p.defaultVal) { // REMOVE '&& p.isMagic' check here
+        if (!changesByLine[p.lineIndex]) changesByLine[p.lineIndex] = [];
+        changesByLine[p.lineIndex].push(p);
+    }
+  }
+
+  for (const [lineIdx, params] of Object.entries(changesByLine)) {
+    let originalLine = lines[lineIdx];
+
+    // Case 1: Magic Numbers (Needs complex splicing)
+    // We check if ANY param on this line is magic. 
+    // Ideally, named variables and magic numbers don't mix on the same line due to our `continue` logic.
+    const isMagicLine = params.some(p => p.isMagic);
+
+    if (isMagicLine) {
+        params.sort((a, b) => a.charIndex - b.charIndex);
+        let newLine = "";
+        let cursor = 0;
+        for (const p of params) {
+            newLine += originalLine.substring(cursor, p.charIndex);
+            newLine += String(p.value);
+            cursor = p.charIndex + p.strLength;
+        }
+        newLine += originalLine.substring(cursor);
+        lines[lineIdx] = newLine;
+    } 
+    
+    // Case 2: Named Variables (Simple Regex Replace)
+    else {
+        // We assume one variable assignment per line for simplicity
+        const p = params[0];
+        let valStr = p.value;
+        if (p.type === 'string') valStr = `"${p.value}"`;
+        
+        lines[lineIdx] = originalLine.replace(
+            /^([ \t]*[a-zA-Z0-9_$]+\s*=\s*)([^;]+)(;.*)/, 
+            `$1${valStr}$3`
+        );
+    }
+  }
+
+  return lines.join('\n');
+}
+
+// ── GitHub metadata fetch ─────────────────────────────────────────────────────
+async function loadGithubMeta(rawUrl) {
+  const blobUrl = toBlobUrl(rawUrl);
+  document.getElementById('githubSourceBtn').href = blobUrl;
+  const repoMatch = blobUrl.match(/github\.com\/([^/]+\/[^/]+)\//);
+  if (repoMatch) {
+    document.getElementById('githubForkBtn').href = `https://github.com/${repoMatch[1]}/fork`;
+  }
+
+  const apiBase = rawUrl.match(/raw\.githubusercontent\.com\/([^/]+\/[^/]+)\//);
+  if (!apiBase) return;
+
+  try {
+    const res = await fetch(`https://api.github.com/repos/${apiBase[1]}`);
+    if (!res.ok) return;
+    const d = await res.json();
+
+    document.getElementById('githubMeta').style.display = 'flex';
+    document.getElementById('ghAuthor').innerHTML =
+      `<span style="color:var(--text-dim)">by</span> <a href="https://github.com/${d.owner?.login}" target="_blank">${d.owner?.login || '—'}</a>`;
+    document.getElementById('ghStars').textContent = `★ ${(d.stargazers_count||0).toLocaleString()}`;
+    document.getElementById('ghLicense').textContent = d.license?.spdx_id || 'No license';
+
+    if (d.description && !document.getElementById('modelSubtitle').textContent) {
+      document.getElementById('modelSubtitle').textContent = d.description;
+    }
+  } catch(e) {}
+}
+
+// ── Try to load sidecar files (bom.json, print-settings.json) ─────────────────
+async function loadSidecars(rawUrl) {
+  const dir = rawUrl.substring(0, rawUrl.lastIndexOf('/'));
+
+  // try {
+  //   const r = await fetch(`${dir}/print-settings.json`);
+  //   if (r.ok) {
+  //     const ps = await r.json();
+  //     const body = document.getElementById('printSettingsBody');
+  //     body.innerHTML = '<div class="ps-grid"></div>';
+  //     const grid = body.querySelector('.ps-grid');
+  //     for (const [k, v] of Object.entries(ps)) {
+  //       grid.innerHTML += `<div class="ps-item"><div class="ps-key">${k}</div><div class="ps-val">${v}</div></div>`;
+  //     }
+  //   }
+  // } catch(e) {}
+
+  // try {
+  //   const r = await fetch(`${dir}/bom.json`);
+  //   if (r.ok) {
+  //     const bom = await r.json();
+  //     const body = document.getElementById('bomBody');
+  //     body.innerHTML = `<table class="bom-table">
+  //       <thead><tr><th>Item</th><th>Qty</th><th>Notes</th><th>Source</th></tr></thead>
+  //       <tbody>${bom.map(item => `<tr>
+  //         <td>${item.name||''}</td>
+  //         <td style="color:var(--amber)">${item.qty||''}</td>
+  //         <td style="color:var(--text-mid)">${item.notes||''}</td>
+  //         <td>${item.url?`<a href="${item.url}" target="_blank">Buy →</a>`:''}</td>
+  //       </tr>`).join('')}</tbody>
+  //     </table>`;
+  //   }
+  // } catch(e) {}
+}
+
+// ── Load model from URL ───────────────────────────────────────────────────────
+async function loadScadFromUrl(url) {
+  const rawUrl = toRawUrl(url);
+
+  document.getElementById('landingState').style.display = 'none';
+  document.getElementById('modelView').style.display = 'block';
+
+  // FIX: Initialize 3D engine now that the container has dimensions
+  init3D(); 
+
+  const filename = rawUrl.split('/').pop().replace(/\.scad$/i, '');
+  document.getElementById('modelTitle').textContent = filename.replace(/[-_]/g, ' ');
+  document.getElementById('modelSubtitle').textContent = '';
+
+  document.getElementById('renderOverlay').classList.remove('hidden');
+  document.getElementById('renderStatus').textContent = 'Fetching source…';
+
+  try {
+    const res = await fetch(rawUrl);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    virtualFileSystem[0].txt = text;
+
+    // Source view
+    const lines = text.split('\n');
+    document.getElementById('sourceDisplay').innerHTML = lines
+      .map((l, i) => `<span class="src-ln">${String(i+1).padStart(3,' ')}</span>${esc(l)}`)
+      .join('\n');
+
+    // Params
+    const groups = parseScadParams(text);
+    buildParamUI(groups);
+
+    // Sidecars + GitHub meta (non-blocking)
+    loadGithubMeta(rawUrl);
+    loadSidecars(rawUrl);
+
+    // Render
+    document.getElementById('renderStatus').textContent = 'Compiling model…';
+    await window.runAndShowScad();
+
+  } catch(e) {
+    document.getElementById('renderStatus').textContent = `Error: ${e.message}`;
+    console.error(e);
+  }
+}
+
+function loadFromInput() {
+  const val = document.getElementById('urlInput').value.trim();
+  if (!val) return;
+  const u = new URL(window.location.href);
+  
+  // FIX: Remove encodeURIComponent here. The browser does it for you.
+  u.searchParams.set('file', val); 
+  
+  window.history.pushState({}, '', u.toString());
+  loadScadFromUrl(val);
+}
+
+// ── Accordion ─────────────────────────────────────────────────────────────────
+function toggleSection(header) {
+  const body = header.nextElementSibling;
+  const ch = header.querySelector('.chevron');
+  const open = body.classList.contains('open');
+  body.classList.toggle('open', !open);
+  header.classList.toggle('open', !open);
+  ch.classList.toggle('open', !open);
+}
+
+// ── 3D rendering ─────────────────────────────────────────────────────────────
+async function ShowMeThatStinkingStlFile(currentSTL) {
+  window.currentSTL = currentSTL;
+  try {
+    SceneHandler.getScene("scene-0").scene.children =
+      [SceneHandler.getScene("scene-0").scene.children[0]];
+  } catch(e) {}
+
+  const loader = new THREE.STLLoader();
+  var geometry = loader.parse(currentSTL);
+
+  let oldOpacity = parseFloat(document.getElementById('opacitySlider').value) || 0.95;
+  let oldWireVisible = meshWire ? meshWire.visible : true;
+  let oldSolidVisible = meshSolid ? meshSolid.visible : true;
+
+  meshWire  = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xc8922a, wireframe: true }));
+  meshSolid = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial({ transparent: true, opacity: oldOpacity }));
+  meshWire.visible  = oldWireVisible;
+  meshSolid.visible = oldSolidVisible;
+
+  meshWire.rotateX(-Math.PI / 2);
+  meshSolid.rotateX(-Math.PI / 2);
+
+  var box = new THREE.Box3().setFromObject(meshSolid);
+  var meshTranslationInY = box.getSize().y / 2;
+  meshWire.translateZ(meshTranslationInY);
+  meshSolid.translateZ(meshTranslationInY);
+
+  await Engine.addToScene(meshWire, 'scene-0');
+  await Engine.addToScene(meshSolid, 'scene-0');
+
+  document.getElementById('downloadBtn').disabled = false;
+  document.getElementById('renderOverlay').classList.add('hidden');
+}
+
+function downloadSTL() {
+  if (!window.currentSTL) return;
+  const name = (document.getElementById('modelTitle').textContent || 'model')
+    .replace(/\s+/g, '-').toLowerCase() + '.stl';
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([window.currentSTL], { type: 'application/octet-stream' }));
+  a.download = name;
+  a.click();
+}
+
+function esc(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function showAbout() {
+  alert('Scadder β\n\nAn open parametric design library.\nDesigns live on GitHub. Fork everything.\n\nBuilt on OpenSCAD · Manifold · Three.js');
+}
+
+// Init scene
+// Lazy-load the scene so it initializes only when visible
+var sceneInitialized = false;
+function init3D() {
+  if (sceneInitialized) return;
+  Engine.createScene({ containerId: 'canvas-container', showGrid: false });
+  sceneInitialized = true;
+}
 </script>
+
+<!-- OpenSCAD WASM -->
+<script type="module">
+  import OpenScad from "./openscad.js";
+  import { addFonts } from "./openscad.fonts.js";
+
+  const consoleEl = document.getElementById("consoleOutput");
+
+  window.runAndShowScad = async function() {
+    const original = virtualFileSystem[0].txt;
+    if (!original) return;
+
+    const modified = buildModifiedScad(original);
+
+    document.getElementById('renderOverlay').classList.remove('hidden');
+    document.getElementById('renderStatus').textContent = 'Compiling…';
+    consoleEl.textContent = '';
+
+    try {
+      const inst = await OpenScad({
+        noInitialRun: true,
+        print:    t => { consoleEl.textContent += t + "\n"; },
+        printErr: t => { consoleEl.textContent += t + "\n"; },
+      });
+
+      addFonts(inst);
+
+      for (const f of virtualFileSystem) {
+        inst.FS.writeFile("/" + f.name, f.name === 'main.scad' ? modified : f.txt);
+      }
+
+      inst.callMain(["/main.scad", "-o", "out.stl"]);
+      const output = await new Blob([inst.FS.readFile("/out.stl")]).text();
+      console.log("STL output length:", output.length, "bytes");
+      await ShowMeThatStinkingStlFile(output);
+
+    } catch(e) {
+      console.error(e);
+      document.getElementById('renderStatus').textContent = 'Render error — check console';
+      consoleEl.textContent += "\nError: " + e;
+    }
+  };
+
+  // Auto-load from URL param on boot
+  const fileParam = urlParam('file');
+  if (fileParam) {
+    const url = decodeURIComponent(fileParam);
+    document.getElementById('urlInput').value = url;
+    loadScadFromUrl(url);
+  } else {
+    document.getElementById('renderOverlay').classList.add('hidden');
+  }
+</script>
+
+</body>
+</html>

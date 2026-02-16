@@ -1,0 +1,366 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<title>OpenSCAD Cloud from Autodrop3d</title>
+<link rel="icon" type="image/x-icon" href="../logo.png">
+<!-- <script src="./login.js"></script> -->
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-SWE7HZBGBR"></script>
+<script src="./configurator.js"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-SWE7HZBGBR');
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<link id="mainStyleSheet" rel="stylesheet" type="text/css" href="./css/mvp.css">
+<link id="mainStyleSheet" rel="stylesheet" type="text/css" href="./css/dark.css">
+
+<script src="./stlViewer/engine/threejs/three.min.js"></script>
+<script src="./stlViewer/engine/threejs/OrbitControls.js"></script>
+<script src="./stlViewer/engine/threejs/STLLoader.js"></script>
+<script src="./stlViewer/engine/parts/engine-render/sceneHandler.js"></script>
+<script src="./stlViewer/engine/parts/engine-render/renderHandler.js"></script>
+<script src='./stlViewer/engine/engine.js'></script>
+
+<link rel="stylesheet" data-name="vs/editor/editor.main" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.20.0/min/vs/editor/editor.main.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs/loader.min.js"></script>
+
+
+<div id="CheatSheet" style="top:10%;right:10%;left:10%;bottom:10%;position: absolute;z-index: 1000; background-color: rgb(52, 55, 55);">
+    <iframe style="width:100%;height:100%;" src="https://openscad.org/cheatsheet/"></iframe>
+</div>
+
+
+<div id="configurator" style="top:10%;right:50%;left:10%;bottom:10%;position: absolute;z-index: 1000; background-color: rgb(52, 55, 55);overflow-y: scroll;">
+    <span><button onclick="run_Configurator()">Generate </button> <button onclick="$('#configurator').hide()" style="float: right; color: red;">X</button></span>
+
+    <div id="container"></div>
+</div>
+
+<script>
+    $("#CheatSheet").hide();
+    $("#configurator").hide();
+</script>
+
+
+
+<style>
+    .container {
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-columns: 1.2fr 1.2fr;
+        grid-template-rows: 0.1fr 0.1fr 2.3fr 0.4fr;
+        gap: 0px 0px;
+        grid-auto-flow: row;
+        grid-template-areas:
+            "toolbar1 toolbar2"
+            "toolbar3 view3d"
+            "openScadCode view3d"
+            "openScadCode OpenScadConsole";
+    }
+
+    .toolbar1 {
+        grid-area: toolbar1;
+    }
+
+    .toolbar2 {
+        grid-area: toolbar2;
+    }
+
+    .toolbar3 {
+        grid-area: toolbar3;
+        display: inline-block;
+    }
+
+    .toolBarItem {
+        display: inline-block;
+    }
+
+    .openScadCode {
+        grid-area: openScadCode;
+    }
+
+    .view3d {
+        grid-area: view3d;
+    }
+
+    .OpenScadConsole {
+        grid-area: OpenScadConsole;
+        height: 100%;
+    }
+
+
+    .OpenScadConsole {
+        overflow: scroll;
+        grid-area: OpenScadConsole;
+        display: none;
+    }
+
+
+
+    select:focus,
+    input:focus,
+    textarea:focus {
+        background: white;
+    }
+
+    #canvas-container {
+        width: 97%;
+        height: 99%;
+        border: 1px solid yellow;
+        border-radius: 2rem;
+    }
+</style>
+
+
+
+<div class="container">
+    <div class="toolbar1">
+        <!-- <button onclick="goBackToPartPage()">◄ Back to part details</button> -->
+        <!-- <button id="Save" onclick="storeOpenSCADfileToCloud();">💾</button> -->
+        <button id="runOpenSCAD">▶</button>
+        <button onclick="download('export-'+ openPartID+openPartRev+'.stl', window.currentSTL);">Export STL</button>
+        <button onclick="window.location.reload();" class="refreshButton">🔄</button>
+        <!-- <button onclick="makeShareLink();">Share Link</button>
+        <button onclick="$('#CheatSheet').toggle()">Cheat Sheet</button>
+        <button onclick="setup_Configurator();">Customizer</button> -->
+    </div>
+    <div class="toolbar2">
+        <button onclick="meshWire.visible = (meshWire.visible === true ? false : true)" style="display: inline-block;">Wireframe</button>
+        <button onclick="meshSolid.visible = (meshSolid.visible === true ? false : true)" style="display: inline-block;">Solid</button>
+        <input id="transparancy" type="range" min=".1" max="1" step=".05" value=".9" oninput="meshSolid.material.opacity = this.value;" style="display: inline-block;height:22px;">
+        <button onclick="doLogin();" style="float:right;">Login</button>
+    </div>
+    <div class="openScadCode">
+        <div id="monacoEditor" style="height:100%;width:100%;  resize: horizontal;"></div>
+    </div>
+    <div class="view3d">
+        <div id="canvas-container"></div>
+    </div>
+    <div class="OpenScadConsole">
+        <pre id="consoleOutput"></pre>
+    </div>
+</div>
+
+
+
+<div id="globalDimmScreen" class="modal" onclick="if(event.target.id =='globalModalWindow') ModalWindowClose();">
+    <div class="modal" style="display: block;background:url(./images/loading.gif) center center no-repeat;">
+    </div>
+</div>
+
+
+<script>
+    // 1. Initialize the Virtual File System
+    var virtualFileSystem = [{ name: "main.scad", txt: "// Loading..." }];
+    var currentVirtualFileName = "main.scad";
+    
+    // Globals for the 3D Engine
+    var meshWire;
+    var meshSolid;
+    var openPartID = "local"; 
+    var openPartRev = "1";
+
+    // 2. Helper to get URL params
+    function param(name) {
+        return (location.search.split(name + '=')[1] || '').split('&')[0];
+    }
+
+    // 3. The "Fetch from GitHub" Logic
+    async function loadFromURL() {
+        const targetFile = param("file");
+        const url = targetFile ? decodeURIComponent(targetFile) : null;
+
+        if (url) {
+            virtualFileSystem[0].txt = "// Fetching from GitHub...\n// Please wait.";
+            if (window.editor) window.editor.setValue(virtualFileSystem[0].txt);
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("Network response was not ok");
+                const text = await response.text();
+                
+                virtualFileSystem[0].txt = text;
+                if (window.editor) window.editor.setValue(text);
+
+                // Try to auto-run if the engine is ready
+                if (typeof window.runAndShowScad === 'function') {
+                    console.log("File loaded. Auto-running...");
+                    window.runAndShowScad();
+                }
+
+            } catch (error) {
+                console.error("Failed to load file:", error);
+                virtualFileSystem[0].txt = "// Error loading file:\n// " + error.message;
+                if (window.editor) window.editor.setValue(virtualFileSystem[0].txt);
+            }
+        } else {
+            virtualFileSystem[0].txt = `// Welcome to the BIFL Viewer!
+// Add ?file=RAW_GITHUB_URL to the URL to load a model.
+difference() {
+    cube(20, center=true);
+    sphere(12);
+}`;
+        }
+    }
+
+    // 4. This draws the STL
+    async function ShowMeThatStinkingStlFile(currentSTL) {
+        window.currentSTL = currentSTL;
+        try {
+            SceneHandler.getScene("scene-0").scene.children = [SceneHandler.getScene("scene-0").scene.children[0]];
+        } catch(e) { console.log("Scene clear error (harmless):", e); }
+
+        const loader = new THREE.STLLoader();
+        var geometry = loader.parse(currentSTL);
+
+        // Keep view settings if they exist
+        let oldOpacity = 0.95;
+        let oldWireVisible = true;
+        let oldSolidVisible = true;
+        
+        if (typeof meshSolid !== 'undefined' && meshSolid.material) {
+             oldOpacity = meshSolid.material.opacity;
+             oldSolidVisible = meshSolid.visible;
+        }
+        if (typeof meshWire !== 'undefined') {
+             oldWireVisible = meshWire.visible;
+        }
+
+        meshWire = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true, }));
+        meshSolid = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial({ transparent: true, opacity: oldOpacity }));
+
+        meshWire.visible = oldWireVisible;
+        meshSolid.visible = oldSolidVisible;
+
+        // Rotate to match OpenSCAD Z-up
+        meshWire.rotateX(-Math.PI / 2);
+        meshSolid.rotateX(-Math.PI / 2);
+
+        // Center it
+        var box = new THREE.Box3().setFromObject(meshSolid);
+        var meshTranslationInY = box.getSize().y / 2;
+        meshWire.translateZ(meshTranslationInY);
+        meshSolid.translateZ(meshTranslationInY);
+
+        await Engine.addToScene(meshWire, 'scene-0');
+        await Engine.addToScene(meshSolid, 'scene-0');
+        window.firstRenderDone = true;
+    }
+
+    function download(filename, content) {
+        // Create a blob from the content (works for both text and binary)
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        
+        // Create a temporary link to trigger the download
+        const element = document.createElement('a');
+        element.href = url;
+        element.download = filename;
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        
+        element.click();
+        
+        // Cleanup
+        document.body.removeChild(element);
+        URL.revokeObjectURL(url);
+    }
+    
+    // 5. Dummy helpers
+    function storeOpenSCADfileToCloud() { alert("Cloud save disabled."); }
+    function doLogin() { alert("No login required!"); }
+    
+    // Initialize Scene
+    Engine.createScene({ containerId: 'canvas-container', showGrid: false });
+    
+</script>
+
+
+<script type="module">
+    import OpenScad from "./openscad.js";
+    import { addFonts } from "./openscad.fonts.js";
+    import { registerOpenSCADLanguage } from './openscad-editor-config.js'
+
+    // 1. Setup Monaco Editor
+    async function setUpMonacoEditor() {
+        await loadFromURL(); 
+
+        await require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.26.1/min/vs' } });
+
+        await require(["vs/editor/editor.main"], async () => {
+            await registerOpenSCADLanguage();
+            window.editor = await monaco.editor.create(document.getElementById('monacoEditor'), {
+                value: virtualFileSystem[0].txt,
+                language: 'openscad',
+                theme: 'vs-dark',
+                automaticLayout: true 
+            });
+
+            window.editor.onDidChangeModelContent(() => {
+                virtualFileSystem[0].txt = window.editor.getValue();
+            });
+        });
+    }
+
+    await setUpMonacoEditor();
+
+    // 2. The Runner Function
+    const openSCADconsoleOutput = document.getElementById("consoleOutput");
+
+    window.runAndShowScad = async function() {
+        // ERROR FIX: Manually sync instead of calling the missing function
+        if(window.editor) virtualFileSystem[0].txt = window.editor.getValue();
+        
+        openSCADconsoleOutput.innerHTML = "Processing..."; 
+        $("#globalDimmScreen").show();
+
+        try {
+            const instance = await OpenScad({
+                noInitialRun: true,
+                'print': text => { openSCADconsoleOutput.innerHTML += text + "\n"; },
+                'printErr': text => { openSCADconsoleOutput.innerHTML += text + "\n"; },
+            });
+
+            addFonts(instance);
+
+            await virtualFileSystem.forEach(async (item) => {
+                 await instance.FS.writeFile("/" + item.name, item.txt);
+            });
+
+            let openSCADarguments = ["/main.scad", "-o", "cube.stl"];
+            await instance.callMain(openSCADarguments);
+
+            const output = await new Blob([await instance.FS.readFile("/cube.stl")]).text();
+            
+            // This calls the function we restored in Fix 1
+            ShowMeThatStinkingStlFile(output);
+            
+            openSCADconsoleOutput.innerHTML += "\nDone!";
+
+        } catch (e) {
+            console.error(e);
+            openSCADconsoleOutput.innerHTML += "\nError: " + e;
+        }
+
+        $("#globalDimmScreen").hide();
+    }
+
+    // 3. Connect Buttons
+    document.getElementById("runOpenSCAD").onclick = function () { window.runAndShowScad() };
+
+    // 4. Auto-Run after 1 second
+    setTimeout(() => {
+        if(virtualFileSystem[0].txt.length > 50) { // Only run if we actually loaded something
+             window.runAndShowScad();
+        }
+    }, 1500);
+</script>
