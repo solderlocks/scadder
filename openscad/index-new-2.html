@@ -110,7 +110,7 @@
 
   /* Main */
   .main {
-    max-width: 900px;
+    /* max-width: 900px; */
     margin: 0 auto;
     padding: 2rem 1.5rem 4rem;
   }
@@ -147,6 +147,8 @@
     padding-top: 0.2rem;
     flex-wrap: wrap;
     justify-content: flex-end;
+    position: absolute; 
+    right: 2rem;
   }
 
   /* GitHub chips */
@@ -556,11 +558,6 @@
         <div class="model-title" id="modelTitle">Untitled Model</div>
         <div class="model-subtitle" id="modelSubtitle"></div>
       </div>
-      <div class="model-actions">
-        <a id="githubSourceBtn" href="#" target="_blank" class="btn btn-ghost">⎇ Source</a>
-        <a id="githubForkBtn" href="#" target="_blank" class="btn btn-ghost">Fork ↗</a>
-        <button class="btn btn-primary" id="downloadBtn" onclick="downloadSTL()" disabled>↓ Export STL</button>
-      </div>
     </div>
 
     <!-- GitHub meta chips -->
@@ -568,6 +565,12 @@
       <div class="gh-chip" id="ghAuthor"></div>
       <div class="gh-chip" id="ghLicense"></div>
       <div class="gh-chip" id="ghStars"></div>
+
+      <div class="model-actions">
+        <a id="githubSourceBtn" href="#" target="_blank" class="btn btn-ghost">⎇ Source</a>
+        <a id="githubForkBtn" href="#" target="_blank" class="btn btn-ghost">Fork ↗</a>
+        <button class="btn btn-primary" id="downloadBtn" onclick="downloadSTL()" disabled>↓ Export STL</button>
+      </div>
     </div>
 
     <!-- 3D Viewport -->
@@ -696,71 +699,100 @@ function toBlobUrl(rawUrl) {
 
 // ── OpenSCAD Customizer parameter parser ──────────────────────────────────────
 function parseScadParams(code) {
-  const groups = [{ name: null, params: [] }];
-  let cur = groups[0];
+  const groups = [];
+  let currentGroup = { name: "Global Parameters", params: [] };
+  groups.push(currentGroup);
 
-  for (const line of code.split('\n')) {
+  const evaluate = (str) => {
+    try { return Function(`"use strict"; return (${str})`)(); } catch(e) { return null; }
+  };
+
+  const lines = code.split('\n');
+  let currentContext = "Global";
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
     const t = line.trim();
 
-    // /* [Group] */
-    const gm = t.match(/^\/\*\s*\[([^\]]+)\]\s*\*\/$/);
-    if (gm) { cur = { name: gm[1].trim(), params: [] }; groups.push(cur); continue; }
+    // 1. Detect Context
+    const moduleMatch = t.match(/^module\s+([a-zA-Z0-9_]+)\s*\(/);
+    if (moduleMatch) {
+        currentContext = `Module: ${moduleMatch[1]}`;
+        currentGroup = { name: currentContext, params: [] };
+        groups.push(currentGroup);
+        continue;
+    }
 
-    // var = value; // [annotation] Label
-    const pm = t.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*=\s*([^;]+?)\s*;(?:\s*\/\/\s*(.*))?/);
-    if (!pm) continue;
+    // 2. Detect Groups
+    const groupMatch = t.match(/^\/\*\s*\[([^\]]+)\]\s*\*\/$/);
+    if (groupMatch) {
+        currentContext = groupMatch[1].trim();
+        currentGroup = { name: currentContext, params: [] };
+        groups.push(currentGroup);
+        continue;
+    }
 
-    const [, name, rawDef, comment] = pm;
-    const rawTrimmed = rawDef.trim();
+    // 3. Match Assignments
+    const varMatch = t.match(/^([ \t]*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*([^;]+?)\s*;(?:\s*\/\/\s*(.*))?/);
+    if (!varMatch) continue;
 
-    // Skip complex expressions (function calls, vectors, strings with spaces, etc)
-    if (rawTrimmed.match(/[a-zA-Z_]\w*\s*\(/)) continue;  // function calls
-    if (rawTrimmed.startsWith('[') && rawTrimmed.endsWith(']') && rawTrimmed.includes(',')) continue; // vectors/arrays
+    const [, indent, name, rawVal, comment] = varMatch;
+    
+    // SKIP RULES
+    if (name === '$fn' || name === '$fa' || name === '$fs') continue; 
+    if (rawVal.includes('(')) continue; 
+    if (rawVal.startsWith('[') && !rawVal.includes('"')) continue; 
 
-    let type = 'number', defaultVal, min, max, step, options;
-    let label = name.replace(/_/g, ' ');
-    label = label.charAt(0).toUpperCase() + label.slice(1);
+    // 4. Type Inference
+    let type = 'number';
+    let val = rawVal.trim();
+    let computedVal = val;
 
-    if (rawTrimmed === 'true' || rawTrimmed === 'false') {
-      type = 'boolean'; defaultVal = rawTrimmed === 'true';
-    } else if (rawTrimmed.startsWith('"') || rawTrimmed.startsWith("'")) {
-      type = 'string'; defaultVal = rawTrimmed.replace(/^["']|["']$/g, '');
+    if (val === 'true' || val === 'false') {
+        type = 'boolean';
+        computedVal = (val === 'true');
+    } else if (val.startsWith('"') || val.startsWith("'")) {
+        type = 'string';
+        computedVal = val.replace(/^["']|["']$/g, '');
     } else {
-      const n = parseFloat(rawTrimmed);
-      defaultVal = isNaN(n) ? rawTrimmed : n;
+        const mathResult = evaluate(val);
+        if (mathResult !== null && !isNaN(mathResult)) {
+            computedVal = mathResult;
+        } else {
+             type = 'raw'; 
+        }
     }
 
+    // 5. Parse Range
+    let min, max, step;
     if (comment) {
-      // [min:step:max]
-      const r3 = comment.match(/^\[(-?[\d.]+):(-?[\d.]+):(-?[\d.]+)\]/);
-      // [min:max]
-      const r2 = comment.match(/^\[(-?[\d.]+):(-?[\d.]+)\]/);
-      // enum ["a","b"]
-      const re = comment.match(/^\[([^\]]+)\]/) ;
-
-      if (r3) {
-        min = parseFloat(r3[1]); step = parseFloat(r3[2]); max = parseFloat(r3[3]);
-        type = 'range';
-        label = comment.replace(/^\[[^\]]+\]\s*/, '').trim() || label;
-      } else if (r2) {
-        min = parseFloat(r2[1]); max = parseFloat(r2[2]); step = 1;
-        type = 'range';
-        label = comment.replace(/^\[[^\]]+\]\s*/, '').trim() || label;
-      } else if (re && re[1].includes('"')) {
-        options = re[1].match(/"([^"]+)"/g).map(s => s.replace(/"/g,''));
-        type = 'select';
-        label = comment.replace(/^\[[^\]]+\]\s*/, '').trim() || label;
-      } else if (!comment.startsWith('[')) {
-        label = comment.trim() || label;
-      }
+        const range = comment.match(/\[(-?[\d.]+):(-?[\d.]+)\]/);
+        if (range) {
+             min = parseFloat(range[1]);
+             max = parseFloat(range[2]);
+             step = 1;
+             type = 'range';
+        }
     }
 
-    cur.params.push({ name, type, defaultVal, min, max, step, options, label, value: defaultVal });
+    // 6. Add to list
+    currentGroup.params.push({
+        name,
+        type,
+        value: computedVal,
+        defaultVal: computedVal, // <--- THIS WAS MISSING!
+        rawValue: val,
+        min, max, step,
+        lineIndex: i,
+        label: name,
+        context: currentContext
+    });
   }
 
   return groups.filter(g => g.params.length > 0);
 }
 
+// ── Build param UI ────────────────────────────────────────────────────────────
 // ── Build param UI ────────────────────────────────────────────────────────────
 function buildParamUI(groups) {
   const grid = document.getElementById('paramGrid');
@@ -849,10 +881,15 @@ function buildParamUI(groups) {
 
       } else {
         const inp = document.createElement('input');
-        inp.type = p.type === 'string' ? 'text' : 'number';
+        // FIX: Use 'text' type for strings AND raw formulas (so "size/2" shows up)
+        inp.type = (p.type === 'string' || p.type === 'raw') ? 'text' : 'number';
         inp.className = 'param-input';
         inp.value = p.defaultVal;
-        inp.oninput = () => { p.value = inp.type === 'number' ? parseFloat(inp.value) : inp.value; };
+        
+        inp.oninput = () => { 
+            // If it's a number field, parse it. If it's text (raw/string), keep as string.
+            p.value = inp.type === 'number' ? parseFloat(inp.value) : inp.value; 
+        };
         item.appendChild(inp);
       }
 
@@ -862,19 +899,36 @@ function buildParamUI(groups) {
 }
 
 // ── Inject current param values into SCAD source ──────────────────────────────
-function buildModifiedScad(code) {
-  for (const p of parsedParams) {
-    const val = p.type === 'boolean'
-      ? (p.value ? 'true' : 'false')
-      : (p.type === 'string' || p.type === 'select')
-      ? `"${p.value}"`
-      : p.value;
-    code = code.replace(
-      new RegExp(`((?:^|\\n))(${p.name}\\s*=\\s*)[^;]+;`, 'g'),
-      `$1$2${val};`
-    );
+// ── Inject current param values into SCAD source ──────────────────────────────
+function buildModifiedScad(originalCode) {
+  const lines = originalCode.split('\n');
+  
+  // parsedParams is ALREADY a flat array (thanks to buildParamUI), so we loop directly
+  for (const p of parsedParams) { 
+    // Only replace if the value actually changed from default
+    // Note: We use p.defaultVal (from parser), not p.defaultValue
+    if (p.value !== p.defaultVal) { 
+        
+        let valStr = p.value;
+        if (p.type === 'string') valStr = `"${p.value}"`;
+        
+        // Get the original line
+        const originalLine = lines[p.lineIndex];
+        
+        // Safety check in case lineIndex is out of bounds (shouldn't happen)
+        if (!originalLine) continue;
+
+        // Replace the value part, keeping indentation and variable name
+        // Regex: (indent var = ) oldVal (;)
+        const newLine = originalLine.replace(
+            /^([ \t]*[a-zA-Z0-9_$]+\s*=\s*)([^;]+)(;.*)/, 
+            `$1${valStr}$3`
+        );
+        
+        lines[p.lineIndex] = newLine;
+    }
   }
-  return code;
+  return lines.join('\n');
 }
 
 // ── GitHub metadata fetch ─────────────────────────────────────────────────────
