@@ -5,8 +5,11 @@
     "description": "A simple demonstration of rotational geometry.",
     "author": "openscad",
     "url": "https://raw.githubusercontent.com/openscad/openscad/master/examples/Basics/rotate_extrude.scad",
-    "image": "assets/previews/rotate-extrude.png", 
-    "tags": ["demo", "basics"]
+    "image": "assets/previews/rotate-extrude.png",
+    "tags": [
+      "demo",
+      "basics"
+    ]
   },
   {
     "id": "logo-demo",
@@ -15,6 +18,9 @@
     "author": "openscad",
     "url": "https://raw.githubusercontent.com/openscad/openscad/master/examples/Basics/logo.scad",
     "image": "assets/previews/logo.png",
-    "tags": ["logo", "complex"]
+    "tags": [
+      "logo",
+      "complex"
+    ]
   }
 ]
