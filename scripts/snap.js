@@ -2,62 +2,75 @@ const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 
-// Keep this flexible! 
-// Locally, it uses your MAMP defaults (8888). 
-// On GitHub, it uses the ENV variable we set above (8080).
-const BASE_URL = process.env.BASE_URL || 'http://localhost:8080/scadder/openscad/index.html';
-const LIBRARY_PATH = path.join(__dirname, '../openscad/library.json'); // Robust pathing
+// CONFIG
+const BASE_URL = process.env.BASE_URL || 'http://localhost:8080/index.html'; 
+const LIBRARY_PATH = path.join(__dirname, '../openscad/library.json');
 const OUTPUT_DIR = path.join(__dirname, '../assets/previews');
 
 (async () => {
+  // 1. Ensure output dir exists (Safety check)
+  if (!fs.existsSync(OUTPUT_DIR)){
+      fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+  }
+
   const library = JSON.parse(fs.readFileSync(LIBRARY_PATH, 'utf8'));
 
-  // CRITICAL FIX FOR GITHUB ACTIONS (Linux)
+  // 2. Launch with WebGL support flags for CI environments
   const browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
+    headless: "new", // Modern headless mode
+    args: [
+        '--no-sandbox', 
+        '--disable-setuid-sandbox',
+        '--hide-scrollbars',
+        '--use-gl=egl', // FORCE WebGL to work in headless Linux
+    ]
   });
 
   const page = await browser.newPage();
-  // ... rest of script ...
-
-  // Set viewport to standard thumbnail size
   await page.setViewport({ width: 400, height: 300 });
+
+  // 3. LISTEN TO CONSOLE LOGS (Crucial for debugging)
+  page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+  page.on('pageerror', err => console.log('PAGE ERROR:', err.toString()));
+  page.on('requestfailed', req => console.log('FAILED REQ:', req.url()));
 
   for (const item of library) {
     console.log(`📸 Snapping: ${item.title}...`);
-    
-    // Construct the viewer URL
     const url = `${BASE_URL}?file=${encodeURIComponent(item.url)}`;
-    await page.goto(url);
-
-    // WAIT for the canvas to exist and the spinner to disappear
+    
     try {
-        await page.waitForSelector('#canvas-container canvas', { timeout: 10000 });
-        await page.waitForSelector('#renderOverlay.hidden', { timeout: 30000 }); // Wait for render to finish
+        await page.goto(url, { waitUntil: 'networkidle0' }); // Wait for network to settle
+
+        // Wait for canvas
+        await page.waitForSelector('#canvas-container canvas', { timeout: 15000 });
         
-        // Optional: Wait an extra second for the frame to settle
+        // Wait for the overlay to disappear (render complete)
+        await page.waitForSelector('#renderOverlay.hidden', { timeout: 45000 });
+        
+        // Wait a beat for the frame to settle
         await new Promise(r => setTimeout(r, 1000));
 
-        // Take the screenshot
         const filename = `${item.id}.png`;
         const filepath = path.join(OUTPUT_DIR, filename);
         
-        // We capture just the viewport card, or the whole page? 
-        // Let's grab the #canvas-container element specifically
         const element = await page.$('#canvas-container');
         await element.screenshot({ path: filepath });
         
-        // Update the JSON with the new image path
-        item.image = `assets/previews/${filename}`;
+        // Only update if not already set (preserve custom paths if any)
+        if (!item.image) {
+            item.image = `assets/previews/${filename}`;
+        }
         
     } catch (e) {
-        console.error(`❌ Failed to capture ${item.title}:`, e.message);
+        console.error(`❌ Failed to capture ${item.title}:`);
+        console.error(e.message);
+        // Continue to the next item instead of crashing the whole script
     }
   }
 
   await browser.close();
 
-  // Save the updated JSON back to file
+  // Save JSON
   fs.writeFileSync(LIBRARY_PATH, JSON.stringify(library, null, 2));
   console.log("✨ All done! library.json updated.");
 })();
