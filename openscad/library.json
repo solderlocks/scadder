@@ -8,7 +8,8 @@
     "tags": [
       "demo",
       "basics"
-    ]
+    ],
+    "image": "assets/previews/rotate-extrude-demo.png"
   },
   {
     "id": "logo-demo",
@@ -19,6 +20,7 @@
     "tags": [
       "logo",
       "complex"
-    ]
+    ],
+    "image": "assets/previews/logo-demo.png"
   }
 ]
