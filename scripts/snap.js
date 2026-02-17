@@ -3,27 +3,26 @@ const fs = require('fs');
 const path = require('path');
 
 // CONFIG
-const BASE_URL = process.env.BASE_URL || 'http://localhost:8080/index.html'; 
+// Default to the subfolder URL for local dev too
+const BASE_URL = process.env.BASE_URL || 'http://localhost:8080/openscad/index.html'; 
+
 const LIBRARY_PATH = path.join(__dirname, '../openscad/library.json');
-const OUTPUT_DIR = path.join(__dirname, '../assets/previews');
+
+// FIX: Save images inside the openscad folder so relative links work!
+const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
 
 (async () => {
-  // 1. Ensure output dir exists (Safety check)
+  // Ensure the new nested folder exists
   if (!fs.existsSync(OUTPUT_DIR)){
       fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   }
 
   const library = JSON.parse(fs.readFileSync(LIBRARY_PATH, 'utf8'));
 
-  // 2. Launch with WebGL support flags for CI environments
+  // Keep your existing browser launch config (it was correct!)
   const browser = await puppeteer.launch({
-    headless: "new", // Modern headless mode
-    args: [
-        '--no-sandbox', 
-        '--disable-setuid-sandbox',
-        '--hide-scrollbars',
-        '--use-gl=egl', // FORCE WebGL to work in headless Linux
-    ]
+    headless: "new",
+    args: ['--no-sandbox', '--disable-setuid-sandbox', '--hide-scrollbars', '--use-gl=egl']
   });
 
   const page = await browser.newPage();
@@ -56,7 +55,8 @@ const OUTPUT_DIR = path.join(__dirname, '../assets/previews');
         const element = await page.$('#canvas-container');
         await element.screenshot({ path: filepath });
         
-        // Only update if not already set (preserve custom paths if any)
+        
+       // Just update the item.image path to be relative to the JSON file
         if (!item.image) {
             item.image = `assets/previews/${filename}`;
         }

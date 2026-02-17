@@ -32,13 +32,15 @@ jobs:
           echo "Server started on 8080"
           sleep 5 # Give it a moment to boot up
 
-      - name: Run Snapshot Script
+    - name: Run Snapshot Script
         env:
-          BASE_URL: 'http://localhost:8080/index.html' # Point to the background server
+          # FIX 1: Point to the subdirectory where the REAL app lives
+          BASE_URL: 'http://localhost:8080/openscad/index.html' 
         run: node scripts/snap.js
 
       - name: Commit and Push New Images
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "📸 Auto-generated screenshots for library update"
-          file_pattern: "assets/previews/*.png openscad/library.json"
+          # FIX 2: Look for images inside the openscad folder now
+          file_pattern: "openscad/assets/previews/*.png openscad/library.json"
