@@ -3,33 +3,26 @@ const fs = require('fs');
 const path = require('path');
 
 // CONFIG
-// Default to the subfolder URL for local dev too
 const BASE_URL = process.env.BASE_URL || 'http://localhost:8080/openscad/index.html'; 
-
 const LIBRARY_PATH = path.join(__dirname, '../openscad/library.json');
-
-// FIX: Save images inside the openscad folder so relative links work!
 const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
 
 (async () => {
-  // Ensure the new nested folder exists
+  // Ensure output directory exists
   if (!fs.existsSync(OUTPUT_DIR)){
       fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   }
 
   const library = JSON.parse(fs.readFileSync(LIBRARY_PATH, 'utf8'));
+  let hasChanges = false; // Track if we actually need to save the JSON
 
- // FIX: Force software rendering (SwiftShader) so WebGL works without a GPU
- const browser = await puppeteer.launch({
+  // Launch browser with aggressive software rendering flags
+  const browser = await puppeteer.launch({
     headless: "new",
     args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
-        
-        // THE MISSING KEY FROM YOUR LOGS:
-        '--enable-unsafe-swiftshader',  
-        
-        // Keep these for good measure:
+        '--enable-unsafe-swiftshader',  // The key to software WebGL
         '--use-gl=angle',
         '--use-angle=swiftshader',
         '--hide-scrollbars'
@@ -39,59 +32,87 @@ const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
   const page = await browser.newPage();
   await page.setViewport({ width: 400, height: 300 });
 
-  // 3. LISTEN TO CONSOLE LOGS (Crucial for debugging)
-  page.on('console', msg => console.log('PAGE LOG:', msg.text()));
-  page.on('pageerror', err => console.log('PAGE ERROR:', err.toString()));
-  page.on('requestfailed', req => console.log('FAILED REQ:', req.url()));
+  // Console logging for debugging
+  page.on('console', msg => {
+      // Filter out some noise, keep important logs
+      const text = msg.text();
+      if (!text.includes('marker') && !text.includes('fallback')) {
+        console.log('PAGE LOG:', text);
+      }
+  });
 
   for (const item of library) {
-    console.log(`📸 Snapping: ${item.title}...`);
+    const filename = `${item.id}.png`;
+    const filepath = path.join(OUTPUT_DIR, filename);
+    const relativePath = `assets/previews/${filename}`;
+
+    // 1. INCREMENTAL CHECK: If image exists, skip render!
+    if (fs.existsSync(filepath)) {
+        console.log(`⏩ Skipping ${item.title} (Image exists)`);
+        
+        // Ensure JSON has the link, just in case it was missing
+        if (item.image !== relativePath) {
+            item.image = relativePath;
+            hasChanges = true;
+        }
+        continue; 
+    }
+
+    // If we are here, the image is missing. Let's render it.
+    console.log(`📸 Generating new thumbnail: ${item.title}...`);
     const url = `${BASE_URL}?file=${encodeURIComponent(item.url)}`;
     
     try {
         await page.goto(url, { waitUntil: 'networkidle0' });
+
+        // Wait for the 3D canvas
+        await page.waitForSelector('#canvas-container canvas', { timeout: 20000 });
         
-        await page.waitForSelector('#canvas-container canvas', { timeout: 15000 });
-        await page.waitForSelector('#renderOverlay.hidden', { timeout: 45000 });
+        // Wait for the loading spinner to disappear
+        await page.waitForSelector('#renderOverlay.hidden', { timeout: 60000 });
+        
+        // Give it a second to settle
         await new Promise(r => setTimeout(r, 1000));
 
-        // ⬇️ NEW: Hide the UI elements before snapping! ⬇️
+        // 2. DOM SURGERY: Hide the UI before snapping
         await page.evaluate(() => {
-            // Hide the main header (Scadder / About)
             const header = document.querySelector('header');
             if(header) header.style.display = 'none';
 
-            // Hide the toolbar (Render / Wireframe buttons) for a cleaner thumbnail
             const toolbar = document.querySelector('.viewport-toolbar');
             if(toolbar) toolbar.style.display = 'none';
             
-            // Optional: Force transparent background if you want png transparency
-            // document.body.style.background = 'transparent';
+            // Optional: Hide scrollbars explicitly
+            document.body.style.overflow = 'hidden';
         });
-        // ⬆️ ------------------------------------------ ⬆️
 
-        const filename = `${item.id}.png`;
-        const filepath = path.join(OUTPUT_DIR, filename);
-        
-        const element = await page.$('#canvas-container');
-        await element.screenshot({ path: filepath });
-        
-        
-       // Just update the item.image path to be relative to the JSON file
-        if (!item.image) {
-            item.image = `assets/previews/${filename}`;
+        // Take the screenshot of just the canvas area
+        // (Since we hid the UI, we can just snap the viewport card)
+        const element = await page.$('.viewport-card'); 
+        if (element) {
+            await element.screenshot({ path: filepath });
+        } else {
+            // Fallback if card not found
+            await page.screenshot({ path: filepath });
         }
         
+        // Update JSON
+        item.image = relativePath;
+        hasChanges = true;
+        
     } catch (e) {
-        console.error(`❌ Failed to capture ${item.title}:`);
-        console.error(e.message);
-        // Continue to the next item instead of crashing the whole script
+        console.error(`❌ Failed to capture ${item.title}: ${e.message}`);
     }
   }
 
   await browser.close();
 
-  // Save JSON
-  fs.writeFileSync(LIBRARY_PATH, JSON.stringify(library, null, 2));
-  console.log("✨ All done! library.json updated.");
+  // Only write to disk if something changed (preserves file modification times)
+  if (hasChanges) {
+      fs.writeFileSync(LIBRARY_PATH, JSON.stringify(library, null, 2));
+      console.log("✨ Library index updated.");
+  } else {
+      console.log("✨ No changes to library index needed.");
+  }
+  
 })();

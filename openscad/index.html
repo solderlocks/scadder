@@ -546,6 +546,102 @@
     text-align: left;
   }
 
+  /* Control Bar */
+.library-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.control-group { display: flex; align-items: center; gap: 1rem; }
+
+.search-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.8rem;
+  border-radius: 4px;
+  color: var(--text);
+  font-family: var(--mono);
+  width: 240px;
+  outline: none;
+}
+.search-input:focus { border-color: var(--amber); }
+
+.result-count {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.btn-icon {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+.btn-icon:hover { color: var(--text); background: var(--surface2); }
+.btn-icon.active { color: var(--amber); border-color: var(--border); background: var(--surface); }
+
+/* List View Overrides */
+.library-grid.list-view {
+  grid-template-columns: 1fr; /* Single column */
+  gap: 0.75rem;
+}
+
+.library-grid.list-view .lib-card {
+  flex-direction: row; /* Horizontal layout */
+  height: 100px;
+  align-items: center;
+}
+
+.library-grid.list-view .lib-img {
+  width: 120px;
+  height: 100%;
+  aspect-ratio: auto;
+  border-bottom: none;
+  border-right: 1px solid var(--border);
+}
+
+  .library-grid.list-view .lib-meta {
+    padding: 0 1.5rem;
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+  }
+
+  .page-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-mid);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  .page-btn:hover { border-color: var(--amber-dim); color: var(--text); }
+  .page-btn.active { background: var(--amber); color: #000; border-color: var(--amber); }
+  .page-btn:disabled { opacity: 0.3; cursor: default; }
+
   .lib-card {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -633,9 +729,28 @@
 <div class="landing" id="landingState">
   <h1>Scadder</h1>
   <p class="tagline">Extensible open source objects for everyday life. Fork existing 3D designs, tweak the parameters, and share the link. No login required. </p>
-  <div class="library-grid" id="libraryGrid">
-    <div class="spinner"></div>
+  
+  <div>
+    <div class="library-controls">
+      <div class="control-group">
+        <input type="text" id="libSearch" class="search-input" placeholder="Search objects, tags, authors..." oninput="app.handleSearch(this.value)">
+        <span class="result-count" id="resultCount">Loading...</span>
+      </div>
+      
+      <div class="control-group">
+        <button class="btn-icon active" id="btnGrid" onclick="app.setView('grid')" title="Grid View">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z"/></svg>
+        </button>
+        <button class="btn-icon" id="btnList" onclick="app.setView('list')" title="List View">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h16v2H4zm0 6h16v2H4zm0 6h16v2H4z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="library-grid" id="libraryGrid"></div>
+    <div class="pagination" id="pagination"></div>
   </div>
+  
   
   <div class="submit-cta">
     <p>Want to add an object?</p>
@@ -1344,36 +1459,142 @@ function init3D() {
   sceneInitialized = true;
 }
 
-async function initLibrary() {
-  const grid = document.getElementById('libraryGrid');
-  if (!grid) return; // We might be in "viewer mode" (file=...) so grid is hidden
+// Global App Namespace to keep things tidy
+const app = {
+  data: [],        // All models from JSON
+  filtered: [],    // Models matching search
+  
+  // State
+  page: 1,
+  limit: 12,       // Items per page
+  view: 'grid',    // 'grid' or 'list'
+  search: '',
 
-  try {
-    const res = await fetch('library.json');
-    if (!res.ok) throw new Error("Failed to load library");
-    const items = await res.json();
+  async init() {
+    // Only run on landing page
+    if (urlParam('file')) return;
 
-    grid.innerHTML = items.map(item => `
+    const grid = document.getElementById('libraryGrid');
+    if (!grid) return;
+
+    try {
+      const res = await fetch('library.json'); // Adjusted path based on your folder structure
+      this.data = await res.json();
+      this.filtered = this.data; // Start with all items
+      
+      this.render();
+    } catch (e) {
+      grid.innerHTML = `<p style="color:var(--text-dim)">Error loading library: ${e.message}</p>`;
+    }
+  },
+
+  handleSearch(query) {
+    this.search = query.toLowerCase().trim();
+    this.page = 1; // Reset to page 1 on search
+    
+    if (!this.search) {
+      this.filtered = this.data;
+    } else {
+      this.filtered = this.data.filter(item => {
+        // Search Title, Description, Author, and Tags
+        const text = `${item.title} ${item.description} ${item.author} ${item.tags.join(' ')}`.toLowerCase();
+        return text.includes(this.search);
+      });
+    }
+    this.render();
+  },
+
+  setView(mode) {
+    this.view = mode;
+    document.getElementById('libraryGrid').className = `library-grid ${mode === 'list' ? 'list-view' : ''}`;
+    
+    // Update button states
+    document.getElementById('btnGrid').classList.toggle('active', mode === 'grid');
+    document.getElementById('btnList').classList.toggle('active', mode === 'list');
+  },
+
+  setPage(p) {
+    if (p < 1 || p > Math.ceil(this.filtered.length / this.limit)) return;
+    this.page = p;
+    this.render();
+    
+    // Scroll to top of grid
+    document.querySelector('.library-controls').scrollIntoView({ behavior: 'smooth' });
+  },
+
+  render() {
+    const grid = document.getElementById('libraryGrid');
+    const countEl = document.getElementById('resultCount');
+    const paginateEl = document.getElementById('pagination');
+
+    // Update Count
+    countEl.textContent = `${this.filtered.length} Object${this.filtered.length !== 1 ? 's' : ''}`;
+
+    // Calculate Pagination Slices
+    const start = (this.page - 1) * this.limit;
+    const end = start + this.limit;
+    const pageItems = this.filtered.slice(start, end);
+
+    if (pageItems.length === 0) {
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:3rem;color:var(--text-dim)">No objects found matching "${this.search}"</div>`;
+      paginateEl.innerHTML = '';
+      return;
+    }
+
+    // Render Cards
+    grid.innerHTML = pageItems.map(item => `
       <a href="?file=${encodeURIComponent(item.url)}" class="lib-card">
         <img src="${item.image || 'assets/placeholder.png'}" class="lib-img" loading="lazy" alt="${item.title}">
         <div class="lib-meta">
-          <div class="lib-title">${item.title}</div>
-          <div class="lib-desc">${item.description}</div>
-          <div style="margin-top:0.5rem;font-size:0.65rem;color:var(--text-dim);font-family:var(--mono)">
-            by ${item.author}
+          <div>
+            <div class="lib-title">${item.title}</div>
+            <div class="lib-desc">${item.description}</div>
           </div>
+          ${this.view === 'list' ? 
+            `<div style="font-family:var(--mono);font-size:0.7rem;color:var(--amber);white-space:nowrap;margin-left:1rem">by ${item.author}</div>` 
+            : 
+            `<div style="margin-top:0.5rem;font-size:0.65rem;color:var(--text-dim);font-family:var(--mono)">by ${item.author}</div>`
+          }
         </div>
       </a>
     `).join('');
-    
-  } catch (e) {
-    grid.innerHTML = `<p style="color:var(--text-dim)">Could not load library index.<br>${e.message}</p>`;
+
+    // Render Pagination Controls
+    const totalPages = Math.ceil(this.filtered.length / this.limit);
+    if (totalPages > 1) {
+      let btns = '';
+      
+      // Prev Button
+      btns += `<button class="page-btn" onclick="app.setPage(${this.page - 1})" ${this.page === 1 ? 'disabled' : ''}>←</button>`;
+      
+      // Numbered Buttons (Simple version: show all or max 5? Let's keep it simple first)
+      for (let i = 1; i <= totalPages; i++) {
+        // Show only nearby pages logic could go here, but for <500 items, simple is fine
+        if (i === 1 || i === totalPages || (i >= this.page - 1 && i <= this.page + 1)) {
+            btns += `<button class="page-btn ${i === this.page ? 'active' : ''}" onclick="app.setPage(${i})">${i}</button>`;
+        } else if (i === this.page - 2 || i === this.page + 2) {
+            btns += `<span style="color:var(--text-dim);align-self:end">...</span>`;
+        }
+      }
+
+      // Next Button
+      btns += `<button class="page-btn" onclick="app.setPage(${this.page + 1})" ${this.page === totalPages ? 'disabled' : ''}>→</button>`;
+      
+      paginateEl.innerHTML = btns;
+    } else {
+      paginateEl.innerHTML = '';
+    }
   }
-}
+};
+
+// Start the app
+
 
 // Call this on page load IF we aren't loading a file
 if (!urlParam('file')) {
-    initLibrary();
+    document.addEventListener('DOMContentLoaded', () => {
+      app.init();
+    });
 }
 </script>
 
