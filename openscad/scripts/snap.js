@@ -4,7 +4,7 @@ const path = require('path');
 
 // Use environment variable if present, otherwise default to local
 const BASE_URL = process.env.BASE_URL || 'http://localhost:8888/index.html'; 
-const LIBRARY_PATH = path.join(__dirname, 'library.json'); // Robust pathing
+const LIBRARY_PATH = path.join(__dirname, '../openscad/library.json'); // Robust pathing
 const OUTPUT_DIR = path.join(__dirname, '../assets/previews');
 
 (async () => {
