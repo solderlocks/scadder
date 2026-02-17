@@ -2,135 +2,79 @@
   {
     "id": "openscad-logo",
     "title": "OpenSCAD Logo",
-    "description": "The official, parametric logo of the OpenSCAD project.",
+    "description": "The official, parametric logo. A classic test of boolean operations.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/logo.scad",
     "tags": ["logo", "demo", "basics", "official"]
   },
   {
     "id": "rotate-extrude",
-    "title": "Rotate Extrude Demo",
-    "description": "Demonstrates how to turn a 2D profile into a 3D shape.",
+    "title": "Rotate Extrude",
+    "description": "Turning 2D profiles into 3D rotational geometry.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/rotate_extrude.scad",
     "tags": ["demo", "basics", "geometry"]
   },
   {
-    "id": "gridfinity-cup",
-    "title": "Gridfinity Basic Cup",
-    "description": "A standard, parametric bin for the Gridfinity organization system.",
-    "author": "vector76",
-    "url": "https://github.com/vector76/gridfinity_openscad/blob/master/gridfinity_basic_cup.scad",
-    "tags": ["gridfinity", "organizer", "functional", "box"]
-  },
-  {
-    "id": "gridfinity-baseplate",
-    "title": "Gridfinity Baseplate",
-    "description": "Parametric baseplate for the Gridfinity system.",
-    "author": "vector76",
-    "url": "https://github.com/vector76/gridfinity_openscad/blob/master/gridfinity_baseplate.scad",
-    "tags": ["gridfinity", "organizer", "functional", "base"]
-  },
-  {
-    "id": "surface-demo",
-    "title": "Surface Mapping",
-    "description": "Demonstrates reading a heightmap from an image file.",
-    "author": "openscad",
-    "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/surface.scad",
-    "tags": ["demo", "advanced", "texture"]
-  },
-  {
-    "id": "parametric-gears",
-    "title": "Parametric Gears",
-    "description": "Classic involute gear generator.",
-    "author": "openscad",
-    "url": "https://github.com/openscad/openscad/blob/master/examples/Parametric/gears.scad",
-    "tags": ["mechanical", "gears", "parametric", "engineering"]
-  },
-  {
-    "id": "fractal-tree",
-    "title": "Recursive Fractal Tree",
-    "description": "A 3D tree generated using recursive modules.",
-    "author": "openscad",
-    "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/fractal01.scad",
-    "tags": ["art", "fractal", "recursive", "nature"]
-  },
-  {
-    "id": "project-box",
-    "title": "Parametric Project Box",
-    "description": "A customizable enclosure for electronics with snap-fit lids.",
-    "author": "gregmarra",
-    "url": "https://github.com/gregmarra/project_box/blob/master/project_box.scad",
-    "tags": ["enclosure", "electronics", "box", "functional"]
-  },
-  {
     "id": "text-on-cube",
     "title": "Text on Cube",
-    "description": "Simple example of boolean difference with text.",
+    "description": "Boolean difference example using text primitives.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/text_on_cube.scad",
     "tags": ["basics", "text", "typography"]
   },
   {
-    "id": "voronoi-sphere",
-    "title": "Voronoi Sphere",
-    "description": "Complex organic pattern generation.",
+    "id": "parametric-sign",
+    "title": "Parametric Sign",
+    "description": "Customizable sign with raised lettering and rounded corners.",
     "author": "openscad",
-    "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/animation.scad",
-    "tags": ["art", "organic", "complex", "voronoi"]
-  },
-  {
-    "id": "l-system",
-    "title": "L-System Plant",
-    "description": "Lindenmayer system for generating plant-like structures.",
-    "author": "openscad",
-    "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/l-system.scad",
-    "tags": ["math", "fractal", "nature", "advanced"]
-  },
-  {
-    "id": "projection-demo",
-    "title": "3D to 2D Projection",
-    "description": "Flattening 3D objects into 2D profiles for laser cutting.",
-    "author": "openscad",
-    "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/projection.scad",
-    "tags": ["demo", "advanced", "lasercut"]
+    "url": "https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad",
+    "tags": ["customizable", "text", "beginner"]
   },
   {
     "id": "csg-modules",
-    "title": "CSG Modules Demo",
-    "description": "Visualizing Constructive Solid Geometry operations.",
+    "title": "CSG Modules",
+    "description": "Visualization of Constructive Solid Geometry operations.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/CSG-modules.scad",
-    "tags": ["demo", "basics", "educational"]
+    "tags": ["demo", "educational", "geometry"]
   },
   {
-    "id": "intersection-demo",
-    "title": "Intersection For Loop",
-    "description": "Creating complex shapes by intersecting rotated copies.",
+    "id": "projection-demo",
+    "title": "Projection Demo",
+    "description": "Flattening 3D objects into 2D profiles for laser cutting.",
     "author": "openscad",
-    "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/intersection.scad",
-    "tags": ["demo", "basics", "geometry"]
+    "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/projection.scad",
+    "tags": ["advanced", "lasercut", "2d"]
   },
   {
-    "id": "linear-extrude",
-    "title": "Linear Extrude with Twist",
-    "description": "Twisting a 2D shape as it extrudes into 3D.",
+    "id": "linear-extrude-twist",
+    "title": "Twisted Extrusion",
+    "description": "Linear extrusion with a twist parameter.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/linear_extrude.scad",
     "tags": ["demo", "basics", "twist"]
   },
   {
-    "id": "offset-demo",
-    "title": "Offset Geometry",
-    "description": "Rounding corners using the offset() module.",
+    "id": "recursive-tree",
+    "title": "Fractal Tree",
+    "description": "A recursive module generating a fractal tree structure.",
     "author": "openscad",
-    "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/offset.scad",
-    "tags": ["demo", "basics", "2d"]
+    "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/fractal01.scad",
+    "tags": ["art", "fractal", "recursive", "nature"]
+  },
+  {
+    "id": "intersection-loop",
+    "title": "Intersection Loop",
+    "description": "Complex shapes created by intersecting rotated copies.",
+    "author": "openscad",
+    "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/intersection.scad",
+    "tags": ["demo", "basics", "geometry"]
   },
   {
     "id": "children-demo",
     "title": "Children Module",
-    "description": "How to pass objects into modules as children.",
+    "description": "Demonstrates passing geometry into modules as children.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Functions/children.scad",
     "tags": ["demo", "functions", "intermediate"]
@@ -146,18 +90,10 @@
   {
     "id": "minkowski-trace",
     "title": "Minkowski Sum",
-    "description": "Tracing a shape around another to add thickness or roundness.",
+    "description": "Tracing a shape around another to add rounded thickness.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/minkowski.scad",
     "tags": ["demo", "basics", "advanced"]
-  },
-  {
-    "id": "parametric-sign",
-    "title": "Parametric Sign",
-    "description": "A simple customizable sign with raised text.",
-    "author": "openscad",
-    "url": "https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad",
-    "tags": ["customizable", "text", "beginner"]
   },
   {
     "id": "poly-bowl",
@@ -168,14 +104,6 @@
     "tags": ["art", "household", "geometric"]
   },
   {
-    "id": "search-light",
-    "title": "Search Light Model",
-    "description": "A complex multi-part assembly of a searchlight.",
-    "author": "openscad",
-    "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/search.scad",
-    "tags": ["assembly", "complex", "mechanical"]
-  },
-  {
     "id": "function-grapher",
     "title": "3D Function Grapher",
     "description": "Visualizing mathematical functions in 3D space.",
@@ -184,19 +112,11 @@
     "tags": ["math", "visualization", "science"]
   },
   {
-    "id": "nefertiti-hack",
-    "title": "Nefertiti Hack",
-    "description": "Using import() to load and modify external STLs.",
+    "id": "l-system",
+    "title": "L-System Plant",
+    "description": "Lindenmayer system for generating plant-like structures.",
     "author": "openscad",
-    "url": "https://github.com/openscad/openscad/blob/master/examples/Old/nefertiti.scad",
-    "tags": ["art", "import", "remix"]
-  },
-  {
-    "id": "maze-generator",
-    "title": "Maze Generator",
-    "description": "Procedural generation of a 3D maze.",
-    "author": "openscad",
-    "url": "https://github.com/openscad/openscad/blob/master/examples/Old/maze.scad",
-    "tags": ["game", "procedural", "fun"]
+    "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/l-system.scad",
+    "tags": ["math", "fractal", "nature", "advanced"]
   }
 ]
