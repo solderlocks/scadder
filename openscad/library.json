@@ -5,7 +5,7 @@
     "description": "A simple demonstration of rotational geometry.",
     "author": "openscad",
     "url": "https://raw.githubusercontent.com/openscad/openscad/master/examples/Basics/rotate_extrude.scad",
-    "image": "assets/previews/rotate-extrude.png",
+    "image": "openscad/assets/previews/rotate-extrude.png",
     "tags": [
       "demo",
       "basics"
@@ -17,7 +17,7 @@
     "description": "The classic parametric logo.",
     "author": "openscad",
     "url": "https://raw.githubusercontent.com/openscad/openscad/master/examples/Basics/logo.scad",
-    "image": "assets/previews/logo.png",
+    "image": "openscad/assets/previews/logo.png",
     "tags": [
       "logo",
       "complex"
