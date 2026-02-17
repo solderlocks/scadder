@@ -25,10 +25,13 @@ const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
     args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
-        // THE NEW MAGIC COMBO FOR LINUX CI:
-        '--use-gl=angle',           
-        '--use-angle=swiftshader',  
-        '--enable-webgl',
+        
+        // THE MISSING KEY FROM YOUR LOGS:
+        '--enable-unsafe-swiftshader',  
+        
+        // Keep these for good measure:
+        '--use-gl=angle',
+        '--use-angle=swiftshader',
         '--hide-scrollbars'
     ]
   });
@@ -46,16 +49,26 @@ const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
     const url = `${BASE_URL}?file=${encodeURIComponent(item.url)}`;
     
     try {
-        await page.goto(url, { waitUntil: 'networkidle0' }); // Wait for network to settle
-
-        // Wait for canvas
+        await page.goto(url, { waitUntil: 'networkidle0' });
+        
         await page.waitForSelector('#canvas-container canvas', { timeout: 15000 });
-        
-        // Wait for the overlay to disappear (render complete)
         await page.waitForSelector('#renderOverlay.hidden', { timeout: 45000 });
-        
-        // Wait a beat for the frame to settle
         await new Promise(r => setTimeout(r, 1000));
+
+        // ⬇️ NEW: Hide the UI elements before snapping! ⬇️
+        await page.evaluate(() => {
+            // Hide the main header (Scadder / About)
+            const header = document.querySelector('header');
+            if(header) header.style.display = 'none';
+
+            // Hide the toolbar (Render / Wireframe buttons) for a cleaner thumbnail
+            const toolbar = document.querySelector('.viewport-toolbar');
+            if(toolbar) toolbar.style.display = 'none';
+            
+            // Optional: Force transparent background if you want png transparency
+            // document.body.style.background = 'transparent';
+        });
+        // ⬆️ ------------------------------------------ ⬆️
 
         const filename = `${item.id}.png`;
         const filepath = path.join(OUTPUT_DIR, filename);
