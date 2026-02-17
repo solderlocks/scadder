@@ -37,7 +37,7 @@ const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
   });
 
   const page = await browser.newPage();
-  await page.setViewport({ width: 400, height: 300 });
+  await page.setViewport({ width: 300, height: 300 });
 
   // 3. LISTEN TO CONSOLE LOGS (Crucial for debugging)
   page.on('console', msg => console.log('PAGE LOG:', msg.text()));
