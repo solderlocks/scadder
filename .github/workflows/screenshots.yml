@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Snapshot Script
         env:
-          BASE_URL: 'http://localhost:8888/index.html' # Point to the background server
+          BASE_URL: 'http://localhost:8080/index.html' # Point to the background server
         run: node scripts/snap.js
 
       - name: Commit and Push New Images

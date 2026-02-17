@@ -5,7 +5,7 @@ const path = require('path');
 // Keep this flexible! 
 // Locally, it uses your MAMP defaults (8888). 
 // On GitHub, it uses the ENV variable we set above (8080).
-const BASE_URL = process.env.BASE_URL || 'http://localhost:8888/scadder/openscad/index.html';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:8080/scadder/openscad/index.html';
 const LIBRARY_PATH = path.join(__dirname, '../openscad/library.json'); // Robust pathing
 const OUTPUT_DIR = path.join(__dirname, '../assets/previews');
 
