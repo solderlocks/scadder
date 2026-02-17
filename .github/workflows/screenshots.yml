@@ -32,7 +32,7 @@ jobs:
           echo "Server started on 8080"
           sleep 5 # Give it a moment to boot up
 
-    - name: Run Snapshot Script
+      - name: Run Snapshot Script
         env:
           # FIX 1: Point to the subdirectory where the REAL app lives
           BASE_URL: 'http://localhost:8080/openscad/index.html' 
