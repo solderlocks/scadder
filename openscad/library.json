@@ -10,5 +10,17 @@
       "demo",
       "basics"
     ]
+  },
+  {
+    "id": "logo-demo",
+    "title": "OpenSCAD Logo",
+    "description": "The classic parametric logo.",
+    "author": "openscad",
+    "url": "https://raw.githubusercontent.com/openscad/openscad/master/examples/Basics/logo.scad",
+    "image": "assets/previews/logo.png",
+    "tags": [
+      "logo",
+      "complex"
+    ]
   }
 ]
