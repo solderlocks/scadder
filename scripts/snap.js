@@ -9,7 +9,12 @@ const OUTPUT_DIR = path.join(__dirname, '../assets/previews');
 
 (async () => {
   const library = JSON.parse(fs.readFileSync(LIBRARY_PATH, 'utf8'));
-  const browser = await puppeteer.launch();
+  
+  // FIX: Add these arguments to make it work on Linux/GitHub Actions
+  const browser = await puppeteer.launch({
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
+
   const page = await browser.newPage();
 
   // Set viewport to standard thumbnail size
