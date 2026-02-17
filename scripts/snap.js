@@ -19,10 +19,17 @@ const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
 
   const library = JSON.parse(fs.readFileSync(LIBRARY_PATH, 'utf8'));
 
-  // Keep your existing browser launch config (it was correct!)
+ // FIX: Force software rendering (SwiftShader) so WebGL works without a GPU
   const browser = await puppeteer.launch({
     headless: "new",
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--hide-scrollbars', '--use-gl=egl']
+    args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--use-gl=swiftshader',      // <--- THE KEY FIX: Use CPU for graphics
+        '--enable-webgl',
+        '--ignore-gpu-blocklist',    // Force Chrome to use the software GPU
+        '--hide-scrollbars'
+    ]
   });
 
   const page = await browser.newPage();
