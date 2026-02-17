@@ -8,21 +8,22 @@ const LIBRARY_PATH = path.join(__dirname, '../openscad/library.json');
 const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
 
 (async () => {
-  // Ensure output directory exists
   if (!fs.existsSync(OUTPUT_DIR)){
       fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   }
 
   const library = JSON.parse(fs.readFileSync(LIBRARY_PATH, 'utf8'));
-  let hasChanges = false; // Track if we actually need to save the JSON
+  let hasChanges = false;
+  
+  // 1. Collect all valid IDs from the JSON
+  const validIds = new Set(library.map(item => item.id));
 
-  // Launch browser with aggressive software rendering flags
   const browser = await puppeteer.launch({
     headless: "new",
     args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
-        '--enable-unsafe-swiftshader',  // The key to software WebGL
+        '--enable-unsafe-swiftshader',
         '--use-gl=angle',
         '--use-angle=swiftshader',
         '--hide-scrollbars'
@@ -32,25 +33,21 @@ const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
   const page = await browser.newPage();
   await page.setViewport({ width: 400, height: 300 });
 
-  // Console logging for debugging
   page.on('console', msg => {
-      // Filter out some noise, keep important logs
       const text = msg.text();
       if (!text.includes('marker') && !text.includes('fallback')) {
         console.log('PAGE LOG:', text);
       }
   });
 
+  // 2. GENERATE MISSING IMAGES
   for (const item of library) {
     const filename = `${item.id}.png`;
     const filepath = path.join(OUTPUT_DIR, filename);
     const relativePath = `assets/previews/${filename}`;
 
-    // 1. INCREMENTAL CHECK: If image exists, skip render!
     if (fs.existsSync(filepath)) {
         console.log(`⏩ Skipping ${item.title} (Image exists)`);
-        
-        // Ensure JSON has the link, just in case it was missing
         if (item.image !== relativePath) {
             item.image = relativePath;
             hasChanges = true;
@@ -58,45 +55,27 @@ const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
         continue; 
     }
 
-    // If we are here, the image is missing. Let's render it.
     console.log(`📸 Generating new thumbnail: ${item.title}...`);
     const url = `${BASE_URL}?file=${encodeURIComponent(item.url)}`;
     
     try {
         await page.goto(url, { waitUntil: 'networkidle0' });
-
-        // Wait for the 3D canvas
         await page.waitForSelector('#canvas-container canvas', { timeout: 20000 });
-        
-        // Wait for the loading spinner to disappear
         await page.waitForSelector('#renderOverlay.hidden', { timeout: 60000 });
-        
-        // Give it a second to settle
         await new Promise(r => setTimeout(r, 1000));
 
-        // 2. DOM SURGERY: Hide the UI before snapping
         await page.evaluate(() => {
             const header = document.querySelector('header');
             if(header) header.style.display = 'none';
-
             const toolbar = document.querySelector('.viewport-toolbar');
             if(toolbar) toolbar.style.display = 'none';
-            
-            // Optional: Hide scrollbars explicitly
             document.body.style.overflow = 'hidden';
         });
 
-        // Take the screenshot of just the canvas area
-        // (Since we hid the UI, we can just snap the viewport card)
         const element = await page.$('.viewport-card'); 
-        if (element) {
-            await element.screenshot({ path: filepath });
-        } else {
-            // Fallback if card not found
-            await page.screenshot({ path: filepath });
-        }
+        if (element) await element.screenshot({ path: filepath });
+        else await page.screenshot({ path: filepath });
         
-        // Update JSON
         item.image = relativePath;
         hasChanges = true;
         
@@ -107,7 +86,23 @@ const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
 
   await browser.close();
 
-  // Only write to disk if something changed (preserves file modification times)
+  // 3. CLEANUP ORPHANS (Garbage Collection)
+  console.log("🧹 Checking for orphaned images...");
+  const files = fs.readdirSync(OUTPUT_DIR);
+  
+  for (const file of files) {
+      if (!file.endsWith('.png')) continue; // Skip non-images
+      
+      const id = file.replace('.png', '');
+      
+      // If this file's ID is NOT in our JSON list, delete it
+      if (!validIds.has(id)) {
+          console.log(`🗑️ Deleting orphan: ${file}`);
+          fs.unlinkSync(path.join(OUTPUT_DIR, file));
+          // No need to set hasChanges=true because this doesn't affect library.json
+      }
+  }
+
   if (hasChanges) {
       fs.writeFileSync(LIBRARY_PATH, JSON.stringify(library, null, 2));
       console.log("✨ Library index updated.");
