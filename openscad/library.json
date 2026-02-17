@@ -5,7 +5,13 @@
     "description": "The official, parametric logo. A classic test of boolean operations.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/logo.scad",
-    "tags": ["logo", "demo", "basics", "official"]
+    "tags": [
+      "logo",
+      "demo",
+      "basics",
+      "official"
+    ],
+    "image": "assets/previews/openscad-logo.png"
   },
   {
     "id": "rotate-extrude",
@@ -13,7 +19,12 @@
     "description": "Turning 2D profiles into 3D rotational geometry.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/rotate_extrude.scad",
-    "tags": ["demo", "basics", "geometry"]
+    "tags": [
+      "demo",
+      "basics",
+      "geometry"
+    ],
+    "image": "assets/previews/rotate-extrude.png"
   },
   {
     "id": "text-on-cube",
@@ -21,7 +32,12 @@
     "description": "Boolean difference example using text primitives.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/text_on_cube.scad",
-    "tags": ["basics", "text", "typography"]
+    "tags": [
+      "basics",
+      "text",
+      "typography"
+    ],
+    "image": "assets/previews/text-on-cube.png"
   },
   {
     "id": "parametric-sign",
@@ -29,7 +45,12 @@
     "description": "Customizable sign with raised lettering and rounded corners.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad",
-    "tags": ["customizable", "text", "beginner"]
+    "tags": [
+      "customizable",
+      "text",
+      "beginner"
+    ],
+    "image": "assets/previews/parametric-sign.png"
   },
   {
     "id": "csg-modules",
@@ -37,7 +58,12 @@
     "description": "Visualization of Constructive Solid Geometry operations.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/CSG-modules.scad",
-    "tags": ["demo", "educational", "geometry"]
+    "tags": [
+      "demo",
+      "educational",
+      "geometry"
+    ],
+    "image": "assets/previews/csg-modules.png"
   },
   {
     "id": "projection-demo",
@@ -45,7 +71,11 @@
     "description": "Flattening 3D objects into 2D profiles for laser cutting.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/projection.scad",
-    "tags": ["advanced", "lasercut", "2d"]
+    "tags": [
+      "advanced",
+      "lasercut",
+      "2d"
+    ]
   },
   {
     "id": "linear-extrude-twist",
@@ -53,7 +83,12 @@
     "description": "Linear extrusion with a twist parameter.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/linear_extrude.scad",
-    "tags": ["demo", "basics", "twist"]
+    "tags": [
+      "demo",
+      "basics",
+      "twist"
+    ],
+    "image": "assets/previews/linear-extrude-twist.png"
   },
   {
     "id": "recursive-tree",
@@ -61,7 +96,12 @@
     "description": "A recursive module generating a fractal tree structure.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/fractal01.scad",
-    "tags": ["art", "fractal", "recursive", "nature"]
+    "tags": [
+      "art",
+      "fractal",
+      "recursive",
+      "nature"
+    ]
   },
   {
     "id": "intersection-loop",
@@ -69,7 +109,11 @@
     "description": "Complex shapes created by intersecting rotated copies.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/intersection.scad",
-    "tags": ["demo", "basics", "geometry"]
+    "tags": [
+      "demo",
+      "basics",
+      "geometry"
+    ]
   },
   {
     "id": "children-demo",
@@ -77,7 +121,11 @@
     "description": "Demonstrates passing geometry into modules as children.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Functions/children.scad",
-    "tags": ["demo", "functions", "intermediate"]
+    "tags": [
+      "demo",
+      "functions",
+      "intermediate"
+    ]
   },
   {
     "id": "hull-demo",
@@ -85,7 +133,12 @@
     "description": "Shrink-wrapping multiple shapes together.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/hull.scad",
-    "tags": ["demo", "basics", "hull"]
+    "tags": [
+      "demo",
+      "basics",
+      "hull"
+    ],
+    "image": "assets/previews/hull-demo.png"
   },
   {
     "id": "minkowski-trace",
@@ -93,7 +146,11 @@
     "description": "Tracing a shape around another to add rounded thickness.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/minkowski.scad",
-    "tags": ["demo", "basics", "advanced"]
+    "tags": [
+      "demo",
+      "basics",
+      "advanced"
+    ]
   },
   {
     "id": "poly-bowl",
@@ -101,7 +158,11 @@
     "description": "A geometric bowl generated by looping differences.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/poly_bowl.scad",
-    "tags": ["art", "household", "geometric"]
+    "tags": [
+      "art",
+      "household",
+      "geometric"
+    ]
   },
   {
     "id": "function-grapher",
@@ -109,7 +170,12 @@
     "description": "Visualizing mathematical functions in 3D space.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Functions/functions.scad",
-    "tags": ["math", "visualization", "science"]
+    "tags": [
+      "math",
+      "visualization",
+      "science"
+    ],
+    "image": "assets/previews/function-grapher.png"
   },
   {
     "id": "l-system",
@@ -117,6 +183,11 @@
     "description": "Lindenmayer system for generating plant-like structures.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/l-system.scad",
-    "tags": ["math", "fractal", "nature", "advanced"]
+    "tags": [
+      "math",
+      "fractal",
+      "nature",
+      "advanced"
+    ]
   }
 ]
