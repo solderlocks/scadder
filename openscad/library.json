@@ -103,5 +103,31 @@
       "science"
     ],
     "image": "assets/previews/function-grapher.png"
+  },
+  {
+    "id": "rotate-extrude-demo",
+    "title": "Rotate Extrude Demo",
+    "description": "A simple demonstration of rotational geometry.",
+    "author": "openscad",
+    "url": "https://raw.githubusercontent.com/openscad/openscad/master/examples/Basics/rotate_extrude.scad",
+    "tags": [
+      "math",
+      "visualization",
+      "science"
+    ],
+    "image": "assets/previews/rotate-extrude-demo.png"
+  },
+  {
+    "id": "logo-demo",
+    "title": "OpenSCAD Logo",
+    "description": "The classic parametric logo.",
+    "author": "openscad",
+    "url": "https://raw.githubusercontent.com/openscad/openscad/master/examples/Basics/logo.scad",
+    "tags": [
+      "math",
+      "visualization",
+      "science"
+    ],
+    "image": "assets/previews/logo-demo.png"
   }
 ]
