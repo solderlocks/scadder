@@ -4,7 +4,7 @@ const path = require('path');
 
 // Use environment variable if present, otherwise default to local
 const BASE_URL = process.env.BASE_URL || 'http://localhost:8888/index.html'; 
-const LIBRARY_PATH = path.join(__dirname, '../library.json'); // Robust pathing
+const LIBRARY_PATH = path.join(__dirname, 'library.json'); // Robust pathing
 const OUTPUT_DIR = path.join(__dirname, '../assets/previews');
 
 (async () => {
@@ -13,7 +13,7 @@ const OUTPUT_DIR = path.join(__dirname, '../assets/previews');
   const page = await browser.newPage();
 
   // Set viewport to standard thumbnail size
-  await page.setViewport({ width: 800, height: 600 });
+  await page.setViewport({ width: 400, height: 300 });
 
   for (const item of library) {
     console.log(`📸 Snapping: ${item.title}...`);

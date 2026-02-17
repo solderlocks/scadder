@@ -2,7 +2,7 @@ name: Auto-Generate Screenshots
 on:
   push:
     paths:
-      - 'library.json'  # ONLY run when the library changes
+      - 'openscad/library.json'  # ONLY run when the library changes
     branches:
       - main
 
@@ -41,4 +41,4 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "📸 Auto-generated screenshots for library update"
-          file_pattern: "assets/previews/*.png library.json"
+          file_pattern: "assets/previews/*.png openscad/library.json"
