@@ -30,15 +30,14 @@ jobs:
 
       - name: Start Local Server
         run: |
-          # Start server on 8080
+          # "." means serve the current directory (repo root)
           npx http-server . -p 8080 &
           echo "Server started on 8080"
           sleep 5
 
       - name: Run Snapshot Script
         env:
-          # FIX: Point to port 8080 to match the server above
-          # Also, ensure we point to the correct HTML file relative to root
+          # FIX: The robot sees index.html at the root, on port 8080
           BASE_URL: 'http://localhost:8080/index.html' 
         run: node scripts/snap.js
 
