@@ -2,12 +2,12 @@ name: Auto-Generate Screenshots
 on:
   push:
     paths:
-      - 'openscad/library.json' # This path looks correct based on your file structure
+      - 'openscad/library.json'  # ONLY run when the library changes
     branches:
       - main
 
 permissions:
-  contents: write
+  contents: write      # Allow the robot to commit changes back
 
 jobs:
   snap:
@@ -25,21 +25,16 @@ jobs:
           npm init -y
           npm install puppeteer http-server
 
-      - name: Ensure Assets Directory Exists
-        run: mkdir -p assets/previews
-
       - name: Start Local Server
         run: |
-          # Start server on 8080
+          # Start a simple server on port 8080 in the background (&)
           npx http-server . -p 8080 &
           echo "Server started on 8080"
-          sleep 5
+          sleep 5 # Give it a moment to boot up
 
       - name: Run Snapshot Script
         env:
-          # FIX: Point to port 8080 to match the server above
-          # Also, ensure we point to the correct HTML file relative to root
-          BASE_URL: 'http://localhost:8080/index.html' 
+          BASE_URL: 'http://localhost:8888/index.html' # Point to the background server
         run: node scripts/snap.js
 
       - name: Commit and Push New Images
