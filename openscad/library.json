@@ -172,33 +172,5 @@
       "parts"
     ],
     "image": "assets/previews/nuts-and-bolts.png"
-  },
-  {
-    "id": "fractal-tree",
-    "title": "Recursive Fractal Tree",
-    "description": "A beautiful math-based tree generator. Tests recursion limits.",
-    "author": "openscad",
-    "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/fractal01.scad",
-    "tags": [
-      "art",
-      "math",
-      "nature",
-      "recursive"
-    ],
-    "image": "assets/previews/fractal-tree.png"
-  },
-  {
-    "id": "voronoi-generator",
-    "title": "Voronoi Generator",
-    "description": "Generates organic cellular patterns. A classic stress test for 2D geometry.",
-    "author": "felipesanches",
-    "url": "https://github.com/felipesanches/OpenSCAD_Voronoi_Generator/blob/master/voronoi.scad",
-    "tags": [
-      "art",
-      "math",
-      "pattern",
-      "voronoi"
-    ],
-    "image": "assets/previews/voronoi-generator.png"
   }
 ] 

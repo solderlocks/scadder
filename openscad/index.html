@@ -1718,7 +1718,6 @@ if (!urlParam('file')) {
     if (modified.includes('polygon') || modified.includes('projection') || !modified.includes('module')) {
         modified = `linear_extrude(height=0.1) { ${modified} }`;
     }
-    
     // Create a clean VFS copy for the worker
     const workerVFS = virtualFileSystem.map(f => ({
         name: f.name,
@@ -1768,15 +1767,14 @@ if (!urlParam('file')) {
             }, 200);
         } 
         else if (msg.type === 'error') {
-          console.error(msg.error);
-          document.getElementById('renderStatus').textContent = 'Error: ' + msg.error;
-          document.getElementById('progressBar').style.background = '#ff4444';
-          
-          // 🔥 ADD THIS: Hide overlay after a delay so the bot can at least 
-          // take a screenshot of the error or the empty grid instead of hanging.
-          setTimeout(() => {
-              document.getElementById('renderOverlay').classList.add('hidden');
-          }, 2000);
+            console.error("Worker Error:", msg.error);
+            document.getElementById('renderStatus').textContent = 'Error: ' + msg.error;
+            
+            // 🔥 THE SAFETY VALVE: Hide the overlay even on failure 
+            // so the screenshot bot doesn't hang forever.
+            setTimeout(() => {
+                document.getElementById('renderOverlay').classList.add('hidden');
+            }, 1000);
         }
     };
 
