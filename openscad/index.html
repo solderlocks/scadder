@@ -162,6 +162,10 @@
     font-family: var(--mono);
   }
 
+  .top-toolbar {
+    position: relative;
+  }
+
   .model-actions {
     display: flex;
     gap: 0.5rem;
@@ -170,8 +174,23 @@
     padding-top: 0.2rem;
     flex-wrap: wrap;
     justify-content: flex-end;
-    position: absolute; 
-    right: 2rem;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+  }
+
+  @media (max-width: 675px) {
+    .model-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-shrink: 0;
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding-top: 0.2rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      position: static;
+    }
   }
 
   /* GitHub chips */
@@ -811,23 +830,26 @@
   <!-- Model view -->
   <div id="modelView" style="display:none">
     <!-- GitHub meta chips -->
-    <div class="model-meta">
-      <div>
-        <div class="model-title" id="modelTitle">Untitled Model</div>
-        <div class="model-subtitle" id="modelSubtitle"></div>
+    <div class="top-toolbar">
+      <div class="model-meta">
+        <div>
+          <div class="model-title" id="modelTitle">Untitled Model</div>
+          <div class="model-subtitle" id="modelSubtitle"></div>
+        </div>
+        
       </div>
-      
+
+      <div class="github-meta" id="githubMeta" style="display:none">
+        <div class="gh-chip" id="ghAuthor"></div>
+        <div class="gh-chip" id="ghLicense"></div>
+        <div class="gh-chip" id="ghStars"></div>
+      </div>
+
       <div class="model-actions">
         <a id="githubSourceBtn" href="#" target="_blank" class="btn btn-ghost">⎇ Source</a>
         <a id="githubForkBtn" href="#" target="_blank" class="btn btn-ghost">Fork ↗</a>
         <button class="btn btn-primary" id="downloadBtn" onclick="downloadSTL()" disabled>↓ Export STL</button>
       </div>
-    </div>
-
-    <div class="github-meta" id="githubMeta" style="display:none">
-      <div class="gh-chip" id="ghAuthor"></div>
-      <div class="gh-chip" id="ghLicense"></div>
-      <div class="gh-chip" id="ghStars"></div>
     </div>
 
     <!-- 3D Viewport -->
