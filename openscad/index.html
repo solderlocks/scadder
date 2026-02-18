@@ -1320,59 +1320,80 @@ async function loadSidecars(rawUrl) {
 }
 
 // ── Load model from URL ───────────────────────────────────────────────────────
-// ── Load model from URL ───────────────────────────────────────────────────────
+// Add a global to track what we've already fetched to prevent infinite loops
+var fetchedUrls = new Set();
+
 async function loadScadFromUrl(url) {
   const rawUrl = toRawUrl(url);
+  fetchedUrls.clear(); // Reset for new project
+  virtualFileSystem = []; // Clear old project files
 
   document.getElementById('landingState').style.display = 'none';
   document.getElementById('modelView').style.display = 'block';
 
-  // FIX: Initialize 3D engine now that the container has dimensions
   init3D(); 
 
   const filename = rawUrl.split('/').pop().replace(/\.scad$/i, '');
   document.getElementById('modelTitle').textContent = filename.replace(/[-_]/g, ' ');
-  document.getElementById('modelSubtitle').textContent = '';
 
   document.getElementById('renderOverlay').classList.remove('hidden');
-  document.getElementById('renderStatus').textContent = 'Fetching source…';
+  document.getElementById('renderStatus').textContent = 'Crawling project dependencies…';
 
   try {
-    const res = await fetch(rawUrl);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = await res.text();
-    virtualFileSystem[0].txt = text;
+    // Start the recursive crawl
+    await crawlAndFetch(rawUrl, "main.scad");
+    
+    const mainFile = virtualFileSystem.find(f => f.name === "main.scad");
+    if (!mainFile) throw new Error("Failed to load main file");
 
-    // Source view
-    const lines = text.split('\n');
-    document.getElementById('sourceDisplay').innerHTML = lines
+    // UI Updates
+    document.getElementById('sourceDisplay').innerHTML = mainFile.txt.split('\n')
       .map((l, i) => `<span class="src-ln">${String(i+1).padStart(3,' ')}</span>${esc(l)}`)
       .join('\n');
 
-    // ⬇️⬇️⬇️ ADD THESE TWO LINES BACK ⬇️⬇️⬇️
     loadGithubMeta(rawUrl);
     loadSidecars(rawUrl);
-    // ⬆️⬆️⬆️ ------------------------- ⬆️⬆️⬆️
 
-    // 1. Parse the file
-    const groups = parseScadParams(text);
-
-    // 2. Flatten params so we can search them
+    const groups = parseScadParams(mainFile.txt);
     parsedParams = groups.flatMap(g => g.params);
-
-    // 3. APPLY URL STATE NOW (Override defaults with URL values)
     applyUrlState(); 
-
-    // 4. Build UI (Now the sliders will generate with the URL values)
     buildParamUI(groups);
 
-    // 5. Render
     await window.runAndShowScad();
 
   } catch(e) {
     document.getElementById('renderStatus').textContent = `Error: ${e.message}`;
     console.error(e);
   }
+}
+
+/**
+ * Recursively finds and fetches 'include' and 'use' dependencies
+ */
+async function crawlAndFetch(url, vfsName) {
+  if (fetchedUrls.has(url)) return;
+  fetchedUrls.add(url);
+
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Could not fetch ${vfsName}`);
+  const text = await res.text();
+
+  // Save to our internal VFS
+  virtualFileSystem.push({ name: vfsName, txt: text });
+
+  // Regex to find: include <filename.scad> or use "filename.scad"
+  const importRegex = /^(?:include|use)\s*[<"]([^>"]+)[>"]/gm;
+  let match;
+  const promises = [];
+
+  while ((match = importRegex.exec(text)) !== null) {
+    const depPath = match[1];
+    // Resolve the relative path against the current file's URL
+    const depUrl = new URL(depPath, url).href;
+    promises.push(crawlAndFetch(depUrl, depPath));
+  }
+
+  await Promise.all(promises);
 }
 
 function loadFromInput() {
@@ -1624,8 +1645,23 @@ if (!urlParam('file')) {
 
       addFonts(inst);
 
+      // Write ALL files from our crawled VFS into the WASM memory
       for (const f of virtualFileSystem) {
-        inst.FS.writeFile("/" + f.name, f.name === 'main.scad' ? modified : f.txt);
+        // If it's the main file, use the one with customizer overrides
+        const content = (f.name === "main.scad") ? modified : f.txt;
+        
+        // Ensure subdirectories exist in WASM memory if the path has slashes
+        if (f.name.includes('/')) {
+          const folders = f.name.split('/');
+          let currentPath = "/";
+          for (let i = 0; i < folders.length - 1; i++) {
+            currentPath += folders[i] + "/";
+            try { inst.FS.mkdir(currentPath); } catch(e) {} // Ignore if folder exists
+          }
+        }
+        
+        inst.FS.writeFile("/" + f.name, content);
+        console.log(`✅ VFS Loaded: ${f.name}`);
       }
 
       inst.callMain(["/main.scad", "-o", "out.stl"]);

@@ -103,5 +103,21 @@
       "science"
     ],
     "image": "assets/previews/function-grapher.png"
-  }
+  },
+  {
+    "id": "gridfinity-cup",
+    "title": "Gridfinity Basic Cup",
+    "description": "A standard, parametric bin for the Gridfinity organization system.",
+    "author": "vector76",
+    "url": "https://github.com/vector76/gridfinity_openscad/blob/master/gridfinity_basic_cup.scad",
+    "tags": ["gridfinity", "organizer", "functional", "box"]
+  },
+  {
+    "id": "gridfinity-baseplate",
+    "title": "Gridfinity Baseplate",
+    "description": "Parametric baseplate for the Gridfinity system.",
+    "author": "vector76",
+    "url": "https://github.com/vector76/gridfinity_openscad/blob/master/gridfinity_baseplate.scad",
+    "tags": ["gridfinity", "organizer", "functional", "base"]
+  },
 ]
