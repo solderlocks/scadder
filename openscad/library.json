@@ -158,19 +158,5 @@
       "organizer"
     ],
     "image": "assets/previews/honeycomb-wall.png"
-  },
-  {
-    "id": "nuts-and-bolts",
-    "title": "Nuts & Bolts Demo",
-    "description": "ISO-standard metric fasteners. Demonstrates library inclusion.",
-    "author": "JohK",
-    "url": "https://github.com/JohK/nutsnbolts/blob/master/examples.scad",
-    "tags": [
-      "hardware",
-      "mechanical",
-      "library",
-      "parts"
-    ],
-    "image": "assets/previews/nuts-and-bolts.png"
   }
 ]
