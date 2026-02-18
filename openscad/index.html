@@ -503,28 +503,7 @@
 
   .empty-note code { color: var(--text-mid); }
 
-  /* Landing */
-  .landing {
-    padding: 5rem 2rem;
-    text-align: center;
-    max-width: 520px;
-    margin: 0 auto;
-  }
-
-  .landing h1 {
-    font-family: var(--hero);
-    font-size: 2.6rem;
-    color: var(--amber);
-    margin-bottom: 0.75rem;
-    line-height: 1.15;
-  }
-
-  .landing p {
-    color: var(--text-mid);
-    line-height: 1.75;
-    margin-bottom: 1.25rem;
-    font-size: 0.88rem;
-  }
+  
 
   .landing code { color: var(--amber); font-family: var(--mono); }
 
@@ -611,7 +590,7 @@
   border-radius: 4px;
   color: var(--text);
   font-family: var(--mono);
-  width: 240px;
+  width: 440px;
   outline: none;
 }
 .search-input:focus { border-color: var(--amber); }
@@ -661,6 +640,28 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+
+  /* Landing */
+  .landing {
+    padding: 5rem 2rem;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .landing h1 {
+    font-family: var(--hero);
+    font-size: 2.6rem;
+    color: var(--amber);
+    margin-bottom: 0.75rem;
+    line-height: 1.15;
+  }
+
+  .landing p {
+    color: var(--text-mid);
+    line-height: 1.75;
+    font-size: 0.88rem;
   }
 
   /* Pagination */
@@ -729,10 +730,15 @@
     overflow: hidden;
   }
 
+  
+
   .tagline {
     font-family: var(--mono);
     color: var(--amber);
-    margin-bottom: 2rem;
+    max-width: 500px;
+    text-align: center;
+    margin: auto;
+    margin-bottom: 6rem;
   }
 
   .submit-cta {
@@ -1586,7 +1592,7 @@ const app = {
   
   // State
   page: 1,
-  limit: 12,       // Items per page
+  limit: 10,       // Items per page
   view: 'grid',    // 'grid' or 'list'
   search: '',
 
