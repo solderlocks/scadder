@@ -1709,11 +1709,15 @@ if (!urlParam('file')) {
   let worker = null;
 
   window.runAndShowScad = async function() {
-    const original = virtualFileSystem.find(f => f.name === 'main.scad')?.txt;
-    if (!original) return;
+    const mainFile = virtualFileSystem.find(f => f.name === 'main.scad');
+    if (!mainFile) return;
 
-    // 1. Prepare the VFS with modified parameters
-    const modified = buildModifiedScad(original);
+    let modified = buildModifiedScad(mainFile.txt);
+    
+    // 🪄 VORONOI/2D FIX: If the code looks like 2D, wrap it so it becomes an STL
+    if (modified.includes('polygon') || modified.includes('projection') || !modified.includes('module')) {
+        modified = `linear_extrude(height=0.1) { ${modified} }`;
+    }
     
     // Create a clean VFS copy for the worker
     const workerVFS = virtualFileSystem.map(f => ({
@@ -1764,8 +1768,15 @@ if (!urlParam('file')) {
             }, 200);
         } 
         else if (msg.type === 'error') {
-            // ... error handling ...
-            document.getElementById('progressBar').style.background = '#ff4444'; // Red bar on error
+          console.error(msg.error);
+          document.getElementById('renderStatus').textContent = 'Error: ' + msg.error;
+          document.getElementById('progressBar').style.background = '#ff4444';
+          
+          // 🔥 ADD THIS: Hide overlay after a delay so the bot can at least 
+          // take a screenshot of the error or the empty grid instead of hanging.
+          setTimeout(() => {
+              document.getElementById('renderOverlay').classList.add('hidden');
+          }, 2000);
         }
     };
 

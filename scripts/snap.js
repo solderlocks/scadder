@@ -59,10 +59,14 @@ const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
     const url = `${BASE_URL}?file=${encodeURIComponent(item.url)}`;
     
     try {
-        await page.goto(url, { waitUntil: 'networkidle0' });
-        await page.waitForSelector('#canvas-container canvas', { timeout: 60000 });
+        await page.goto(url, { waitUntil: 'networkidle2' });
+          await page.waitForSelector('#canvas-container canvas', { timeout: 60000 });
+        // Wait for the worker to start and the overlay to eventually hide
+        // We keep the 120s timeout for the "Rugged Box" cases
         await page.waitForSelector('#renderOverlay.hidden', { timeout: 120000 });
-        await new Promise(r => setTimeout(r, 1000));
+        
+        // Give Three.js an extra second to actually paint the geometry
+        await new Promise(r => setTimeout(r, 2000));
 
         await page.evaluate(() => {
             const header = document.querySelector('header');
