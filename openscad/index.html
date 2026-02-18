@@ -1257,15 +1257,26 @@ function applyUrlState() {
 
     // 🩹 THE FIX: Create a helper that uses your evaluate logic
     const cleanValue = (val) => {
-        if (typeof val !== 'string') return val;
-        // Use the same logic as your parser's evaluate helper
-        try {
-            const result = Function(`"use strict"; return (${val})`)();
-            if (Array.isArray(result) && result.length === 2) return result[0];
-            return result;
-        } catch(e) { 
-            return parseFloat(val); 
-        }
+      if (typeof val !== 'string') return val;
+
+      // 1. Check if it's a numeric string first to avoid the Function() overhead
+      if (!isNaN(val) && !isNaN(parseFloat(val))) {
+          return parseFloat(val);
+      }
+
+      // 2. Try to evaluate as a JS expression (for arrays or math)
+      try {
+          // We only want to evaluate if it looks like an array or object
+          if (val.trim().startsWith('[') || val.trim().startsWith('{')) {
+              const result = Function(`"use strict"; return (${val})`)();
+              return result;
+          }
+      } catch(e) { 
+          // Fall through to returning the raw string
+      }
+
+      // 3. It's likely just a text string (like "Welcome to")
+      return val;
     };
 
     for (const p of parsedParams) {
@@ -1692,7 +1703,7 @@ const app = {
     // Render Cards
     grid.innerHTML = pageItems.map(item => `
       <a href="?file=${encodeURIComponent(item.url)}" class="lib-card">
-        <img src="${item.image || 'assets/placeholder.png'}" class="lib-img" loading="lazy" alt="${item.title}">
+        <img src="assets/previews/${item.id || 'placeholder'}.png" class="lib-img" loading="lazy" alt="${item.title}">
         <div class="lib-meta">
           <div>
             <div class="lib-title">${item.title}</div>

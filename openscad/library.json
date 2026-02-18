@@ -5,13 +5,7 @@
     "description": "The official, parametric logo. A classic test of boolean operations.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/logo.scad",
-    "tags": [
-      "logo",
-      "demo",
-      "basics",
-      "official"
-    ],
-    "image": "assets/previews/openscad-logo.png"
+    "tags": ["logo", "demo", "basics", "official"]
   },
   {
     "id": "rotate-extrude",
@@ -19,12 +13,7 @@
     "description": "Turning 2D profiles into 3D rotational geometry.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/rotate_extrude.scad",
-    "tags": [
-      "demo",
-      "basics",
-      "geometry"
-    ],
-    "image": "assets/previews/rotate-extrude.png"
+    "tags": ["demo", "basics", "geometry"]
   },
   {
     "id": "text-on-cube",
@@ -32,12 +21,7 @@
     "description": "Boolean difference example using text primitives.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/text_on_cube.scad",
-    "tags": [
-      "basics",
-      "text",
-      "typography"
-    ],
-    "image": "assets/previews/text-on-cube.png"
+    "tags": ["basics", "text", "typography"]
   },
   {
     "id": "parametric-sign",
@@ -45,12 +29,7 @@
     "description": "Customizable sign with raised lettering and rounded corners.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad",
-    "tags": [
-      "customizable",
-      "text",
-      "beginner"
-    ],
-    "image": "assets/previews/parametric-sign.png"
+    "tags": ["customizable", "text", "beginner"]
   },
   {
     "id": "csg-modules",
@@ -58,12 +37,7 @@
     "description": "Visualization of Constructive Solid Geometry operations.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/CSG-modules.scad",
-    "tags": [
-      "demo",
-      "educational",
-      "geometry"
-    ],
-    "image": "assets/previews/csg-modules.png"
+    "tags": ["demo", "educational", "geometry"]
   },
   {
     "id": "linear-extrude-twist",
@@ -71,12 +45,7 @@
     "description": "Linear extrusion with a twist parameter.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/linear_extrude.scad",
-    "tags": [
-      "demo",
-      "basics",
-      "twist"
-    ],
-    "image": "assets/previews/linear-extrude-twist.png"
+    "tags": ["demo", "basics", "twist"]
   },
   {
     "id": "hull-demo",
@@ -84,12 +53,7 @@
     "description": "Shrink-wrapping multiple shapes together.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Basics/hull.scad",
-    "tags": [
-      "demo",
-      "basics",
-      "hull"
-    ],
-    "image": "assets/previews/hull-demo.png"
+    "tags": ["demo", "basics", "hull"]
   },
   {
     "id": "function-grapher",
@@ -97,12 +61,7 @@
     "description": "Visualizing mathematical functions in 3D space.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Functions/functions.scad",
-    "tags": [
-      "math",
-      "visualization",
-      "science"
-    ],
-    "image": "assets/previews/function-grapher.png"
+    "tags": ["math", "visualization", "science"]
   },
   {
     "id": "gridfinity-cup",
@@ -110,13 +69,7 @@
     "description": "The gold standard storage block. Features stacking lips, magnet holes, and scoop curves.",
     "author": "ostat",
     "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_basic_cup.scad",
-    "tags": [
-      "gridfinity",
-      "storage",
-      "organizer",
-      "functional"
-    ],
-    "image": "assets/previews/gridfinity-cup.png"
+    "tags": ["gridfinity", "storage", "organizer", "functional"]
   },
   {
     "id": "gridfinity-baseplate",
@@ -124,12 +77,7 @@
     "description": "Parametric baseplate for the Gridfinity system. Supports weighted and screw-down bases.",
     "author": "ostat",
     "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_baseplate.scad",
-    "tags": [
-      "gridfinity",
-      "base",
-      "workshop"
-    ],
-    "image": "assets/previews/gridfinity-baseplate.png"
+    "tags": ["gridfinity", "base", "workshop"]
   },
   {
     "id": "rugged-box",
@@ -137,13 +85,7 @@
     "description": "A waterproof, latching box with endless configuration options. No screws required.",
     "author": "ok1hra",
     "url": "https://github.com/ok1hra/Parameterizable-rugged-box-in-OpenScad/blob/master/rugged-box.scad",
-    "tags": [
-      "box",
-      "case",
-      "waterproof",
-      "mechanical"
-    ],
-    "image": "assets/previews/rugged-box.png"
+    "tags": ["box", "case", "waterproof", "mechanical"]
   },
   {
     "id": "honeycomb-wall",
@@ -151,13 +93,7 @@
     "description": "Generates a hexagonal storage wall pattern. Great test for the 'include' fetcher.",
     "author": "smkent",
     "url": "https://github.com/smkent/honeycomb-openscad/blob/main/example.scad",
-    "tags": [
-      "storage",
-      "wall",
-      "honeycomb",
-      "organizer"
-    ],
-    "image": "assets/previews/honeycomb-wall.png"
+    "tags": ["storage", "wall", "honeycomb", "organizer"]
   },
   {
     "id": "yapp-box",
@@ -165,116 +101,102 @@
     "description": "The 'Yet Another Parametric Projectbox' generator. A comprehensive system for creating electronics enclosures.",
     "author": "mrWheel",
     "url": "https://github.com/mrWheel/YAPP_Box/blob/main/YAPP_Template_v3.scad",
-    "tags": [
-      "electronics",
-      "enclosure",
-      "project-box"
-    ],
-    "image": "assets/previews/yapp-box.png",
-    "units": "mm"
+    "tags": ["electronics", "enclosure", "project-box"]
   },
   {
     "id": "key-v2",
     "title": "KeyV2: Parametric Keycaps",
-    "description": "A massive library for generating mechanical keyboard keycaps (Cherry MX, Alps, etc.) with support for various profiles like SA, DSA, and OEM.",
+    "description": "A massive library for generating mechanical keyboard keycaps (Cherry MX, Alps, etc.).",
     "author": "rsheldiii",
     "url": "https://github.com/rsheldiii/KeyV2/blob/master/src/key.scad",
-    "tags": [
-      "mechanical-keyboard",
-      "gaming",
-      "customizable",
-      "parts"
-    ],
-    "image": "assets/previews/key-v2.png",
-    "units": "mm"
+    "tags": ["mechanical-keyboard", "gaming", "customizable", "parts"]
   },
   {
     "id": "vase-mode-box",
     "title": "Vase Mode Box",
-    "description": "Optimized containers designed for 'Spiral Vase' printing mode. Zero-seam boxes with customizable polygon shapes.",
+    "description": "Optimized containers designed for 'Spiral Vase' printing mode. Zero-seam boxes.",
     "author": "DrLex0",
     "url": "https://github.com/DrLex0/print3d-customizable-vase-mode-box/blob/master/Vase_mode_box.scad",
-    "tags": [
-      "vase-mode",
-      "container",
-      "storage"
-    ],
-    "image": "assets/previews/vase-mode-box.png",
-    "units": "mm"
+    "tags": ["vase-mode", "container", "storage"]
   },
   {
     "id": "knurled-cap",
     "title": "Knurled Cap Generator",
-    "description": "Generates grippy caps and knobs for bolts or potentiometers. Features customizable knurling patterns and bolt head traps.",
+    "description": "Generates grippy caps and knobs for bolts or potentiometers.",
     "author": "muesli",
     "url": "https://github.com/muesli/cap-generator/blob/master/cap.scad",
-    "tags": [
-      "hardware",
-      "knob",
-      "tools",
-      "utility"
-    ],
-    "image": "assets/previews/knurled-cap.png",
-    "units": "mm"
+    "tags": ["hardware", "knob", "tools", "utility"]
   },
   {
     "id": "nut-job",
     "title": "Nut Job (Hardware Generator)",
-    "description": "The classic parametric fastener generator. Create nuts, bolts, washers, and threaded rods. Renders a standard M8 nut by default.",
+    "description": "The classic parametric fastener generator. Create nuts, bolts, washers, and threaded rods.",
     "author": "xunker (orig. aubenc)",
     "url": "https://github.com/xunker/random_scad/blob/master/Nut_Job.scad",
-    "tags": [
-      "hardware",
-      "fastener",
-      "bolt",
-      "nut",
-      "threaded"
-    ],
-    "image": "assets/previews/nut-job.png",
-    "units": "mm"
+    "tags": ["hardware", "fastener", "bolt", "nut", "threaded"]
   },
   {
     "id": "harddrive-stacker",
     "title": "Hard drive Stacker",
-    "description": "Conical adapter",
-    "author": "xunker (orig. aubenc)",
-    "url": "https://raw.githubusercontent.com/xunker/random_scad/refs/heads/master/3_5_drive_stacker/3_5_drive_stacker.scad",
-    "tags": [
-      "harddrive",
-      "adapter",
-      "stacker",
-      "rack"
-    ],
-    "image": "assets/previews/harddrive-stacker.png",
-    "units": "mm"
+    "description": "Efficient vertical stacking for 3.5 inch hard drives.",
+    "author": "xunker",
+    "url": "https://github.com/xunker/random_scad/blob/master/3_5_drive_stacker/3_5_drive_stacker.scad",
+    "tags": ["harddrive", "adapter", "stacker", "rack"]
+  },
+  {
+    "id": "gridfinity-item-holder",
+    "title": "Gridfinity Item Holder",
+    "description": "Parametric holder with presets for SD cards, batteries, and hex bits.",
+    "author": "ostat",
+    "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_item_holder.scad",
+    "tags": ["gridfinity", "storage", "tools"]
   },
   {
     "id": "drill-mount",
     "title": "Drill Mount",
-    "description": "Bracket for holding drills on a wall",
-    "author": "xunker (orig. aubenc)",
-    "url": "https://raw.githubusercontent.com/xunker/random_scad/refs/heads/master/drill_mount.scad",
-    "tags": [
-      "drill",
-      "adapter",
-      "mount",
-      "bracket"
-    ],
-    "image": "assets/previews/drill-mount.png",
-    "units": "mm"
+    "description": "Bracket for holding drills on a wall.",
+    "author": "xunker",
+    "url": "https://github.com/xunker/random_scad/blob/master/drill_mount.scad",
+    "tags": ["drill", "adapter", "mount", "bracket"]
   },
   {
     "id": "duct-adapter",
     "title": "Duct Adapter",
-    "description": "Conical adapter",
-    "author": "xunker (orig. aubenc)",
-    "url": "https://raw.githubusercontent.com/xunker/random_scad/refs/heads/master/adapter.scad",
-    "tags": [
-      "hardware",
-      "ducting",
-      "adapter"
-    ],
-    "image": "assets/previews/duct-adapter.png",
-    "units": "mm"
+    "description": "Conical adapter for ventilation and ducting.",
+    "author": "xunker",
+    "url": "https://github.com/xunker/random_scad/blob/master/adapter.scad",
+    "tags": ["hardware", "ducting", "adapter"]
+  },
+  {
+    "id": "gridfinity-rebuilt-baseplate",
+    "title": "Gridfinity Rebuilt: Baseplate",
+    "description": "The high-performance foundation for any Gridfinity drawer setup.",
+    "author": "kennetek",
+    "url": "https://github.com/kennetek/gridfinity-rebuilt-openscad/blob/master/gridfinity-rebuilt-baseplate.scad",
+    "tags": ["gridfinity", "base", "organization"]
+  },
+  {
+    "id": "gridfinity-rebuilt-standard-bin",
+    "title": "Gridfinity Rebuilt: Standard Bin",
+    "description": "High-performance, mathematically accurate bins with multiple chambers.",
+    "author": "kennetek",
+    "url": "https://github.com/kennetek/gridfinity-rebuilt-openscad/blob/master/gridfinity-rebuilt-bins.scad",
+    "tags": ["gridfinity", "storage", "organizer"]
+  },
+  {
+    "id": "gridfinity-vase-bins",
+    "title": "Gridfinity Vase Bins",
+    "description": "Ultra-fast printing bins using vase mode geometry.",
+    "author": "ostat",
+    "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_vase_cup.scad",
+    "tags": ["gridfinity", "vase-mode", "storage"]
+  },
+  {
+    "id": "hsw-gridfinity-adapter",
+    "title": "HSW to Gridfinity Adapter",
+    "description": "Mount your Gridfinity bins to your Honeycomb Storage Wall.",
+    "author": "smkent",
+    "url": "https://github.com/smkent/honeycomb-openscad/blob/main/hsw-gridfinity-adapter.scad",
+    "tags": ["gridfinity", "honeycomb", "adapter"]
   }
 ]
