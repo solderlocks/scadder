@@ -107,29 +107,64 @@
   {
     "id": "gridfinity-cup",
     "title": "Gridfinity Basic Cup",
-    "description": "A standard, parametric bin for the Gridfinity organization system.",
-    "author": "vector76",
-    "url": "https://github.com/vector76/gridfinity_openscad/blob/master/gridfinity_basic_cup.scad",
-    "tags": [
-      "gridfinity",
-      "organizer",
-      "functional",
-      "box"
-    ],
+    "description": "The gold standard storage block. Features stacking lips, magnet holes, and scoop curves.",
+    "author": "ostat",
+    "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_basic_cup.scad",
+    "tags": ["gridfinity", "storage", "organizer", "functional"],
     "image": "assets/previews/gridfinity-cup.png"
   },
   {
     "id": "gridfinity-baseplate",
     "title": "Gridfinity Baseplate",
-    "description": "Parametric baseplate for the Gridfinity system.",
-    "author": "vector76",
-    "url": "https://github.com/vector76/gridfinity_openscad/blob/master/gridfinity_baseplate.scad",
-    "tags": [
-      "gridfinity",
-      "organizer",
-      "functional",
-      "base"
-    ],
+    "description": "Parametric baseplate for the Gridfinity system. Supports weighted and screw-down bases.",
+    "author": "ostat",
+    "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_baseplate.scad",
+    "tags": ["gridfinity", "base", "workshop"],
     "image": "assets/previews/gridfinity-baseplate.png"
+  },
+  {
+    "id": "rugged-box",
+    "title": "Parametric Rugged Box",
+    "description": "A waterproof, latching box with endless configuration options. No screws required.",
+    "author": "ok1hra",
+    "url": "https://github.com/ok1hra/Parameterizable-rugged-box-in-OpenScad/blob/master/rugged-box.scad",
+    "tags": ["box", "case", "waterproof", "mechanical"],
+    "image": "assets/previews/rugged-box.png"
+  },
+  {
+    "id": "honeycomb-wall",
+    "title": "Honeycomb Wall",
+    "description": "Generates a hexagonal storage wall pattern. Great test for the 'include' fetcher.",
+    "author": "smkent",
+    "url": "https://github.com/smkent/honeycomb-openscad/blob/main/example.scad",
+    "tags": ["storage", "wall", "honeycomb", "organizer"],
+    "image": "assets/previews/honeycomb-wall.png"
+  },
+  {
+    "id": "nuts-and-bolts",
+    "title": "Nuts & Bolts Demo",
+    "description": "ISO-standard metric fasteners. Demonstrates library inclusion.",
+    "author": "JohK",
+    "url": "https://github.com/JohK/nutsnbolts/blob/master/examples.scad",
+    "tags": ["hardware", "mechanical", "library", "parts"],
+    "image": "assets/previews/nuts-and-bolts.png"
+  },
+  {
+    "id": "fractal-tree",
+    "title": "Recursive Fractal Tree",
+    "description": "A beautiful math-based tree generator. Tests recursion limits.",
+    "author": "openscad",
+    "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/fractal01.scad",
+    "tags": ["art", "math", "nature", "recursive"],
+    "image": "assets/previews/fractal-tree.png"
+  },
+  {
+    "id": "voronoi-generator",
+    "title": "Voronoi Generator",
+    "description": "Generates organic cellular patterns. A classic stress test for 2D geometry.",
+    "author": "felipesanches",
+    "url": "https://github.com/felipesanches/OpenSCAD_Voronoi_Generator/blob/master/voronoi.scad",
+    "tags": ["art", "math", "pattern", "voronoi"],
+    "image": "assets/previews/voronoi-generator.png"
   }
 ]

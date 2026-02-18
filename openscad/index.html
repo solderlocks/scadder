@@ -300,7 +300,16 @@
   .chevron { color: var(--text-dim); font-size: 0.65rem; transition: transform 0.2s; }
   .chevron.open { transform: rotate(180deg); }
 
-  .section-body { display: none; padding: 1rem; }
+  .section-body { 
+    display: none; 
+    padding: 1rem; 
+    max-height: 60vh; 
+    overflow-y: auto;
+    
+    /* Smooth scrolling */
+    scrollbar-width: thin;
+    overscroll-behavior: contain; 
+  }
   .section-body.open { display: block; }
 
   /* Parameters */
@@ -1021,7 +1030,6 @@ function parseScadParams(code) {
 }
 
 // ── Build param UI ────────────────────────────────────────────────────────────
-// ── Build param UI ────────────────────────────────────────────────────────────
 function buildParamUI(groups) {
   const grid = document.getElementById('paramGrid');
   grid.innerHTML = '';
@@ -1051,7 +1059,7 @@ function buildParamUI(groups) {
       const lbl = document.createElement('label');
       lbl.className = 'param-label';
       // Show cleaner label for magic numbers
-      lbl.innerHTML = `${p.label} <span class="param-varname">${p.isMagic ? '' : p.name}</span>`;
+      lbl.innerHTML = `${p.label}`;
       item.appendChild(lbl);
 
       // ── RANGE SLIDER ──
@@ -1325,8 +1333,8 @@ var fetchedUrls = new Set();
 
 async function loadScadFromUrl(url) {
   const rawUrl = toRawUrl(url);
-  fetchedUrls.clear(); // Reset for new project
-  virtualFileSystem = []; // Clear old project files
+  fetchedUrls.clear();
+  virtualFileSystem = [];
 
   document.getElementById('landingState').style.display = 'none';
   document.getElementById('modelView').style.display = 'block';
@@ -1336,17 +1344,16 @@ async function loadScadFromUrl(url) {
   const filename = rawUrl.split('/').pop().replace(/\.scad$/i, '');
   document.getElementById('modelTitle').textContent = filename.replace(/[-_]/g, ' ');
 
+  // Show the overlay immediately
   document.getElementById('renderOverlay').classList.remove('hidden');
   document.getElementById('renderStatus').textContent = 'Crawling project dependencies…';
 
   try {
-    // Start the recursive crawl
     await crawlAndFetch(rawUrl, "main.scad");
     
     const mainFile = virtualFileSystem.find(f => f.name === "main.scad");
     if (!mainFile) throw new Error("Failed to load main file");
 
-    // UI Updates
     document.getElementById('sourceDisplay').innerHTML = mainFile.txt.split('\n')
       .map((l, i) => `<span class="src-ln">${String(i+1).padStart(3,' ')}</span>${esc(l)}`)
       .join('\n');
@@ -1354,10 +1361,23 @@ async function loadScadFromUrl(url) {
     loadGithubMeta(rawUrl);
     loadSidecars(rawUrl);
 
+    document.getElementById('renderStatus').textContent = 'Parsing parameters…';
+    
+    // YIELD 1: Let the UI update text
+    await new Promise(r => setTimeout(r, 50));
+
     const groups = parseScadParams(mainFile.txt);
     parsedParams = groups.flatMap(g => g.params);
     applyUrlState(); 
+    
+    // We revert to your synchronous UI builder (it's fine!)
     buildParamUI(groups);
+
+    // Before we start the heavy render, update text and wait 100ms.
+    // This guarantees the spinner is spinning on screen before the freeze happens.
+    document.getElementById('renderStatus').textContent = 'Compiling geometry (this may take a moment)…';
+    await new Promise(r => setTimeout(r, 100)); 
+    // ⬆️ ------------------------------------ ⬆️
 
     await window.runAndShowScad();
 
@@ -1368,29 +1388,39 @@ async function loadScadFromUrl(url) {
 }
 
 /**
- * Recursively finds and fetches 'include' and 'use' dependencies
+ * Recursively finds and fetches dependencies with a "Breath"
+ * Handles relative paths and indented includes correctly.
  */
-async function crawlAndFetch(url, vfsName) {
+async function crawlAndFetch(url, vfsPath) {
   if (fetchedUrls.has(url)) return;
   fetchedUrls.add(url);
 
+  // 1. Yield to browser (The Breath)
+  await new Promise(r => setTimeout(r, 10));
+
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Could not fetch ${vfsName}`);
+  if (!res.ok) throw new Error(`Could not fetch ${vfsPath}`);
   const text = await res.text();
 
-  // Save to our internal VFS
-  virtualFileSystem.push({ name: vfsName, txt: text });
+  virtualFileSystem.push({ name: vfsPath, txt: text });
 
-  // Regex to find: include <filename.scad> or use "filename.scad"
-  const importRegex = /^(?:include|use)\s*[<"]([^>"]+)[>"]/gm;
+  // 2. FIXED REGEX: Allow whitespace at start of line (^\s*)
+  const importRegex = /^\s*(?:include|use)\s*[<"]([^>"]+)[>"]/gm;
   let match;
   const promises = [];
 
   while ((match = importRegex.exec(text)) !== null) {
-    const depPath = match[1];
-    // Resolve the relative path against the current file's URL
-    const depUrl = new URL(depPath, url).href;
-    promises.push(crawlAndFetch(depUrl, depPath));
+    const relativeRef = match[1]; // e.g. "modules/constants.scad"
+
+    // Resolve URL (Network)
+    const depUrl = new URL(relativeRef, url).href;
+
+    // Resolve VFS Path (Disk) using fake root trick
+    const parentVirtualUrl = new URL(vfsPath, "http://root/");
+    const depVirtualUrl = new URL(relativeRef, parentVirtualUrl);
+    const depVfsPath = depVirtualUrl.pathname.substring(1); 
+
+    promises.push(crawlAndFetch(depUrl, depVfsPath));
   }
 
   await Promise.all(promises);
@@ -1487,7 +1517,7 @@ const app = {
   
   // State
   page: 1,
-  limit: 6,       // Items per page
+  limit: 12,       // Items per page
   view: 'grid',    // 'grid' or 'list'
   search: '',
 
@@ -1621,71 +1651,79 @@ if (!urlParam('file')) {
 
 <!-- OpenSCAD WASM -->
 <script type="module">
-  import OpenScad from "./openscad.js";
-  import { addFonts } from "./openscad.fonts.js";
-
   const consoleEl = document.getElementById("consoleOutput");
+  let worker = null;
 
   window.runAndShowScad = async function() {
-    const original = virtualFileSystem[0].txt;
+    const original = virtualFileSystem.find(f => f.name === 'main.scad')?.txt;
     if (!original) return;
 
+    // 1. Prepare the VFS with modified parameters
     const modified = buildModifiedScad(original);
+    
+    // Create a clean VFS copy for the worker
+    const workerVFS = virtualFileSystem.map(f => ({
+        name: f.name,
+        txt: (f.name === 'main.scad') ? modified : f.txt
+    }));
 
     document.getElementById('renderOverlay').classList.remove('hidden');
-    document.getElementById('renderStatus').textContent = 'Compiling…';
+    document.getElementById('renderStatus').textContent = 'Spinning up worker...';
     consoleEl.textContent = '';
 
-    try {
-      const inst = await OpenScad({
-        noInitialRun: true,
-        print:    t => { consoleEl.textContent += t + "\n"; },
-        printErr: t => { consoleEl.textContent += t + "\n"; },
-      });
+    // 2. Terminate old worker if it's still running (Cancel previous render!)
+    if (worker) worker.terminate();
 
-      addFonts(inst);
+    // 3. Start new worker
+    worker = new Worker('./scad-worker.js', { type: "module" });
 
-      // Write ALL files from our crawled VFS into the WASM memory
-      for (const f of virtualFileSystem) {
-        // If it's the main file, use the one with customizer overrides
-        const content = (f.name === "main.scad") ? modified : f.txt;
-        
-        // Ensure subdirectories exist in WASM memory if the path has slashes
-        if (f.name.includes('/')) {
-          const folders = f.name.split('/');
-          let currentPath = "/";
-          for (let i = 0; i < folders.length - 1; i++) {
-            currentPath += folders[i] + "/";
-            try { inst.FS.mkdir(currentPath); } catch(e) {} // Ignore if folder exists
-          }
+    // 4. Handle messages from the worker
+    worker.onmessage = function(e) {
+        const msg = e.data;
+
+        if (msg.type === 'log') {
+            consoleEl.textContent += msg.text + "\n";
+            // Optional: Auto-scroll console
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        } 
+        else if (msg.type === 'done') {
+            console.log("STL received from worker!");
+            const blob = new Blob([msg.stl], { type: 'application/octet-stream' });
+            
+            // We need to convert Blob to ArrayBuffer for the viewer if it expects it, 
+            // or just pass the text/buffer depending on what ShowMeThatStinkingStlFile expects.
+            // Let's assume ShowMeThatStinkingStlFile takes an ArrayBuffer or String.
+            
+            // Fix: The viewer likely expects an ArrayBuffer from the STLLoader
+            ShowMeThatStinkingStlFile(msg.stl.buffer); 
+            
+            document.getElementById('renderStatus').textContent = 'Render complete';
+        } 
+        else if (msg.type === 'error') {
+            console.error(msg.error);
+            document.getElementById('renderStatus').textContent = 'Worker Error';
+            consoleEl.textContent += "\nError: " + msg.error;
         }
-        
-        inst.FS.writeFile("/" + f.name, content);
-        console.log(`✅ VFS Loaded: ${f.name}`);
-      }
+    };
 
-      inst.callMain(["/main.scad", "-o", "out.stl"]);
-      const output = await new Blob([inst.FS.readFile("/out.stl")]).text();
-      console.log("STL output length:", output.length, "bytes");
-      await ShowMeThatStinkingStlFile(output);
+    worker.onerror = function(e) {
+        console.error("Worker Error:", e);
+        document.getElementById('renderStatus').textContent = 'Worker Crashed';
+    };
 
-    } catch(e) {
-      console.error(e);
-      document.getElementById('renderStatus').textContent = 'Render error — check console';
-      consoleEl.textContent += "\nError: " + e;
-    }
+    // 5. Send the job
+    document.getElementById('renderStatus').textContent = 'Compiling geometry...';
+    worker.postMessage({ command: 'render', vfs: workerVFS });
   };
 
-  // Auto-load from URL param on boot
-  const fileParam = urlParam('file');
-  if (fileParam) {
-    const url = decodeURIComponent(fileParam);
+  // Auto-load on boot
+  if (urlParam('file')) {
+    const url = decodeURIComponent(urlParam('file'));
     document.getElementById('urlInput').value = url;
     loadScadFromUrl(url);
   } else {
     document.getElementById('renderOverlay').classList.add('hidden');
   }
-  
 </script>
 
 </body>
