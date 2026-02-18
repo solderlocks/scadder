@@ -110,7 +110,12 @@
     "description": "The gold standard storage block. Features stacking lips, magnet holes, and scoop curves.",
     "author": "ostat",
     "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_basic_cup.scad",
-    "tags": ["gridfinity", "storage", "organizer", "functional"],
+    "tags": [
+      "gridfinity",
+      "storage",
+      "organizer",
+      "functional"
+    ],
     "image": "assets/previews/gridfinity-cup.png"
   },
   {
@@ -119,7 +124,11 @@
     "description": "Parametric baseplate for the Gridfinity system. Supports weighted and screw-down bases.",
     "author": "ostat",
     "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_baseplate.scad",
-    "tags": ["gridfinity", "base", "workshop"],
+    "tags": [
+      "gridfinity",
+      "base",
+      "workshop"
+    ],
     "image": "assets/previews/gridfinity-baseplate.png"
   },
   {
@@ -128,7 +137,12 @@
     "description": "A waterproof, latching box with endless configuration options. No screws required.",
     "author": "ok1hra",
     "url": "https://github.com/ok1hra/Parameterizable-rugged-box-in-OpenScad/blob/master/rugged-box.scad",
-    "tags": ["box", "case", "waterproof", "mechanical"],
+    "tags": [
+      "box",
+      "case",
+      "waterproof",
+      "mechanical"
+    ],
     "image": "assets/previews/rugged-box.png"
   },
   {
@@ -137,7 +151,12 @@
     "description": "Generates a hexagonal storage wall pattern. Great test for the 'include' fetcher.",
     "author": "smkent",
     "url": "https://github.com/smkent/honeycomb-openscad/blob/main/example.scad",
-    "tags": ["storage", "wall", "honeycomb", "organizer"],
+    "tags": [
+      "storage",
+      "wall",
+      "honeycomb",
+      "organizer"
+    ],
     "image": "assets/previews/honeycomb-wall.png"
   },
   {
@@ -146,7 +165,12 @@
     "description": "ISO-standard metric fasteners. Demonstrates library inclusion.",
     "author": "JohK",
     "url": "https://github.com/JohK/nutsnbolts/blob/master/examples.scad",
-    "tags": ["hardware", "mechanical", "library", "parts"],
+    "tags": [
+      "hardware",
+      "mechanical",
+      "library",
+      "parts"
+    ],
     "image": "assets/previews/nuts-and-bolts.png"
   },
   {
@@ -155,7 +179,12 @@
     "description": "A beautiful math-based tree generator. Tests recursion limits.",
     "author": "openscad",
     "url": "https://github.com/openscad/openscad/blob/master/examples/Advanced/fractal01.scad",
-    "tags": ["art", "math", "nature", "recursive"],
+    "tags": [
+      "art",
+      "math",
+      "nature",
+      "recursive"
+    ],
     "image": "assets/previews/fractal-tree.png"
   },
   {
@@ -164,7 +193,12 @@
     "description": "Generates organic cellular patterns. A classic stress test for 2D geometry.",
     "author": "felipesanches",
     "url": "https://github.com/felipesanches/OpenSCAD_Voronoi_Generator/blob/master/voronoi.scad",
-    "tags": ["art", "math", "pattern", "voronoi"],
+    "tags": [
+      "art",
+      "math",
+      "pattern",
+      "voronoi"
+    ],
     "image": "assets/previews/voronoi-generator.png"
   }
 ]
