@@ -241,15 +241,51 @@
 
   .render-overlay.hidden { opacity: 0; pointer-events: none; }
 
-  .spinner {
-    width: 36px; height: 36px;
-    border: 2px solid var(--border);
-    border-top-color: var(--amber);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+/* Progress Bar Container */
+  .progress-container {
+    width: 240px;
+    height: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 0.75rem;
   }
 
-  @keyframes spin { to { transform: rotate(360deg); } }
+  /* The Moving Bar */
+  .progress-bar {
+    height: 100%;
+    background: var(--amber);
+    width: 0%;
+    transition: width 0.3s ease-out;
+    
+    /* Industrial Stripes */
+    background-image: linear-gradient(
+      45deg, 
+      rgba(0,0,0,0.15) 25%, 
+      transparent 25%, 
+      transparent 50%, 
+      rgba(0,0,0,0.15) 50%, 
+      rgba(0,0,0,0.15) 75%, 
+      transparent 75%, 
+      transparent
+    );
+    background-size: 1rem 1rem;
+    animation: stripes 1s linear infinite;
+  }
+
+  @keyframes stripes {
+    from { background-position: 1rem 0; }
+    to { background-position: 0 0; }
+  }
+
+  /* The "Long Haul" Animation */
+  /* Used when we enter the heavy render phase */
+  .progress-bar.creeping {
+    transition: width 60s cubic-bezier(0, 0, 0.2, 1);
+    width: 95% !important;
+  }
 
   .render-overlay p {
     color: var(--text-mid);
@@ -806,8 +842,10 @@
       </div>
       <div id="canvas-container"></div>
       <div class="render-overlay" id="renderOverlay">
-        <div class="spinner"></div>
-        <p id="renderStatus">Initializing…</p>
+        <div class="progress-container">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <p id="renderStatus">Initializing system…</p>
       </div>
     </div>
 
@@ -920,6 +958,20 @@ function toBlobUrl(rawUrl) {
       return `https://github.com/${m[1]}/blob/${m[2]}/${m[3]}`;
   }
   return rawUrl;
+}
+
+// ⬇️ MOVE THIS FUNCTION HERE ⬇️
+function setProgress(percent, isCreeping = false) {
+  const bar = document.getElementById('progressBar');
+  if (!bar) return; // Safety check
+  
+  if (isCreeping) {
+      bar.classList.add('creeping');
+      bar.offsetHeight; // Force reflow
+  } else {
+      bar.classList.remove('creeping');
+      bar.style.width = percent + '%';
+  }
 }
 
 // ── OpenSCAD Customizer parameter parser ──────────────────────────────────────
@@ -1346,6 +1398,7 @@ async function loadScadFromUrl(url) {
 
   // Show the overlay immediately
   document.getElementById('renderOverlay').classList.remove('hidden');
+  setProgress(10);
   document.getElementById('renderStatus').textContent = 'Crawling project dependencies…';
 
   try {
@@ -1372,9 +1425,10 @@ async function loadScadFromUrl(url) {
     
     // We revert to your synchronous UI builder (it's fine!)
     buildParamUI(groups);
-
+    
     // Before we start the heavy render, update text and wait 100ms.
     // This guarantees the spinner is spinning on screen before the freeze happens.
+    setProgress(15);
     document.getElementById('renderStatus').textContent = 'Compiling geometry (this may take a moment)…';
     await new Promise(r => setTimeout(r, 100)); 
     // ⬆️ ------------------------------------ ⬆️
@@ -1667,8 +1721,10 @@ if (!urlParam('file')) {
         txt: (f.name === 'main.scad') ? modified : f.txt
     }));
 
-    document.getElementById('renderOverlay').classList.remove('hidden');
+   document.getElementById('renderOverlay').classList.remove('hidden');
+    setProgress(5); // Start at 5%
     document.getElementById('renderStatus').textContent = 'Spinning up worker...';
+
     consoleEl.textContent = '';
 
     // 2. Terminate old worker if it's still running (Cancel previous render!)
@@ -1682,27 +1738,34 @@ if (!urlParam('file')) {
         const msg = e.data;
 
         if (msg.type === 'log') {
+            // Update status text
+            // Don't show every single file write, just the phase
+            if (msg.text.includes('Writing')) {
+                document.getElementById('renderStatus').textContent = 'Patching dependencies...';
+                setProgress(20);
+            } else if (msg.text.includes('Starting Main Render')) {
+                document.getElementById('renderStatus').textContent = 'Calculating geometry...';
+                // TRIGGER THE CREEP: Move to 95% over 60 seconds
+                setProgress(95, true);
+            }
+            
             consoleEl.textContent += msg.text + "\n";
-            // Optional: Auto-scroll console
             consoleEl.scrollTop = consoleEl.scrollHeight;
         } 
         else if (msg.type === 'done') {
-            console.log("STL received from worker!");
-            const blob = new Blob([msg.stl], { type: 'application/octet-stream' });
+            console.log("STL received!");
+            // Snap to 100% instantly
+            setProgress(100);
+            document.getElementById('renderStatus').textContent = 'Finalizing mesh...';
             
-            // We need to convert Blob to ArrayBuffer for the viewer if it expects it, 
-            // or just pass the text/buffer depending on what ShowMeThatStinkingStlFile expects.
-            // Let's assume ShowMeThatStinkingStlFile takes an ArrayBuffer or String.
-            
-            // Fix: The viewer likely expects an ArrayBuffer from the STLLoader
-            ShowMeThatStinkingStlFile(msg.stl.buffer); 
-            
-            document.getElementById('renderStatus').textContent = 'Render complete';
+            // Give the bar a moment to hit 100% before hiding
+            setTimeout(() => {
+                ShowMeThatStinkingStlFile(msg.stl.buffer);
+            }, 200);
         } 
         else if (msg.type === 'error') {
-            console.error(msg.error);
-            document.getElementById('renderStatus').textContent = 'Worker Error';
-            consoleEl.textContent += "\nError: " + msg.error;
+            // ... error handling ...
+            document.getElementById('progressBar').style.background = '#ff4444'; // Red bar on error
         }
     };
 

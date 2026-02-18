@@ -14,13 +14,50 @@ self.onmessage = async (e) => {
         printErr: text => self.postMessage({ type: 'log', text }),
       });
 
-      // 2. STUB FONTS
+      // ---------------------------------------------------------
+      // 2. LOAD REAL FONTS
+      // We fetch the standard Liberation Sans font so text() works.
+      // ---------------------------------------------------------
       try {
-        if (!instance.FS.analyzePath('/fonts').exists) instance.FS.mkdir('/fonts');
-        instance.FS.writeFile('/fonts/LiberationSans-Regular.ttf', new Uint8Array(0));
-        const fontConf = `<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig><dir>/fonts</dir><cachedir>/fonts/cache</cachedir></fontconfig>`;
-        instance.FS.writeFile('/fonts/fonts.conf', fontConf);
-      } catch(e) {}
+        const fontPath = '/fonts/LiberationSans-Regular.ttf';
+        
+        // Only fetch if not already in memory
+        if (!instance.FS.analyzePath(fontPath).exists) {
+            self.postMessage({ type: 'log', text: '   🔤 Loading fonts...' });
+            
+            // Create directory
+            if (!instance.FS.analyzePath('/fonts').exists) instance.FS.mkdir('/fonts');
+
+            // FETCH THE FONT
+            // We try to fetch from your local 'fonts' folder first.
+            // If that fails, you might need to adjust this URL.
+            // (Assuming you have a 'fonts' folder next to index.html)
+            let response = await fetch('fonts/LiberationSans-Regular.ttf');
+            
+            // FALLBACK: If local fetch fails, try a CDN (High reliability)
+            if (!response.ok) {
+                self.postMessage({ type: 'log', text: '   ⚠️ Local font missing, trying CDN...' });
+                response = await fetch('https://raw.githubusercontent.com/openscad/openscad/master/fonts/Liberation-2.00.1/ttf/LiberationSans-Regular.ttf');
+            }
+
+            if (response.ok) {
+                const fontData = await response.arrayBuffer();
+                instance.FS.writeFile(fontPath, new Uint8Array(fontData));
+                
+                // Write the config file so OpenSCAD knows where to look
+                const fontConf = `<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig><dir>/fonts</dir><cachedir>/fonts/cache</cachedir></fontconfig>`;
+                instance.FS.writeFile('/fonts/fonts.conf', fontConf);
+                
+                self.postMessage({ type: 'log', text: '   ✅ Font loaded.' });
+            } else {
+                throw new Error("Could not fetch LiberationSans-Regular.ttf");
+            }
+        }
+      } catch(e) {
+        self.postMessage({ type: 'log', text: '⚠️ Font load warning: ' + e.message });
+        // We don't throw here, so the render can still proceed (just without text)
+      }
+      // ---------------------------------------------------------
 
       self.postMessage({ type: 'log', text: `3. Writing files (with Echo Patch)...` });
 
@@ -38,26 +75,16 @@ self.onmessage = async (e) => {
 
       for (const f of vfs) {
         const fullPath = f.name.startsWith('/') ? f.name : '/' + f.name;
-        
         let content = f.txt;
         
-        // ---------------------------------------------------------
-        // 🩹 THE FIX: The "Echo Patch"
-        // We don't delete the line (breaks syntax).
-        // We don't replace the logic (breaks parsing).
-        // We simply turn the crashy 'assert' into a harmless 'echo'.
-        // This preserves the code structure perfectly.
-        // ---------------------------------------------------------
+        // The Echo Patch (Keeps Gridfinity alive)
         if (content.includes('version()') && content.includes('assert')) {
-             // Look for 'assert(' followed eventually by 'version('
-             // Replace 'assert(' with 'echo("PATCHED",'
              content = content.replace(
                 /assert\s*\(\s*(?=.*version\()/g, 
                 'echo("PATCHED_ASSERT", '
              );
              self.postMessage({ type: 'log', text: `   🩹 Converted assert to echo in: ${fullPath}` });
         }
-        // ---------------------------------------------------------
 
         const dir = fullPath.substring(0, fullPath.lastIndexOf('/'));
         if (dir) mkdir_p(dir);
