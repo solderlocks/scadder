@@ -165,7 +165,11 @@
     "description": "The 'Yet Another Parametric Projectbox' generator. A comprehensive system for creating electronics enclosures.",
     "author": "mrWheel",
     "url": "https://github.com/mrWheel/YAPP_Box/blob/main/YAPP_Template_v3.scad",
-    "tags": ["electronics", "enclosure", "project-box"],
+    "tags": [
+      "electronics",
+      "enclosure",
+      "project-box"
+    ],
     "image": "assets/previews/yapp-box.png",
     "units": "mm"
   },
@@ -175,7 +179,12 @@
     "description": "A massive library for generating mechanical keyboard keycaps (Cherry MX, Alps, etc.) with support for various profiles like SA, DSA, and OEM.",
     "author": "rsheldiii",
     "url": "https://github.com/rsheldiii/KeyV2/blob/master/src/key.scad",
-    "tags": ["mechanical-keyboard", "gaming", "customizable", "parts"],
+    "tags": [
+      "mechanical-keyboard",
+      "gaming",
+      "customizable",
+      "parts"
+    ],
     "image": "assets/previews/key-v2.png",
     "units": "mm"
   },
@@ -185,7 +194,11 @@
     "description": "Optimized containers designed for 'Spiral Vase' printing mode. Zero-seam boxes with customizable polygon shapes.",
     "author": "DrLex0",
     "url": "https://github.com/DrLex0/print3d-customizable-vase-mode-box/blob/master/Vase_mode_box.scad",
-    "tags": ["vase-mode", "container", "storage"],
+    "tags": [
+      "vase-mode",
+      "container",
+      "storage"
+    ],
     "image": "assets/previews/vase-mode-box.png",
     "units": "mm"
   },
@@ -195,7 +208,12 @@
     "description": "Generates grippy caps and knobs for bolts or potentiometers. Features customizable knurling patterns and bolt head traps.",
     "author": "muesli",
     "url": "https://github.com/muesli/cap-generator/blob/master/cap.scad",
-    "tags": ["hardware", "knob", "tools", "utility"],
+    "tags": [
+      "hardware",
+      "knob",
+      "tools",
+      "utility"
+    ],
     "image": "assets/previews/knurled-cap.png",
     "units": "mm"
   },
@@ -205,7 +223,13 @@
     "description": "The classic parametric fastener generator. Create nuts, bolts, washers, and threaded rods. Renders a standard M8 nut by default.",
     "author": "xunker (orig. aubenc)",
     "url": "https://github.com/xunker/random_scad/blob/master/Nut_Job.scad",
-    "tags": ["hardware", "fastener", "bolt", "nut", "threaded"],
+    "tags": [
+      "hardware",
+      "fastener",
+      "bolt",
+      "nut",
+      "threaded"
+    ],
     "image": "assets/previews/nut-job.png",
     "units": "mm"
   },
@@ -215,7 +239,12 @@
     "description": "Conical adapter",
     "author": "xunker (orig. aubenc)",
     "url": "https://raw.githubusercontent.com/xunker/random_scad/refs/heads/master/3_5_drive_stacker/3_5_drive_stacker.scad",
-    "tags": ["harddrive", "adapter", "stacker", "rack"],
+    "tags": [
+      "harddrive",
+      "adapter",
+      "stacker",
+      "rack"
+    ],
     "image": "assets/previews/harddrive-stacker.png",
     "units": "mm"
   },
@@ -225,7 +254,12 @@
     "description": "Bracket for holding drills on a wall",
     "author": "xunker (orig. aubenc)",
     "url": "https://raw.githubusercontent.com/xunker/random_scad/refs/heads/master/drill_mount.scad",
-    "tags": ["drill", "adapter", "mount", "bracket"],
+    "tags": [
+      "drill",
+      "adapter",
+      "mount",
+      "bracket"
+    ],
     "image": "assets/previews/drill-mount.png",
     "units": "mm"
   },
@@ -235,7 +269,11 @@
     "description": "Conical adapter",
     "author": "xunker (orig. aubenc)",
     "url": "https://raw.githubusercontent.com/xunker/random_scad/refs/heads/master/adapter.scad",
-    "tags": ["hardware", "ducting", "adapter"],
+    "tags": [
+      "hardware",
+      "ducting",
+      "adapter"
+    ],
     "image": "assets/previews/duct-adapter.png",
     "units": "mm"
   }
