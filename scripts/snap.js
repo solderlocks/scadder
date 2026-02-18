@@ -60,8 +60,8 @@ const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
     
     try {
         await page.goto(url, { waitUntil: 'networkidle0' });
-        await page.waitForSelector('#canvas-container canvas', { timeout: 20000 });
-        await page.waitForSelector('#renderOverlay.hidden', { timeout: 60000 });
+        await page.waitForSelector('#canvas-container canvas', { timeout: 60000 });
+        await page.waitForSelector('#renderOverlay.hidden', { timeout: 120000 });
         await new Promise(r => setTimeout(r, 1000));
 
         await page.evaluate(() => {
