@@ -60,10 +60,21 @@ const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
     
     try {
         await page.goto(url, { waitUntil: 'networkidle2' });
-          await page.waitForSelector('#canvas-container canvas', { timeout: 60000 });
-        // Wait for the worker to start and the overlay to eventually hide
-        // We keep the 120s timeout for the "Rugged Box" cases
+        
+        // Wait for the overlay to hide
         await page.waitForSelector('#renderOverlay.hidden', { timeout: 120000 });
+
+        // 🛑 CHECK FOR ERRORS BEFORE SAVING
+        // We check if the 'renderStatus' element contains the word "Error"
+        const hasError = await page.evaluate(() => {
+            const status = document.getElementById('renderStatus').textContent;
+            return status.toLowerCase().includes('error') || status.toLowerCase().includes('failed');
+        });
+
+        if (hasError) {
+            console.error(`⚠️ Skipping screenshot for ${item.title} due to render error.`);
+            continue; // Don't save the image, don't update library.json
+        }
         
         // Give Three.js an extra second to actually paint the geometry
         await new Promise(r => setTimeout(r, 2000));

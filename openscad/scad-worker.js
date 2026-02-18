@@ -98,17 +98,7 @@ self.onmessage = async (e) => {
 
       self.postMessage({ type: 'log', text: `4. Starting Main Render...` });
 
-      // Run
       instance.callMain(["/main.scad", "-o", "out.stl"]);
-
-      // Check if file exists before reading
-      if (instance.FS.analyzePath("/out.stl").exists) {
-          const output = instance.FS.readFile("/out.stl");
-          self.postMessage({ type: 'done', stl: output }, [output.buffer]);
-      } else {
-          // It's likely a 2D object or empty scene
-          throw new Error("No 3D geometry generated. This model may be 2D-only.");
-      }
       
       const output = instance.FS.readFile("/out.stl");
       self.postMessage({ type: 'done', stl: output }, [output.buffer]);

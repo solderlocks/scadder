@@ -1712,81 +1712,56 @@ if (!urlParam('file')) {
     const mainFile = virtualFileSystem.find(f => f.name === 'main.scad');
     if (!mainFile) return;
 
-    let modified = buildModifiedScad(mainFile.txt);
+    // 1. Get the modified code from the UI params
+    const modifiedCode = buildModifiedScad(mainFile.txt);
     
-    // 🪄 VORONOI/2D FIX: If the code looks like 2D, wrap it so it becomes an STL
-    if (modified.includes('polygon') || modified.includes('projection') || !modified.includes('module')) {
-        modified = `linear_extrude(height=0.1) { ${modified} }`;
-    }
-    // Create a clean VFS copy for the worker
+    // 2. Build a clean VFS for the worker
     const workerVFS = virtualFileSystem.map(f => ({
         name: f.name,
-        txt: (f.name === 'main.scad') ? modified : f.txt
+        txt: (f.name === 'main.scad') ? modifiedCode : f.txt
     }));
 
-   document.getElementById('renderOverlay').classList.remove('hidden');
-    setProgress(5); // Start at 5%
-    document.getElementById('renderStatus').textContent = 'Spinning up worker...';
-
+    // 3. Reset UI state
+    document.getElementById('renderOverlay').classList.remove('hidden');
+    setProgress(5); 
+    document.getElementById('renderStatus').textContent = 'Initializing engine...';
     consoleEl.textContent = '';
 
-    // 2. Terminate old worker if it's still running (Cancel previous render!)
+    // 4. Lifecycle Management
     if (worker) worker.terminate();
-
-    // 3. Start new worker
     worker = new Worker('./scad-worker.js', { type: "module" });
 
-    // 4. Handle messages from the worker
     worker.onmessage = function(e) {
-        const msg = e.data;
-
-        if (msg.type === 'log') {
-            // Update status text
-            // Don't show every single file write, just the phase
-            if (msg.text.includes('Writing')) {
-                document.getElementById('renderStatus').textContent = 'Patching dependencies...';
-                setProgress(20);
-            } else if (msg.text.includes('Starting Main Render')) {
-                document.getElementById('renderStatus').textContent = 'Calculating geometry...';
-                // TRIGGER THE CREEP: Move to 95% over 60 seconds
-                setProgress(95, true);
-            }
-            
-            consoleEl.textContent += msg.text + "\n";
-            consoleEl.scrollTop = consoleEl.scrollHeight;
-        } 
-        else if (msg.type === 'done') {
-            console.log("STL received!");
-            // Snap to 100% instantly
-            setProgress(100);
-            document.getElementById('renderStatus').textContent = 'Finalizing mesh...';
-            
-            // Give the bar a moment to hit 100% before hiding
-            setTimeout(() => {
-                ShowMeThatStinkingStlFile(msg.stl.buffer);
-            }, 200);
-        } 
-        else if (msg.type === 'error') {
-            console.error("Worker Error:", msg.error);
-            document.getElementById('renderStatus').textContent = 'Error: ' + msg.error;
-            
-            // 🔥 THE SAFETY VALVE: Hide the overlay even on failure 
-            // so the screenshot bot doesn't hang forever.
-            setTimeout(() => {
-                document.getElementById('renderOverlay').classList.add('hidden');
-            }, 1000);
+      const msg = e.data;
+      if (msg.type === 'log') {
+        if (msg.text.includes('Writing')) {
+            document.getElementById('renderStatus').textContent = 'Preparing files...';
+            setProgress(20);
+        } else if (msg.text.includes('Starting Main Render')) {
+            document.getElementById('renderStatus').textContent = 'Calculating geometry...';
+            setProgress(95, true); // Trigger the slow creep
         }
+        consoleEl.textContent += msg.text + "\n";
+        consoleEl.scrollTop = consoleEl.scrollHeight;
+      } 
+      else if (msg.type === 'done') {
+        setProgress(100);
+        document.getElementById('renderStatus').textContent = 'Complete';
+        setTimeout(() => {
+          ShowMeThatStinkingStlFile(msg.stl.buffer);
+        }, 100);
+      } 
+      else if (msg.type === 'error') {
+        console.error("Worker Error:", msg.error);
+        document.getElementById('renderStatus').textContent = 'Error: ' + msg.error;
+        document.getElementById('progressBar').style.background = '#ff4444';
+        // Safety: Hide overlay so UI doesn't lock up
+        setTimeout(() => { document.getElementById('renderOverlay').classList.add('hidden'); }, 2000);
+      }
     };
 
-    worker.onerror = function(e) {
-        console.error("Worker Error:", e);
-        document.getElementById('renderStatus').textContent = 'Worker Crashed';
-    };
-
-    // 5. Send the job
-    document.getElementById('renderStatus').textContent = 'Compiling geometry...';
     worker.postMessage({ command: 'render', vfs: workerVFS });
-  };
+  };  
 
   // Auto-load on boot
   if (urlParam('file')) {
