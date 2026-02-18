@@ -59,13 +59,12 @@ const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
     const url = `${BASE_URL}?file=${encodeURIComponent(item.url)}`;
     
     try {
-        await page.goto(url, { waitUntil: 'networkidle2' });
+        // Increase navigation timeout for slow initial fetches
+        await page.goto(url, { waitUntil: 'networkidle2', timeout: 60000 });
         
-        // Wait for the overlay to hide
-        await page.waitForSelector('#renderOverlay.hidden', { timeout: 120000 });
+        // Give the Rugged Box 3 full minutes to crunch the geometry
+        await page.waitForSelector('#renderOverlay.hidden', { timeout: 180000 });
 
-        // 🛑 CHECK FOR ERRORS BEFORE SAVING
-        // We check if the 'renderStatus' element contains the word "Error"
         const hasError = await page.evaluate(() => {
             const status = document.getElementById('renderStatus').textContent;
             return status.toLowerCase().includes('error') || status.toLowerCase().includes('failed');
@@ -73,11 +72,11 @@ const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
 
         if (hasError) {
             console.error(`⚠️ Skipping screenshot for ${item.title} due to render error.`);
-            continue; // Don't save the image, don't update library.json
+            continue; 
         }
         
-        // Give Three.js an extra second to actually paint the geometry
-        await new Promise(r => setTimeout(r, 2000));
+        // A slightly longer settle time for the renderer to swap buffers
+        await new Promise(r => setTimeout(r, 3000));
 
         await page.evaluate(() => {
             const header = document.querySelector('header');

@@ -344,7 +344,6 @@
     
     /* Smooth scrolling */
     scrollbar-width: thin;
-    overscroll-behavior: contain; 
   }
   .section-body.open { display: block; }
 
@@ -989,8 +988,21 @@ function parseScadParams(code) {
   const lines = code.split('\n');
 
   // Helper for safe evaluation
+  // const evaluate = (str) => {
+  //   try { return Function(`"use strict"; return (${str})`)(); } catch(e) { return null; }
+  // };
   const evaluate = (str) => {
-    try { return Function(`"use strict"; return (${str})`)(); } catch(e) { return null; }
+    try { 
+        let result = Function(`"use strict"; return (${str})`)(); 
+        
+        // 🩹 THE FIX: If it's an array of two numbers where the 
+        // second is 0, just return the first number.
+        if (Array.isArray(result) && result.length === 2 && typeof result[0] === 'number') {
+            return result[0];
+        }
+        
+        return result;
+    } catch(e) { return null; }
   };
 
   for (let i = 0; i < lines.length; i++) {
@@ -1230,27 +1242,30 @@ function updateUrlState() {
 }
 
 function applyUrlState() {
-  // FIX: Use URLSearchParams. It automatically turns "Line+36" back into "Line 36"
   const params = new URLSearchParams(window.location.search);
   const varsParam = params.get('vars'); 
-
   if (!varsParam) return;
 
   try {
     const state = JSON.parse(varsParam);
-    console.log("Applying URL State:", state);
+
+    // 🩹 THE FIX: Create a helper that uses your evaluate logic
+    const cleanValue = (val) => {
+        if (typeof val !== 'string') return val;
+        // Use the same logic as your parser's evaluate helper
+        try {
+            const result = Function(`"use strict"; return (${val})`)();
+            if (Array.isArray(result) && result.length === 2) return result[0];
+            return result;
+        } catch(e) { 
+            return parseFloat(val); 
+        }
+    };
 
     for (const p of parsedParams) {
       if (state.hasOwnProperty(p.name)) {
-        console.log(`Overriding ${p.name}: ${p.value} -> ${state[p.name]}`);
-        
-        if (p.type === 'number' || p.type === 'range') {
-             p.value = parseFloat(state[p.name]);
-        } else if (p.type === 'boolean') {
-             p.value = (state[p.name] === true || state[p.name] === "true");
-        } else {
-             p.value = state[p.name];
-        }
+        // Use the helper instead of raw parseFloat
+        p.value = cleanValue(state[p.name]);
       }
     }
   } catch (e) {
@@ -1721,9 +1736,17 @@ if (!urlParam('file')) {
         txt: (f.name === 'main.scad') ? modifiedCode : f.txt
     }));
 
-    // 3. Reset UI state
+    //3. reset UI state
+    const bar = document.getElementById('progressBar');
+    bar.classList.remove('creeping'); // Stop the slow animation
+    bar.style.transition = 'none';    // Kill transitions temporarily
+    bar.style.width = '0%';           // Snap back to start
+    bar.offsetHeight;                 // Trigger reflow to apply the snap
+    bar.style.transition = '';        // Re-enable transitions
+    
     document.getElementById('renderOverlay').classList.remove('hidden');
-    setProgress(5); 
+    setProgress(5); // Start the new run
+
     document.getElementById('renderStatus').textContent = 'Initializing engine...';
     consoleEl.textContent = '';
 
