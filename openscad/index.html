@@ -1463,41 +1463,63 @@ async function loadScadFromUrl(url) {
 }
 
 /**
- * Recursively finds and fetches dependencies with a "Breath"
- * Handles relative paths and indented includes correctly.
+ * Recursively crawls GitHub for .scad dependencies and maps them
+ * into a structured Virtual File System (VFS).
  */
 async function crawlAndFetch(url, vfsPath) {
+  // 1. Prevent infinite loops (Circular Dependencies)
   if (fetchedUrls.has(url)) return;
   fetchedUrls.add(url);
 
-  // 1. Yield to browser (The Breath)
+  console.log(`📂 Crawling: ${vfsPath} <== ${url}`);
+
+  // Give the UI a tiny "breath" to prevent the browser from locking up
   await new Promise(r => setTimeout(r, 10));
 
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`Could not fetch ${vfsPath}`);
+  if (!res.ok) {
+    // 🔥 Show this in the UI console
+    const errText = `❌ Failed to fetch dependency: ${vfsPath} (${res.status})`;
+    document.getElementById('consoleOutput').textContent += errText + "\n";
+    console.error(errText);
+    return; 
+  }
+  
   const text = await res.text();
 
+  // 2. Store in VFS with its relative directory path
   virtualFileSystem.push({ name: vfsPath, txt: text });
 
-  // 2. FIXED REGEX: Allow whitespace at start of line (^\s*)
+  // 3. Scan for 'include <...>' and 'use <...>'
+  // This regex handles indented lines and both <bracket> and "quote" styles
   const importRegex = /^\s*(?:include|use)\s*[<"]([^>"]+)[>"]/gm;
   let match;
   const promises = [];
 
   while ((match = importRegex.exec(text)) !== null) {
-    const relativeRef = match[1]; // e.g. "modules/constants.scad"
+    const relativeRef = match[1];
 
-    // Resolve URL (Network)
+    // SKIP: Ignore non-scad files (like .stl or .png) if they are included
+    if (relativeRef.toLowerCase().endsWith('.stl')) continue;
+
+    // A. Resolve Network URL (Where to get it on GitHub)
+    // new URL(relative, base) handles '../' perfectly for network paths
     const depUrl = new URL(relativeRef, url).href;
 
-    // Resolve VFS Path (Disk) using fake root trick
+    // B. Resolve VFS Path (Where to put it in the Worker's memory)
+    // We use a dummy "http://root/" to let the URL API do the heavy lifting
+    // of resolving '../' in strings without writing complex regex.
     const parentVirtualUrl = new URL(vfsPath, "http://root/");
     const depVirtualUrl = new URL(relativeRef, parentVirtualUrl);
+    
+    // The pathname will be something like "/libraries/bolt.scad"
+    // We strip the leading slash for the VFS.
     const depVfsPath = depVirtualUrl.pathname.substring(1); 
 
     promises.push(crawlAndFetch(depUrl, depVfsPath));
   }
 
+  // Fetch all dependencies in parallel
   await Promise.all(promises);
 }
 
@@ -1782,7 +1804,7 @@ if (!urlParam('file')) {
       } 
       else if (msg.type === 'error') {
         console.error("Worker Error:", msg.error);
-        document.getElementById('renderStatus').textContent = 'Error: ' + msg.error;
+        document.getElementById('renderStatus').textContent = '' + msg.error;
         document.getElementById('progressBar').style.background = '#ff4444';
         // Safety: Hide overlay so UI doesn't lock up
         setTimeout(() => { document.getElementById('renderOverlay').classList.add('hidden'); }, 2000);

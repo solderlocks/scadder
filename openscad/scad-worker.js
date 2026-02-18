@@ -49,6 +49,43 @@ self.onmessage = async (e) => {
                 instance.FS.writeFile('/fonts/fonts.conf', fontConf);
                 
                 self.postMessage({ type: 'log', text: '   ✅ Font loaded.' });
+                self.postMessage({ type: 'log', text: `3. Writing files (with Echo Patch)...` });
+
+                // 🔍 DEBUG: Log the inventory
+                const fileList = vfs.map(f => f.name).join(', ');
+                self.postMessage({ type: 'log', text: `   📂 VFS Payload (${vfs.length} files): ${fileList}` });
+
+                const mkdir_p = (path) => {
+                  const parts = path.split('/').filter(p => p.length > 0);
+                  let current = "";
+                  for (const part of parts) {
+                      current += "/" + part;
+                      const analysis = instance.FS.analyzePath(current);
+                      if (!analysis.exists) {
+                          try { 
+                              instance.FS.mkdir(current); 
+                              // Log directory creation to confirm structure
+                              // self.postMessage({ type: 'log', text: `   📁 Created dir: ${current}` });
+                          } catch(e) { if (e.code !== 'EEXIST') throw e; }
+                      }
+                  }
+                };
+
+                for (const f of vfs) {
+                  const fullPath = f.name.startsWith('/') ? f.name : '/' + f.name;
+                  let content = f.txt;
+        
+        
+
+                  const dir = fullPath.substring(0, fullPath.lastIndexOf('/'));
+                  if (dir) mkdir_p(dir);
+
+                  try {
+                      instance.FS.writeFile(fullPath, content);
+                  } catch (err) {
+                      throw new Error(`Failed to write ${fullPath}: ${err.message}`);
+                  }
+                }
             } else {
                 throw new Error("Could not fetch LiberationSans-Regular.ttf");
             }
@@ -86,6 +123,16 @@ self.onmessage = async (e) => {
              self.postMessage({ type: 'log', text: `   🩹 Converted assert to echo in: ${fullPath}` });
         }
 
+        // 🩹 PATCH 2: Convert 'assign()' to standard variable blocks
+        // This is a naive regex but handles the common "assign(var=val)" case
+        if (content.includes('assign')) {
+             // Replaces 'assign(a=b)' with 'let(a=b)' which is often compatible
+             // OR simply remove it if it's used as a wrapper.
+             // For safety, let's try mapping it to 'let' first, as that's the modern equivalent scope-wrapper.
+             content = content.replace(/assign\s*\(/g, 'let(');
+             self.postMessage({ type: 'log', text: `   🩹 Patched legacy 'assign' in: ${fullPath}` });
+        }
+
         const dir = fullPath.substring(0, fullPath.lastIndexOf('/'));
         if (dir) mkdir_p(dir);
 
@@ -100,8 +147,12 @@ self.onmessage = async (e) => {
 
       instance.callMain(["/main.scad", "-o", "out.stl"]);
       
-      const output = instance.FS.readFile("/out.stl");
-      self.postMessage({ type: 'done', stl: output }, [output.buffer]);
+      if (instance.FS.analyzePath("/out.stl").exists) {
+          const output = instance.FS.readFile("/out.stl");
+          self.postMessage({ type: 'done', stl: output }, [output.buffer]);
+      } else {
+          throw new Error("Render produced no geometry (Empty Scene).");
+      }
 
     } catch (error) {
       const errText = (typeof error === 'number') 
