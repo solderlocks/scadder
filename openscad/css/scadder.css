@@ -1210,6 +1210,7 @@ header {
   font-size: 0.6rem;
   color: var(--text-dim);
   margin-left: auto;
+  display: none;
 }
 
 .param-group-grid {
