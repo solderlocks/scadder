@@ -191,6 +191,10 @@
       margin-bottom: 1rem;
       position: static;
     }
+
+    .result-count {
+      display: none;
+    }
   }
 
   /* GitHub chips */
@@ -609,7 +613,8 @@
   border-radius: 4px;
   color: var(--text);
   font-family: var(--mono);
-  width: 440px;
+  min-width: 275px;
+  max-width: 440px;
   outline: none;
 }
 .search-input:focus { border-color: var(--amber); }

@@ -1,5 +1,59 @@
 [
   {
+    "id": "parametric-sign",
+    "title": "Parametric Sign",
+    "description": "Customizable sign with raised lettering and rounded corners.",
+    "author": "openscad",
+    "url": "https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad",
+    "tags": [
+      "customizable",
+      "text",
+      "beginner"
+    ],
+    "image": "assets/previews/parametric-sign.png"
+  },
+  {
+    "id": "gridfinity-cup",
+    "title": "Gridfinity Basic Cup",
+    "description": "The gold standard storage block. Features stacking lips, magnet holes, and scoop curves.",
+    "author": "ostat",
+    "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_basic_cup.scad",
+    "tags": [
+      "gridfinity",
+      "storage",
+      "organizer",
+      "functional"
+    ],
+    "image": "assets/previews/gridfinity-cup.png"
+  },
+  {
+    "id": "gridfinity-baseplate",
+    "title": "Gridfinity Baseplate",
+    "description": "Parametric baseplate for the Gridfinity system. Supports weighted and screw-down bases.",
+    "author": "ostat",
+    "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_baseplate.scad",
+    "tags": [
+      "gridfinity",
+      "base",
+      "workshop"
+    ],
+    "image": "assets/previews/gridfinity-baseplate.png"
+  },
+  {
+    "id": "honeycomb-wall",
+    "title": "Honeycomb Wall",
+    "description": "Generates a hexagonal storage wall pattern. Great test for the 'include' fetcher.",
+    "author": "smkent",
+    "url": "https://github.com/smkent/honeycomb-openscad/blob/main/example.scad",
+    "tags": [
+      "storage",
+      "wall",
+      "honeycomb",
+      "organizer"
+    ],
+    "image": "assets/previews/honeycomb-wall.png"
+  },
+  {
     "id": "openscad-logo",
     "title": "OpenSCAD Logo",
     "description": "The official, parametric logo. A classic test of boolean operations.",
@@ -39,19 +93,7 @@
     ],
     "image": "assets/previews/text-on-cube.png"
   },
-  {
-    "id": "parametric-sign",
-    "title": "Parametric Sign",
-    "description": "Customizable sign with raised lettering and rounded corners.",
-    "author": "openscad",
-    "url": "https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad",
-    "tags": [
-      "customizable",
-      "text",
-      "beginner"
-    ],
-    "image": "assets/previews/parametric-sign.png"
-  },
+  
   {
     "id": "csg-modules",
     "title": "CSG Modules",
@@ -104,33 +146,7 @@
     ],
     "image": "assets/previews/function-grapher.png"
   },
-  {
-    "id": "gridfinity-cup",
-    "title": "Gridfinity Basic Cup",
-    "description": "The gold standard storage block. Features stacking lips, magnet holes, and scoop curves.",
-    "author": "ostat",
-    "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_basic_cup.scad",
-    "tags": [
-      "gridfinity",
-      "storage",
-      "organizer",
-      "functional"
-    ],
-    "image": "assets/previews/gridfinity-cup.png"
-  },
-  {
-    "id": "gridfinity-baseplate",
-    "title": "Gridfinity Baseplate",
-    "description": "Parametric baseplate for the Gridfinity system. Supports weighted and screw-down bases.",
-    "author": "ostat",
-    "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_baseplate.scad",
-    "tags": [
-      "gridfinity",
-      "base",
-      "workshop"
-    ],
-    "image": "assets/previews/gridfinity-baseplate.png"
-  },
+  
   {
     "id": "rugged-box",
     "title": "Parametric Rugged Box",
@@ -145,20 +161,7 @@
     ],
     "image": "assets/previews/rugged-box.png"
   },
-  {
-    "id": "honeycomb-wall",
-    "title": "Honeycomb Wall",
-    "description": "Generates a hexagonal storage wall pattern. Great test for the 'include' fetcher.",
-    "author": "smkent",
-    "url": "https://github.com/smkent/honeycomb-openscad/blob/main/example.scad",
-    "tags": [
-      "storage",
-      "wall",
-      "honeycomb",
-      "organizer"
-    ],
-    "image": "assets/previews/honeycomb-wall.png"
-  },
+  
   {
     "id": "yapp-box",
     "title": "YAPP Box (v3)",
@@ -307,29 +310,5 @@
       "organizer"
     ],
     "image": "assets/previews/gridfinity-rebuilt-standard-bin.png"
-  },
-  {
-    "id": "gridfinity-vase-bins",
-    "title": "Gridfinity Vase Bins",
-    "description": "Ultra-fast printing bins using vase mode geometry.",
-    "author": "ostat",
-    "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_vase_cup.scad",
-    "tags": [
-      "gridfinity",
-      "vase-mode",
-      "storage"
-    ]
-  },
-  {
-    "id": "hsw-gridfinity-adapter",
-    "title": "HSW to Gridfinity Adapter",
-    "description": "Mount your Gridfinity bins to your Honeycomb Storage Wall.",
-    "author": "smkent",
-    "url": "https://github.com/smkent/honeycomb-openscad/blob/main/hsw-gridfinity-adapter.scad",
-    "tags": [
-      "gridfinity",
-      "honeycomb",
-      "adapter"
-    ]
   }
 ]
