@@ -49,11 +49,13 @@ function buildParamUI(groups) {
             header.className = 'param-group-header';
 
             const isMagic = group.name.includes('Magic');
+            const hasNamedParams = groups.some(g => g.name && !g.name.includes('Magic') && g.params.length > 0);
+            const startCollapsed = isMagic && hasNamedParams;
             const displayName = GROUP_DISPLAY_NAMES[group.name] || group.name;
             const tooltip = GROUP_TOOLTIPS[group.name] || '';
 
             const chevron = document.createElement('span');
-            chevron.className = `param-group-chevron${isMagic ? '' : ' open'}`;
+            chevron.className = `param-group-chevron${startCollapsed ? '' : ' open'}`;
             chevron.textContent = '▼';
 
             const title = document.createElement('span');
@@ -85,7 +87,7 @@ function buildParamUI(groups) {
 
             // Build inner grid for params
             const innerGrid = document.createElement('div');
-            innerGrid.className = `param-group-grid${isMagic ? ' collapsed' : ''}`;
+            innerGrid.className = `param-group-grid${startCollapsed ? ' collapsed' : ''}`;
 
             // Toggle on click
             header.addEventListener('click', () => {
