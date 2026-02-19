@@ -79,8 +79,13 @@ const app = {
         }
 
         // Render Cards
-        grid.innerHTML = pageItems.map(item => `
-      <a href="?file=${encodeURIComponent(item.url)}" class="lib-card">
+        grid.innerHTML = pageItems.map(item => {
+            let href = `?file=${encodeURIComponent(item.url)}`;
+            if (item.vars && Object.keys(item.vars).length > 0) {
+                href += `&vars=${encodeURIComponent(JSON.stringify(item.vars))}`;
+            }
+            return `
+      <a href="${href}" class="lib-card">
         <img src="assets/previews/${item.id || 'placeholder'}.png" class="lib-img" loading="lazy" alt="${item.title}">
         <div class="lib-meta">
           <div>
@@ -88,13 +93,13 @@ const app = {
             <div class="lib-desc">${item.description}</div>
           </div>
           ${this.view === 'list' ?
-                `<div style="font-family:var(--mono);font-size:0.7rem;color:var(--amber);white-space:nowrap;margin-left:1rem">by ${item.author}</div>`
-                :
-                `<div style="margin-top:0.5rem;font-size:0.65rem;color:var(--text-dim);font-family:var(--mono)">by ${item.author}</div>`
-            }
+                    `<div style="font-family:var(--mono);font-size:0.7rem;color:var(--amber);white-space:nowrap;margin-left:1rem">by ${item.author}</div>`
+                    :
+                    `<div style="margin-top:0.5rem;font-size:0.65rem;color:var(--text-dim);font-family:var(--mono)">by ${item.author}</div>`
+                }
         </div>
       </a>
-    `).join('');
+    `}).join('');
 
         // Render Pagination Controls
         const totalPages = Math.ceil(this.filtered.length / this.limit);

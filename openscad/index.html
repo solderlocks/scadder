@@ -35,6 +35,39 @@
 
 <body>
 
+  <!-- About Modal -->
+  <div class="modal-backdrop" id="aboutModal" onclick="if(event.target===this) closeAbout()">
+    <div class="modal">
+      <button class="modal-close" onclick="closeAbout()">✕</button>
+      <h2>Scadder</h2>
+      <p>An open parametric design library. Browse a curated collection of configurable 3D&nbsp;objects, tweak the
+        parameters to your needs, and download production-ready STL&nbsp;files. No login or software to install.</p>
+      <p>Designs live on GitHub as OpenSCAD source files. Fork them, improve them, and share your link. Every object is
+        a starting point, not a finished product.</p>
+
+      <h3>How It Works</h3>
+      <p>Paste any GitHub link to a <code>.scad</code> file, or pick one from the library. Scadder compiles the model in
+        your browser using OpenSCAD compiled to WebAssembly, so nothing is uploaded to a server. Adjust the parameters,
+        re-render, and export your custom STL.</p>
+
+      <h3>Add a Model to the Library</h3>
+      <ol>
+        <li>Fork the <a href="https://github.com/pollesbog/scadder" target="_blank" style="color:var(--amber)">Scadder
+            repository</a> on GitHub</li>
+        <li>Edit <code>library.json</code> to add your model's URL, title, description, and tags</li>
+        <li>Submit a pull request — that's it!</li>
+      </ol>
+
+      <h3>Built With</h3>
+      <div class="tech-stack">
+        <span class="tech-chip">OpenSCAD WASM</span>
+        <span class="tech-chip">Three.js</span>
+        <span class="tech-chip">Manifold</span>
+        <span class="tech-chip">GitHub Pages</span>
+      </div>
+    </div>
+  </div>
+
   <header>
     <a href="index.html" class="logo">Scadder</a>
     <div style="display:flex;gap:0.5rem;align-items:center">
@@ -154,9 +187,14 @@
           <div class="param-grid" id="paramGrid">
             <p class="no-params">Loading…</p>
           </div>
-          <div class="render-hint">Edit values above, then click <strong style="color:var(--amber)">▶ Render</strong> to
-            preview changes.</div>
+
         </div>
+      </div>
+
+      <!-- Sticky render bar (appears when viewport toolbar scrolls out of view) -->
+      <div class="sticky-render-bar" id="stickyRenderBar">
+        <span class="sticky-hint">Parameters changed —</span>
+        <button class="btn btn-primary" onclick="window.runAndShowScad()">▶ Re-Render</button>
       </div>
 
       <!-- Print settings accordion -->
@@ -219,6 +257,11 @@
     </div><!-- /modelView -->
   </div><!-- /main -->
 
+  <footer class="site-footer">
+    <span>© 2026</span>
+    <a href="https://jscottk.net" target="_blank">Scott Kuehnert</a>
+  </footer>
+
   <!-- OpenSCAD WASM Worker -->
   <script type="module">
     const consoleEl = document.getElementById("consoleOutput");
@@ -255,6 +298,33 @@
       if (worker) worker.terminate();
       worker = new Worker('./scad-worker.js', { type: "module" });
 
+      // Reassurance messages for long renders
+      const reassuranceMessages = [
+        'Still working — complex geometry takes time…',
+        'Computing intersections and unions…',
+        'OpenSCAD is crunching the numbers…',
+        'Hang tight — good things take time…',
+        'Almost there — finalizing geometry…',
+        'Still rendering — this model has a lot of detail…'
+      ];
+      let reassuranceTimer = null;
+      let reassuranceIndex = 0;
+
+      function startReassurance() {
+        reassuranceIndex = 0;
+        const statusEl = document.getElementById('renderStatus');
+        reassuranceTimer = setInterval(() => {
+          statusEl.textContent = reassuranceMessages[reassuranceIndex % reassuranceMessages.length];
+          statusEl.classList.add('reassuring');
+          reassuranceIndex++;
+        }, 8000);
+      }
+
+      function stopReassurance() {
+        if (reassuranceTimer) { clearInterval(reassuranceTimer); reassuranceTimer = null; }
+        document.getElementById('renderStatus').classList.remove('reassuring');
+      }
+
       worker.onmessage = function (e) {
         const msg = e.data;
         if (msg.type === 'log') {
@@ -262,13 +332,15 @@
             document.getElementById('renderStatus').textContent = 'Preparing files...';
             setProgress(20);
           } else if (msg.text.includes('Starting Main Render')) {
-            document.getElementById('renderStatus').textContent = 'Calculating geometry...';
+            document.getElementById('renderStatus').textContent = 'Calculating geometry…';
             setProgress(95, true);
+            startReassurance();
           }
           consoleEl.textContent += msg.text + "\n";
           consoleEl.scrollTop = consoleEl.scrollHeight;
         }
         else if (msg.type === 'done') {
+          stopReassurance();
           setProgress(100);
           document.getElementById('renderStatus').textContent = 'Complete';
           setTimeout(() => {
@@ -276,6 +348,7 @@
           }, 100);
         }
         else if (msg.type === 'error') {
+          stopReassurance();
           console.error("Worker Error:", msg.error);
           document.getElementById('renderStatus').textContent = '' + msg.error;
           document.getElementById('progressBar').style.background = '#ff4444';
@@ -293,6 +366,29 @@
       loadScadFromUrl(url);
     } else {
       document.getElementById('renderOverlay').classList.add('hidden');
+
+      // Rotating tagline for landing page
+      const taglines = [
+        'Customize storage organizers',
+        'Generate threaded hardware',
+        'Design electronics enclosures',
+        'Print parametric keycaps',
+        'Build modular wall systems',
+        'Create knurled knobs & caps',
+      ];
+      const el = document.getElementById('taglineRotate');
+      if (el) {
+        let idx = 0;
+        el.textContent = taglines[0];
+        setInterval(() => {
+          el.style.opacity = '0';
+          setTimeout(() => {
+            idx = (idx + 1) % taglines.length;
+            el.textContent = taglines[idx];
+            el.style.opacity = '1';
+          }, 400);
+        }, 4000);
+      }
     }
   </script>
 

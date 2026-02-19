@@ -310,5 +310,42 @@
       "organizer"
     ],
     "image": "assets/previews/gridfinity-rebuilt-standard-bin.png"
+  },
+  {
+    "id": "gridfinity-rebuilt-baseplate-4x2",
+    "title": "Gridfinity Baseplate: 4×2 Drawer",
+    "description": "Pre-configured 4×2 baseplate perfect for desk drawer organizers.",
+    "author": "kennetek",
+    "url": "https://github.com/kennetek/gridfinity-rebuilt-openscad/blob/master/gridfinity-rebuilt-baseplate.scad",
+    "tags": [
+      "gridfinity",
+      "base",
+      "drawer",
+      "preset"
+    ],
+    "image": "assets/previews/gridfinity-rebuilt-baseplate.png",
+    "vars": {
+      "gridx": 4,
+      "gridy": 2
+    }
+  },
+  {
+    "id": "gridfinity-cup-deep",
+    "title": "Gridfinity Cup: Deep Storage",
+    "description": "Tall single-chamber cup for pens, tools, and standing items.",
+    "author": "ostat",
+    "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_basic_cup.scad",
+    "tags": [
+      "gridfinity",
+      "storage",
+      "deep",
+      "preset"
+    ],
+    "image": "assets/previews/gridfinity-cup.png",
+    "vars": {
+      "num_x": 1,
+      "num_y": 1,
+      "num_z": 6
+    }
   }
 ]

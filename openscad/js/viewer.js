@@ -64,6 +64,48 @@ function toggleSection(header) {
     ch.classList.toggle('open', !open);
 }
 
+// ── About Modal ───────────────────────────────────────────────────────────────
+
 function showAbout() {
-    alert('Scadder β\n\nAn open parametric design library.\nDesigns live on GitHub. Fork everything.\n\nBuilt on OpenSCAD · Manifold · Three.js');
+    document.getElementById('aboutModal').classList.add('open');
+}
+
+function closeAbout() {
+    document.getElementById('aboutModal').classList.remove('open');
+}
+
+// Close on Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAbout();
+});
+
+// ── Sticky Render Bar ─────────────────────────────────────────────────────────
+
+var _stickyObserver = null;
+var _toolbarOutOfView = false;
+var _paramsDirty = false;
+
+function updateStickyBarVisibility() {
+    const stickyBar = document.getElementById('stickyRenderBar');
+    if (stickyBar) stickyBar.classList.toggle('visible', _toolbarOutOfView && _paramsDirty);
+}
+
+function updateStickyBarDirty() {
+    _paramsDirty = parsedParams.some(p => p.value !== p.defaultVal);
+    updateStickyBarVisibility();
+}
+
+function initStickyRenderBar() {
+    const toolbar = document.querySelector('.viewport-toolbar');
+    const stickyBar = document.getElementById('stickyRenderBar');
+    if (!toolbar || !stickyBar) return;
+
+    _stickyObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            _toolbarOutOfView = !entry.isIntersecting;
+            updateStickyBarVisibility();
+        });
+    }, { threshold: 0 });
+
+    _stickyObserver.observe(toolbar);
 }
