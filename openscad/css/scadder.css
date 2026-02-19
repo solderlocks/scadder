@@ -824,14 +824,9 @@ header {
 
 .landing h1 {
   font-family: var(--hero);
-  font-size: 3.2rem;
-  background: linear-gradient(135deg, var(--amber) 0%, #e8c36a 50%, var(--amber) 100%);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: shimmer 6s ease-in-out infinite;
-  margin-bottom: 0.5rem;
+  font-size: 2.6rem;
+  color: var(--amber);
+  margin-bottom: 0.75rem;
   line-height: 1.15;
 }
 
@@ -847,13 +842,7 @@ header {
   }
 }
 
-.tagline {
-  color: var(--text-mid);
-  line-height: 1.75;
-  font-size: 0.88rem;
-  max-width: 540px;
-  margin: 0 auto 1.5rem;
-}
+
 
 .tagline-rotate {
   display: block;
@@ -952,7 +941,9 @@ header {
 
 .tagline {
   font-family: var(--mono);
-  color: var(--amber);
+  color: var(--text-mid);
+  line-height: 1.75;
+  font-size: 0.88rem;
   max-width: 500px;
   text-align: center;
   margin: auto;
