@@ -93,7 +93,6 @@
     ],
     "image": "assets/previews/text-on-cube.png"
   },
-  
   {
     "id": "csg-modules",
     "title": "CSG Modules",
@@ -146,7 +145,6 @@
     ],
     "image": "assets/previews/function-grapher.png"
   },
-  
   {
     "id": "rugged-box",
     "title": "Parametric Rugged Box",
@@ -161,7 +159,6 @@
     ],
     "image": "assets/previews/rugged-box.png"
   },
-  
   {
     "id": "yapp-box",
     "title": "YAPP Box (v3)",
@@ -323,7 +320,7 @@
       "drawer",
       "preset"
     ],
-    "image": "assets/previews/gridfinity-rebuilt-baseplate.png",
+    "image": "assets/previews/gridfinity-rebuilt-baseplate-4x2.png",
     "vars": {
       "gridx": 4,
       "gridy": 2
@@ -341,7 +338,7 @@
       "deep",
       "preset"
     ],
-    "image": "assets/previews/gridfinity-cup.png",
+    "image": "assets/previews/gridfinity-cup-deep.png",
     "vars": {
       "num_x": 1,
       "num_y": 1,
