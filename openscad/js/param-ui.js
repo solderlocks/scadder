@@ -224,7 +224,7 @@ function updateUrlState() {
     let hasChanges = false;
 
     for (const p of parsedParams) {
-        if (p.value !== p.defaultVal) {
+        if (p.value != p.defaultVal) {
             state[p.name] = p.value;
             hasChanges = true;
         }

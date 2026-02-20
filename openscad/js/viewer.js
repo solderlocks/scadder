@@ -39,8 +39,17 @@ async function ShowMeThatStinkingStlFile(currentSTL) {
     await Engine.addToScene(meshWire, 'scene-0');
     await Engine.addToScene(meshSolid, 'scene-0');
 
+    // Check if ruler was active before wipe
+    const wasRulerVisible = rulerMesh && rulerMesh.visible;
+    rulerMesh = null; // Reset reference since object is gone
+
     document.getElementById('downloadBtn').disabled = false;
     document.getElementById('renderOverlay').classList.add('hidden');
+
+    // Restore ruler if it was active
+    if (wasRulerVisible) {
+        toggleRuler();
+    }
 }
 
 function downloadSTL() {
@@ -259,11 +268,19 @@ var _paramsDirty = false;
 
 function updateStickyBarVisibility() {
     const stickyBar = document.getElementById('stickyRenderBar');
-    if (stickyBar) stickyBar.classList.toggle('visible', _toolbarOutOfView && _paramsDirty);
+    // Always show if dirty, regardless of scroll position
+    if (stickyBar) stickyBar.classList.toggle('visible', _paramsDirty);
 }
 
 function updateStickyBarDirty() {
-    _paramsDirty = parsedParams.some(p => p.value !== p.defaultVal);
+    if (!window.lastRenderedValues) {
+        _paramsDirty = false;
+    } else {
+        _paramsDirty = parsedParams.some(p => {
+            const lastVal = window.lastRenderedValues[p.name];
+            return p.value != lastVal;
+        });
+    }
     updateStickyBarVisibility();
 }
 

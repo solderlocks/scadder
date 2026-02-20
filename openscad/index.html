@@ -212,7 +212,9 @@
       <!-- Sticky render bar (appears when viewport toolbar scrolls out of view) -->
       <div class="sticky-render-bar" id="stickyRenderBar">
         <span class="sticky-hint">Parameters changed —</span>
-        <button class="btn btn-primary" onclick="window.runAndShowScad()">▶ Re-Render</button>
+        <button class="btn btn-primary"
+          onclick="window.runAndShowScad(); document.getElementById('modelView').scrollIntoView({behavior:'smooth'})">▶
+          Re-Render</button>
       </div>
 
       <!-- Print settings accordion -->
@@ -288,6 +290,13 @@
     window.runAndShowScad = async function () {
       const mainFile = virtualFileSystem.find(f => f.name === 'main.scad');
       if (!mainFile) return;
+
+      // Snapshot current params as "clean" state
+      window.lastRenderedValues = {};
+      if (typeof parsedParams !== 'undefined') {
+        parsedParams.forEach(p => window.lastRenderedValues[p.name] = p.value);
+      }
+      if (typeof updateStickyBarDirty === 'function') updateStickyBarDirty();
 
       // 1. Get the modified code from the UI params
       const modifiedCode = buildModifiedScad(mainFile.txt);
