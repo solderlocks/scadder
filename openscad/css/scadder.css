@@ -250,6 +250,25 @@ header {
   align-items: center;
 }
 
+@media (max-width: 600px) {
+  .vtb-right {
+    display: none;
+  }
+
+  .vtb-left .lbl {
+    display: none;
+  }
+
+  .vtb-left .btn {
+    padding: 0.42rem 0.5rem;
+    /* Tighter padding for icon-only */
+  }
+}
+
+.lbl {
+  margin-left: 0.1rem;
+}
+
 #canvas-container {
   width: 100%;
   height: 480px;

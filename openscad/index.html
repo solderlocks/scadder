@@ -153,9 +153,38 @@
       <div class="viewport-card">
         <div class="viewport-toolbar">
           <div class="vtb-left">
-            <button class="btn btn-primary" id="runBtn" onclick="window.runAndShowScad()">▶ Render</button>
-            <button class="btn btn-ghost" onclick="if(meshWire) meshWire.visible=!meshWire.visible">Wireframe</button>
-            <button class="btn btn-ghost" onclick="if(meshSolid) meshSolid.visible=!meshSolid.visible">Solid</button>
+            <button class="btn btn-primary" id="runBtn" onclick="window.runAndShowScad()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              <span class="lbl">Render</span>
+            </button>
+            <button class="btn btn-ghost" onclick="if(meshWire) meshWire.visible=!meshWire.visible"
+              title="Toggle Wireframe">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3h18v18H3zM3 9h18M3 15h18M9 3v18M15 3v18" />
+              </svg>
+              <span class="lbl">Wireframe</span>
+            </button>
+            <button class="btn btn-ghost" onclick="if(meshSolid) meshSolid.visible=!meshSolid.visible"
+              title="Toggle Solid">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path
+                  d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                </path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+              <span class="lbl">Solid</span>
+            </button>
+            <button class="btn btn-ghost" onclick="toggleRuler()" id="btnRuler" title="Toggle Ruler">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 17H2V7h20v10z" />
+                <path d="M6 7v5M10 7v3M14 7v5M18 7v3" />
+              </svg>
+              <span class="lbl">Ruler</span>
+            </button>
           </div>
           <div class="vtb-right">
             <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text-dim)">Opacity</span>
