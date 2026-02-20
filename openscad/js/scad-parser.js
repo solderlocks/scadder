@@ -97,7 +97,7 @@ function parseScadParams(code) {
             let contextLabel = contextMatch ? contextMatch[1] : "Value";
 
             magicGroup.params.push({
-                name: `Line ${i + 1}: ${contextLabel}`,
+                name: `magic_${i}_${match.index}`,
                 type: 'number',
                 value: val,
                 defaultVal: val,
