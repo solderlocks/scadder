@@ -20,7 +20,7 @@ async function ShowMeThatStinkingStlFile(currentSTL) {
     var geometry = loader.parse(currentSTL);
 
     let oldOpacity = 0.95;
-    let oldWireVisible = meshWire ? meshWire.visible : true;
+    let oldWireVisible = meshWire ? meshWire.visible : false;
     let oldSolidVisible = meshSolid ? meshSolid.visible : true;
 
     meshWire = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ color: 0xc8922a, wireframe: true }));
@@ -46,6 +46,9 @@ async function ShowMeThatStinkingStlFile(currentSTL) {
     document.getElementById('downloadBtn').disabled = false;
     document.getElementById('renderOverlay').classList.add('hidden');
 
+    const btnWire = document.getElementById('btnWireframeToggle');
+    if (btnWire) btnWire.classList.toggle('active', meshWire.visible);
+
     // Restore ruler if it was active
     if (wasRulerVisible) {
         toggleRuler();
@@ -60,6 +63,20 @@ function downloadSTL() {
     a.href = URL.createObjectURL(new Blob([window.currentSTL], { type: 'application/octet-stream' }));
     a.download = name;
     a.click();
+}
+
+function toggleWireframeMode() {
+    if (!meshWire || !meshSolid) return;
+    const isWireframeVisible = meshWire.visible;
+    if (isWireframeVisible) {
+        meshWire.visible = false;
+        meshSolid.visible = true;
+    } else {
+        meshWire.visible = true;
+        meshSolid.visible = false;
+    }
+    const btn = document.getElementById('btnWireframeToggle');
+    if (btn) btn.classList.toggle('active', meshWire.visible);
 }
 
 // ── Ruler ─────────────────────────────────────────────────────────────────────
