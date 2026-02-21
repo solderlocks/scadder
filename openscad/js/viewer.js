@@ -19,7 +19,7 @@ async function ShowMeThatStinkingStlFile(currentSTL) {
     const loader = new THREE.STLLoader();
     var geometry = loader.parse(currentSTL);
 
-    let oldOpacity = 0.95;
+    let oldOpacity = 100;
     let oldWireVisible = meshWire ? meshWire.visible : false;
     let oldSolidVisible = meshSolid ? meshSolid.visible : true;
 
