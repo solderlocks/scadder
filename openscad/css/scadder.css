@@ -375,7 +375,11 @@ header {
   transition: background 0.15s;
 }
 
-.section-header:hover {
+.section-header.static-header {
+  cursor: default;
+}
+
+.section-header:not(.static-header):hover {
   background: #222018;
 }
 
@@ -1201,6 +1205,10 @@ header {
   margin-top: 0.25rem;
 }
 
+.param-group-header.static-header {
+  cursor: default;
+}
+
 .param-group-header:first-child {
   padding-top: 0;
   margin-top: 0;
@@ -1222,6 +1230,16 @@ header {
 
 .param-group-chevron.open {
   transform: rotate(180deg);
+}
+
+.param-group-toggle {
+  color: var(--text-dim);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  font-weight: bold;
+  width: 12px;
+  text-align: center;
+  line-height: 1;
 }
 
 .param-group-count {

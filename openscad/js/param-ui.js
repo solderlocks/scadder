@@ -44,25 +44,27 @@ function buildParamUI(groups) {
             const section = document.createElement('div');
             section.className = 'param-group-section';
 
-            // Build collapsible header
+            // Build header
             const header = document.createElement('div');
-            header.className = 'param-group-header';
-
             const isMagic = group.name.includes('Magic');
+            header.className = isMagic ? 'param-group-header' : 'param-group-header static-header';
+
             const hasNamedParams = groups.some(g => g.name && !g.name.includes('Magic') && g.params.length > 0);
             const startCollapsed = isMagic && hasNamedParams;
             const displayName = GROUP_DISPLAY_NAMES[group.name] || group.name;
             const tooltip = GROUP_TOOLTIPS[group.name] || '';
 
-            const chevron = document.createElement('span');
-            chevron.className = `param-group-chevron${startCollapsed ? '' : ' open'}`;
-            chevron.textContent = '▼';
+            const toggleIcon = document.createElement('span');
+            toggleIcon.className = 'param-group-toggle';
+            toggleIcon.textContent = startCollapsed ? '+' : '-';
 
             const title = document.createElement('span');
             title.className = 'param-group-title';
             title.textContent = displayName;
 
-            header.appendChild(chevron);
+            if (isMagic) {
+                header.appendChild(toggleIcon);
+            }
             header.appendChild(title);
 
             // Info tooltip
@@ -74,6 +76,10 @@ function buildParamUI(groups) {
                 tipContent.className = 'tip-content';
                 tipContent.textContent = tooltip;
                 tip.appendChild(tipContent);
+                // Prevent toggling accordion when clicking info tip
+                tip.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
                 header.appendChild(tip);
             }
 
@@ -83,18 +89,22 @@ function buildParamUI(groups) {
             count.textContent = `${group.params.length}`;
             header.appendChild(count);
 
-            section.appendChild(header);
+            if (isMagic) {
+                section.appendChild(header);
+            }
 
             // Build inner grid for params
             const innerGrid = document.createElement('div');
             innerGrid.className = `param-group-grid${startCollapsed ? ' collapsed' : ''}`;
 
-            // Toggle on click
-            header.addEventListener('click', () => {
-                const isCollapsed = innerGrid.classList.contains('collapsed');
-                innerGrid.classList.toggle('collapsed', !isCollapsed);
-                chevron.classList.toggle('open', isCollapsed);
-            });
+            if (isMagic) {
+                // Toggle on click
+                header.addEventListener('click', () => {
+                    const isCollapsed = innerGrid.classList.contains('collapsed');
+                    innerGrid.classList.toggle('collapsed', !isCollapsed);
+                    toggleIcon.textContent = isCollapsed ? '-' : '+';
+                });
+            }
 
             // Add params to inner grid
             for (const p of group.params) {
