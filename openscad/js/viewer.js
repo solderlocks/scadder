@@ -293,8 +293,8 @@ function updateStickyBarDirty() {
     if (!window.lastRenderedValues) {
         _paramsDirty = false;
     } else {
-        _paramsDirty = parsedParams.some(p => {
-            const lastVal = window.lastRenderedValues[p.name];
+        _paramsDirty = parsedParams.some((p, i) => {
+            const lastVal = window.lastRenderedValues[i];
             return p.value != lastVal;
         });
     }

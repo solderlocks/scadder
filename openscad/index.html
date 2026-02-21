@@ -288,7 +288,7 @@
       // Snapshot current params as "clean" state
       window.lastRenderedValues = {};
       if (typeof parsedParams !== 'undefined') {
-        parsedParams.forEach(p => window.lastRenderedValues[p.name] = p.value);
+        parsedParams.forEach((p, i) => window.lastRenderedValues[i] = p.value);
       }
       if (typeof updateStickyBarDirty === 'function') updateStickyBarDirty();
 
