@@ -81,7 +81,7 @@ const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
             // A slightly longer settle time for the renderer to swap buffers
             await new Promise(r => setTimeout(r, 3000));
 
-            const rerenderBar = document.querySelector('sticky-render-bar');
+            const rerenderBar = document.querySelector('.sticky-render-bar');
             if (rerenderBar) {
                 rerenderBar.style.display = 'none';
                 rerenderBar.className = 'sticky-render-bar'
