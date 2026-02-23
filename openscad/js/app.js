@@ -56,6 +56,7 @@ async function loadScadFromUrl(url) {
 
         loadGithubMeta(rawUrl);
         loadSidecars(rawUrl);
+        if (window.updateCommunityTelemetry) window.updateCommunityTelemetry(url);
 
         document.getElementById('renderStatus').textContent = 'Parsing parameters…';
 

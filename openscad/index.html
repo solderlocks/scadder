@@ -30,6 +30,7 @@
   <script src="js/github.js"></script>
   <script src="js/viewer.js"></script>
   <script src="js/library.js"></script>
+  <script src="js/community-telemetry.js"></script>
   <script src="js/app.js"></script>
 </head>
 
@@ -212,11 +213,10 @@
       </div>
 
       <!-- Print settings accordion -->
-      <div class="section">
+      <div class="section" style="display:none">
         <div class="section-header" onclick="toggleSection(this)">
           <div class="shl">
             <span class="section-label">Print Settings</span>
-            <span class="section-desc">recommended slicer config</span>
           </div>
           <span class="chevron">▼</span>
         </div>
@@ -227,11 +227,10 @@
       </div>
 
       <!-- BOM accordion -->
-      <div class="section">
+      <div class="section" style="display:none">
         <div class="section-header" onclick="toggleSection(this)">
           <div class="shl">
             <span class="section-label">Bill of Materials</span>
-            <span class="section-desc">components &amp; hardware</span>
           </div>
           <span class="chevron">▼</span>
         </div>
@@ -240,12 +239,24 @@
         </div>
       </div>
 
+      <!-- Discussion accordion -->
+      <div class="section">
+        <div class="section-header" onclick="toggleSection(this)">
+          <div class="shl">
+            <span class="section-label">Discussion</span>
+          </div>
+          <span class="chevron">▼</span>
+        </div>
+        <div class="section-body">
+          <div id="giscus-container"></div>
+        </div>
+      </div>
+
       <!-- Source accordion -->
       <div class="section">
         <div class="section-header" onclick="toggleSection(this)">
           <div class="shl">
             <span class="section-label">Source</span>
-            <span class="section-desc">.scad code</span>
           </div>
           <span class="chevron">▼</span>
         </div>
@@ -259,7 +270,6 @@
         <div class="section-header" onclick="toggleSection(this)">
           <div class="shl">
             <span class="section-label">Console</span>
-            <span class="section-desc">renderer output</span>
           </div>
           <span class="chevron">▼</span>
         </div>
