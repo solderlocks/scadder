@@ -23,7 +23,10 @@ function updateCommunityTelemetry(decodedScadUrl) {
     script.setAttribute('data-reactions-enabled', '0');
     script.setAttribute('data-emit-metadata', '0');
     script.setAttribute('data-input-position', 'bottom');
-    script.setAttribute('data-theme', 'transparent_dark');
+    // Construct absolute URL for the custom theme
+    const themeUrl = new URL('css/giscus-scadder.css?t=' + Date.now(), window.location.href).href;
+
+    script.setAttribute('data-theme', themeUrl);
     script.setAttribute('data-lang', 'en');
     script.setAttribute('crossorigin', 'anonymous');
     script.async = true;
