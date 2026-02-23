@@ -21,7 +21,7 @@ function updateCommunityTelemetry(decodedScadUrl) {
     script.setAttribute('data-term', decodedScadUrl);
     script.setAttribute('data-strict', '1');
     script.setAttribute('data-reactions-enabled', '0');
-    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-emit-metadata', '1');
     script.setAttribute('data-input-position', 'bottom');
     // Construct absolute URL for the custom theme
     const themeUrl = new URL('css/giscus-scadder.css?t=' + Date.now(), window.location.href).href;
@@ -38,3 +38,20 @@ function updateCommunityTelemetry(decodedScadUrl) {
 
 // Export to window for global access
 window.updateCommunityTelemetry = updateCommunityTelemetry;
+
+// Listen for Giscus cross-document messages to update comment count
+window.addEventListener('message', (event) => {
+    if (event.origin !== 'https://giscus.app') return;
+    if (!(typeof event.data === 'object' && event.data.giscus)) return;
+
+    const giscusData = event.data.giscus;
+    if (giscusData.discussion) {
+        const countSpan = document.getElementById('discussionCount');
+        if (countSpan) {
+            const count = giscusData.discussion.totalCommentCount;
+            if (count !== undefined) {
+                countSpan.textContent = count > 0 ? `${count} comment${count !== 1 ? 's' : ''}` : 'No comments';
+            }
+        }
+    }
+});
