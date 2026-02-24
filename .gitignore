@@ -1,9 +1,12 @@
-*/.DS_Store
-.openclaw/workspace-state.json
-AGENTS.md
-BOOTSTRAP.md
-HEARTBEAT.md
-IDENTITY.md
-SOUL.md
-TOOLS.md
-USER.md
+# Scadder Development Artifacts
+.scadder_modules/
+scadder.json
+scadder-cli-readme.md
+
+# Build and Cache
+.scadder_cache/
+node_modules/
+.DS_Store
+
+# Web build artifacts (if applicable)
+dist/
