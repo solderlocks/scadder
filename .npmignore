@@ -1,0 +1,11 @@
+# Ignore local testing and cache
+.scadder_modules/
+scadder.json
+
+# Ignore the heavy web frontend, keep the CLI light
+web/
+.github/
+
+# Keep standard git ignores
+node_modules/
+.DS_Store
