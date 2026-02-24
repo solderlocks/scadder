@@ -2,13 +2,11 @@
 var virtualFileSystem = [{ name: "main.scad", txt: "" }];
 var meshWire, meshSolid;
 var parsedParams = [];
-var fetchedUrls = new Set();
 
 // ── Load Model from URL ───────────────────────────────────────────────────────
 
 async function loadScadFromUrl(url) {
     const rawUrl = toRawUrl(url);
-    fetchedUrls.clear();
     virtualFileSystem = [];
 
     document.getElementById('landingState').style.display = 'none';
@@ -45,7 +43,14 @@ async function loadScadFromUrl(url) {
     document.getElementById('renderStatus').textContent = 'Crawling project dependencies…';
 
     try {
-        await crawlAndFetch(rawUrl, "main.scad");
+        const { resolveDependencies } = await import('../../core/crawler.js');
+        virtualFileSystem = await resolveDependencies(rawUrl, {
+            onLog: (msg) => console.log(msg),
+            onError: (msg) => {
+                document.getElementById('consoleOutput').textContent += msg + "\n";
+                console.error(msg);
+            }
+        });
 
         const mainFile = virtualFileSystem.find(f => f.name === "main.scad");
         if (!mainFile) throw new Error("Failed to load main file");
@@ -80,57 +85,6 @@ async function loadScadFromUrl(url) {
         document.getElementById('renderStatus').textContent = `Error: ${e.message}`;
         console.error(e);
     }
-}
-
-// ── Recursive Dependency Crawler ──────────────────────────────────────────────
-
-async function crawlAndFetch(url, vfsPath) {
-    // Prevent infinite loops (Circular Dependencies)
-    if (fetchedUrls.has(url)) return;
-    fetchedUrls.add(url);
-
-    console.log(`📂 Crawling: ${vfsPath} <== ${url}`);
-
-    // Give the UI a tiny "breath" to prevent the browser from locking up
-    await new Promise(r => setTimeout(r, 10));
-
-    const res = await fetch(url);
-    if (!res.ok) {
-        const errText = `❌ Failed to fetch dependency: ${vfsPath} (${res.status})`;
-        document.getElementById('consoleOutput').textContent += errText + "\n";
-        console.error(errText);
-        return;
-    }
-
-    const text = await res.text();
-
-    // Store in VFS with its relative directory path
-    virtualFileSystem.push({ name: vfsPath, txt: text });
-
-    // Scan for 'include <...>' and 'use <...>'
-    const importRegex = /^\s*(?:include|use)\s*[<"]([^>"]+)[>"]/gm;
-    let match;
-    const promises = [];
-
-    while ((match = importRegex.exec(text)) !== null) {
-        const relativeRef = match[1];
-
-        // Skip non-scad files (like .stl or .png)
-        if (relativeRef.toLowerCase().endsWith('.stl')) continue;
-
-        // Resolve Network URL
-        const depUrl = new URL(relativeRef, url).href;
-
-        // Resolve VFS Path
-        const parentVirtualUrl = new URL(vfsPath, "http://root/");
-        const depVirtualUrl = new URL(relativeRef, parentVirtualUrl);
-        const depVfsPath = depVirtualUrl.pathname.substring(1);
-
-        promises.push(crawlAndFetch(depUrl, depVfsPath));
-    }
-
-    // Fetch all dependencies in parallel
-    await Promise.all(promises);
 }
 
 // ── URL Bar Handler ───────────────────────────────────────────────────────────
