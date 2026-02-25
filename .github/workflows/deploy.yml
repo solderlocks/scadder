@@ -2,7 +2,7 @@ name: 🚀 Sync to Hostinger
 on:
   push:
     branches:
-      - main  # Only goes live when you decide to push to main
+      - main 
 
 jobs:
   web-deploy:
@@ -18,6 +18,15 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        # The user is already in the exact folder we want, so deploy here
-        server-dir: ./ 
-        local-dir: ./
+        # Since the user lands in the real public_html, this creates the scadder folder right next to portfolio
+        server-dir: ./scadder/
+        # Pushes your whole repo contents into that folder
+        local-dir: ./ 
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          **/.DS_Store
+          README.md
+          .github/**
+          .vscode/**
