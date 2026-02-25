@@ -28,4 +28,4 @@ jobs:
           **/.DS_Store
           README.md
           .github/**
-          .vscode/**
+          .vscode/** 
