@@ -18,9 +18,8 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        # Since the user lands in the real public_html, this creates the scadder folder right next to portfolio
+        # Since the user lands in the real public_html, this creates scadder right next to portfolio
         server-dir: ./scadder/
-        # Pushes your whole repo contents into that folder
         local-dir: ./ 
         exclude: |
           **/.git*
@@ -29,4 +28,4 @@ jobs:
           **/.DS_Store
           README.md
           .github/**
-          .vscode/** 
+          .vscode/**
