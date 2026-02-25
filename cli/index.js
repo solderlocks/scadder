@@ -8,7 +8,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { resolveDependencies } from '../core/crawler.js';
 
-const REGISTRY_URL = 'https://jscottk.net/scadder/openscad/library.json';
+const REGISTRY_URL = 'https://jscottk.net/scadder/web/library.json';
 const SCADDER_JSON = 'scadder.json';
 const MODULES_DIR = '.scadder_modules';
 
