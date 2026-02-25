@@ -1,0 +1,178 @@
+/* ── Giscus Scadder Theme ─────────────────────────────────────────────────── */
+
+main {
+    /* Layout & Spacing */
+    --giscus-main-max-width: 100%;
+
+    /* Fonts - Matching Scadder's system */
+    --giscus-font-family: 'IBM Plex Mono', monospace;
+    --giscus-title-font-family: 'IBM Plex Mono', monospace;
+    --giscus-code-font-family: 'IBM Plex Mono', monospace;
+
+    /* Colors - Derived from Scadder Design System */
+    --color-prettylights-syntax-comment: #7a7060;
+    --color-prettylights-syntax-constant: #c8922a;
+    --color-prettylights-syntax-entity: #c8922a;
+    --color-prettylights-syntax-storage-modifier-import: #e8e0d0;
+    --color-prettylights-syntax-entity-tag: #c8922a;
+    --color-prettylights-syntax-keyword: #c8922a;
+    --color-prettylights-syntax-string: #a89880;
+    --color-prettylights-syntax-variable: #e8e0d0;
+
+    /* Button Overrides - Matching .btn classes */
+    --color-btn-text: #a89880;
+    --color-btn-bg: transparent;
+    --color-btn-border: #2a2520;
+    --color-btn-shadow: none;
+    --color-btn-inset-shadow: none;
+    --color-btn-hover-bg: #1e1b17;
+    --color-btn-hover-border: #7a5618;
+    --color-btn-active-bg: #2a2520;
+    --color-btn-active-border: #2a2520;
+    --color-btn-selected-bg: #1e1b17;
+
+    /* Primary Button Overrides (Comment button) */
+    --color-btn-primary-text: #0e0c0a;
+    --color-btn-primary-bg: #c8922a;
+    --color-btn-primary-border: #c8922a;
+    --color-btn-primary-shadow: none;
+    --color-btn-primary-inset-shadow: none;
+    --color-btn-primary-hover-bg: #d4a030;
+    --color-btn-primary-hover-border: #d4a030;
+    --color-btn-primary-selected-bg: #7a5618;
+
+    /* Forms & General UI */
+    --color-fg-default: #e8e0d0;
+    /* var(--text) */
+    --color-fg-muted: #a89880;
+    /* var(--text-mid) */
+    --color-fg-subtle: #7a7060;
+    /* var(--text-dim) */
+    --color-canvas-default: transparent;
+    --color-canvas-overlay: #161412;
+    --color-canvas-inset: #0e0c0a;
+    --color-canvas-subtle: #161412;
+    --color-border-default: #2a2520;
+    /* var(--border) */
+    --color-border-muted: #1e1b17;
+    --color-border-subtle: #2a2520;
+
+    --color-accent-fg: #c8922a;
+    /* var(--amber) */
+    --color-accent-emphasis: #c8922a;
+    --color-accent-muted: rgba(200, 146, 42, 0.4);
+    --color-accent-subtle: rgba(200, 146, 42, 0.1);
+
+    /* Primer System Overrides */
+    --color-primer-border-active: #c8922a;
+    --color-primer-shadow-focus: 0 0 0 1px #c8922a;
+
+    /* Giscus Specific Border Overrides */
+    --color-border-default: #2a2520 !important;
+    --color-border-muted: #1e1b17 !important;
+    --color-border-subtle: #2a2520 !important;
+}
+
+/* ── DOM Overrides (For properties variables can't reach) ─────────────────── */
+
+/* Global Reset */
+* {
+    font-family: inherit;
+    border-radius: 4px !important;
+    /* All Scadder UI units use 4px or 8px */
+}
+
+/* Match Scadder's button typography and case */
+button,
+.btn,
+.gsc-reply-button,
+.gsc-comment-box-buttons .btn-primary {
+    font-family: 'IBM Plex Mono', monospace !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 0.07em !important;
+    text-transform: uppercase !important;
+    font-weight: 500 !important;
+}
+
+/* Ensure primary buttons have dark text for contrast against amber */
+.btn-primary {
+    color: #0e0c0a !important;
+    /* var(--bg) */
+}
+
+.btn-primary:disabled {
+    color: rgba(14, 12, 10, 0.5) !important;
+    background-color: rgba(200, 146, 42, 0.5) !important;
+    border-color: transparent !important;
+}
+
+/* Match Scadder's input/textarea look */
+textarea,
+input[type="text"],
+.gsc-comment-box-main,
+.gsc-reply-box-content {
+    background-color: #0e0c0a !important;
+    /* var(--bg) */
+    border: 1px solid #2a2520 !important;
+    /* var(--border) */
+    color: #e8e0d0 !important;
+    font-family: 'IBM Plex Mono', monospace !important;
+    transition: border-color 0.15s !important;
+}
+
+textarea:focus,
+input[type="text"]:focus,
+.gsc-comment-box-main:focus-within {
+    border-color: #c8922a !important;
+    /* var(--amber) */
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* Links & Metadata */
+a,
+.gsc-comment-author,
+.gsc-upvote-count {
+    color: #c8922a !important;
+    /* var(--amber) */
+    text-decoration: none !important;
+}
+
+a:hover {
+    text-decoration: underline !important;
+}
+
+/* Timeline & Structure */
+.gsc-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.gsc-comment {
+    border: 1px solid #2a2520 !important;
+    background: transparent !important;
+}
+
+.gsc-comment-header {
+    background: #1e1b17 !important;
+    /* var(--surface2) */
+    border-bottom: 1px solid #2a2520 !important;
+    padding-bottom: 0.5rem !important;
+}
+
+.gsc-comment-footer {
+    border-top: 1px solid transparent !important;
+}
+
+/* Remove strange blue borders/shadows from Giscus defaults */
+.gsc-comment-box,
+.gsc-reply-box {
+    border: none !important;
+}
+
+.gsc-social-links,
+.gsc-left-header p {
+    font-size: 0.65rem !important;
+    color: #7a7060 !important;
+}
