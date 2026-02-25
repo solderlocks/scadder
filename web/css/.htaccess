@@ -1,5 +1,0 @@
-<IfModule mod_headers.c>
-    # Allow any domain (like giscus.app) to fetch these CSS files
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Methods "GET, OPTIONS"
-</IfModule>
