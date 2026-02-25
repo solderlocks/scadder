@@ -22,7 +22,7 @@ async function loadScadFromUrl(url) {
     try {
         let libraryData = app.data && app.data.length ? app.data : null;
         if (!libraryData) {
-            const libRes = await fetch('library.json');
+            const libRes = await fetch('../core/library.json');
             if (libRes.ok) libraryData = await libRes.json();
         }
         if (libraryData) {

@@ -1,0 +1,31 @@
+name: 🚀 Sync to Hostinger
+on:
+  push:
+    branches:
+      - main  # Only goes live when you decide to push to main
+
+jobs:
+  web-deploy:
+    name: 🎉 Sync
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v4
+
+    - name: 📂 FTP Deploy
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: public_html/
+        # This list prevents local/dev junk from hitting your live portfolio
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/node_modules/**
+          **/.DS_Store
+          README.md
+          .github/**
+          .vscode/**
+          .env

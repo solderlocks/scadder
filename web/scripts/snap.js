@@ -3,9 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 // CONFIG
-const BASE_URL = process.env.BASE_URL || 'http://localhost:8080/openscad/index.html';
-const LIBRARY_PATH = path.join(__dirname, '../openscad/library.json');
-const OUTPUT_DIR = path.join(__dirname, '../openscad/assets/previews');
+const BASE_URL = process.env.BASE_URL || 'http://localhost:8080/web/index.html';
+const LIBRARY_PATH = path.join(__dirname, '../../core/library.json');
+const OUTPUT_DIR = path.join(__dirname, '../assets/previews');
 
 (async () => {
     if (!fs.existsSync(OUTPUT_DIR)) {

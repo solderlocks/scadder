@@ -18,7 +18,7 @@ const app = {
         if (!grid) return;
 
         try {
-            const res = await fetch('library.json');
+            const res = await fetch('../core/library.json');
             this.data = await res.json();
             this.filtered = this.data;
 

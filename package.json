@@ -1,5 +1,6 @@
 {
   "name": "scadder",
+  "type": "module",
   "version": "0.1.0",
   "description": "A decentralized OpenSCAD package manager and dependency crawler.",
   "main": "cli/index.js",
