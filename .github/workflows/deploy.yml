@@ -18,9 +18,10 @@ jobs:
         server: ${{ secrets.FTP_SERVER }}
         username: ${{ secrets.FTP_USERNAME }}
         password: ${{ secrets.FTP_PASSWORD }}
-        # Use the absolute path from your screenshot to be 100% sure
-        server-dir: domains/jscottk.net/public_html/scadder/
-        local-dir: ./
+        # Since your FTP user starts in public_html, this creates the folder there
+        server-dir: ./scadder/
+        # This ensures we send everything from the root of your repo
+        local-dir: ./ 
         exclude: |
           **/.git*
           **/.git*/**
