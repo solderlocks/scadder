@@ -1,26 +1,29 @@
 # Scadder 🛠️
 
-**The Decentralized Ecosystem for Parametric Hardware.**
+**A serverless customizer, viewer, and dependency manager for OpenSCAD.**
 
-Scadder is an attempt to combat planned obsolescence through an open-source, version-controlled system. High-quality, long-lasting objects should be discoverable, customizable, and resilient to "link rot" and repository drift.
+Sharing parametric models right now usually means fighting with broken customizers, closed-ecosystem web platforms, or passing around massive `.zip` files full of duplicated local libraries. 
 
-## The Problem
-Most 3D hardware is shared as brittle, siloed files. Dependencies break, repositories disappear, and customization requires high-friction manual work.
+Scadder is an open-source toolchain designed to fix the distribution pipeline for OpenSCAD by letting you share, customize, and resolve dependencies directly from GitHub.
 
-## The Solution
-Scadder provides a unified infrastructure for 3D objects:
-* **[Web IDE](https://pollesbog.github.io/scadder/):** A serverless, browser-based OpenSCAD IDE with a recursive GitHub dependency crawler.
-* **[CLI Tool](./cli):** A lightweight Node.js package manager to bring cloud-hosted dependencies into your local development workflow.
-* **Core Registry:** A curated library of "buy-it-for-life" objects, from Gridfinity to precision mechanical parts.
+## The Toolchain
+
+* **[Web Customizer & Viewer](https://pollesbog.github.io/scadder/):** A serverless, WASM-powered web frontend. 
+    * **URL State:** Tweak parameters in the UI, and the state is serialized into the URL. You can share exact customizations without a backend database.
+    * **Dependency Crawling:** It recursively fetches `include` and `use` files directly from GitHub repos so renders don't break.
+    * **Mobile-Friendly:** Actually usable on a phone, so you can tweak parameters and export STLs while standing next to your printer.
+* **[CLI Package Manager](./cli):** A lightweight Node.js utility that brings `npm`-style dependency resolution to local OpenSCAD development. It pulls cloud-hosted dependencies into your local workflow via a `library.json` config.
 
 ## Project Structure
-* `/core`: Environment-agnostic dependency resolution logic.
-* `/web`: The frontend WASM-powered IDE.
+* `/core`: Environment-agnostic dependency resolution and AST parsing logic.
+* `/web`: The frontend web application.
 * `/cli`: The local package manager and terminal utility.
 
----
+## The "Cursed" Architecture (Why serverless?)
+Scadder is designed to be completely decentralized. There is no central database to go down, and no server costs to maintain. 
+* Models are fetched directly from GitHub on the client side.
+* Model discussion and comments are handled by hijacking GitHub Discussions via Giscus, turning a designated repo into a free, zero-maintenance relational database. 
 
-## Philosophy: "No Consensus without Verification"
-We don't take norms as gospel. Scadder operates on the edge cases and nuances that general consensus ignores. If the truth of a design is messy or counter-intuitive, we present the mess. Our goal is precision over palatability.
+You can easily fork this repo and point it at your own `config.json` to host your own standalone viewer and discussion board.
 
-**License:** [GPLv3](LICENSE)
+**License:** [GPLv3](LICENSE) (Built on the shoulders of the OpenSCAD WASM community).
