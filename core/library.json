@@ -799,6 +799,76 @@
     "image": "assets/previews/gridfinity-marble-run.png"
   },
   {
+    "id": "bezier-patches",
+    "title": "Bezier Patches (BOSL)",
+    "description": "Complex 3D surface generation using Bézier patches from the BOSL library.",
+    "author": "revarbat",
+    "url": "https://github.com/revarbat/BOSL/blob/master/examples/bezier_patches.scad",
+    "tags": [
+      "bosl",
+      "math",
+      "surface",
+      "demo"
+    ],
+    "image": "assets/previews/bezier-patches.png"
+  },
+  {
+    "id": "bosl-orientations",
+    "title": "Orientations Demo (BOSL)",
+    "description": "Showcase of various orientation and rotation helper functions in the Belfry OpenScad Library.",
+    "author": "revarbat",
+    "url": "https://github.com/revarbat/BOSL/blob/master/examples/orientations.scad",
+    "tags": [
+      "bosl",
+      "helpers",
+      "geometry",
+      "basics"
+    ],
+    "image": "assets/previews/bosl-orientations.png"
+  },
+  {
+    "id": "abacus-toy",
+    "title": "Parametric Abacus",
+    "description": "A fully functional, customizable abacus with sliding beads.",
+    "author": "AngeloNicoli",
+    "url": "https://github.com/AngeloNicoli/OpenSCAD-Snippet/blob/main/Asset_SCAD/Abacus.scad",
+    "tags": [
+      "educational",
+      "math",
+      "toy",
+      "retro"
+    ],
+    "image": "assets/previews/abacus.png"
+  },
+  {
+    "id": "function-plotter",
+    "title": "3D Function Plotter",
+    "description": "High-complexity mathematical function plotting and surface visualization.",
+    "author": "rcolyer",
+    "url": "https://github.com/rcolyer/plot-function/blob/master/demo_plot_function.scad",
+    "tags": [
+      "math",
+      "plotting",
+      "visualization",
+      "scientific"
+    ],
+    "image": "assets/previews/function-plotter.png"
+  },
+  {
+    "id": "yapp-esp32-box",
+    "title": "ESP32 CAM USB Case",
+    "description": "A professional-grade electronics enclosure generated with the YAPP Box system.",
+    "author": "mrWheel",
+    "url": "https://github.com/mrWheel/YAPP_Box/blob/main/examples/ESP32-CAM-USB_v30.scad",
+    "tags": [
+      "enclosure",
+      "electronics",
+      "yapp-box",
+      "esp32"
+    ],
+    "image": "assets/previews/yapp-esp32-box.png"
+  },
+  {
     "id": "gridfinity-lid",
     "title": "Gridfinity Snap Lid",
     "description": "Snap-fit or press-fit lid for Gridfinity bins. Configurable clearance and style.",
