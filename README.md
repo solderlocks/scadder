@@ -26,4 +26,7 @@ Scadder is designed to be completely decentralized. There is no central database
 
 You can easily fork this repo and point it at your own `config.json` to host your own standalone viewer and discussion board.
 
-**License:** [GPLv3](LICENSE) (Built on the shoulders of the OpenSCAD WASM community).
+## Acknowledgements & Licensing
+Scadder is released under the [GPLv3 License](LICENSE).
+
+This project relies on the incredible work of the OpenSCAD community. Specifically, the web viewer architecture is heavily indebted to the foundational WebAssembly (WASM) porting and compilation logic developed by the [OpenSCAD.cloud](https://openscad.cloud/) team. Scadder builds upon their shoulders to provide this decentralized distribution pipeline. 
