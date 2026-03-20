@@ -1,12 +1,17 @@
 {
   "name": "scadder",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A decentralized OpenSCAD package manager and dependency crawler.",
   "main": "cli/index.js",
-  "bin": {
-    "scadder": "./scadder"
-  },
+  "bin": "./scadder",
+  "files": [
+    "cli/",
+    "core/",
+    "scadder",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "http-server . -p 3002",
@@ -24,7 +29,7 @@
     "cli",
     "hardware"
   ],
-  "author": "",
+  "author": "Scott Kuehnert (Solderlocks)",
   "license": "GPL-3.0",
   "devDependencies": {
     "http-server": "^14.1.1"
