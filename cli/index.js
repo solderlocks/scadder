@@ -10,7 +10,6 @@ import { resolveDependencies } from '../core/crawler.js';
 
 // Point to the live GitHub repo so it works for external users
 const REGISTRY_URL = 'https://raw.githubusercontent.com/solderlocks/scadder/main/core/library.json';
-//const REGISTRY_URL = 'https://jscottk.net/scadder/core/library.json';
 
 // CRITICAL: Use process.cwd() to resolve relative to where the user typed the command!
 const SCADDER_JSON = path.join(process.cwd(), 'scadder.json');
