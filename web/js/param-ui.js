@@ -12,18 +12,6 @@ const GROUP_DISPLAY_NAMES = {
     "Raw Values (Magic Numbers)": "Advanced · Raw Values"
 };
 
-// Heuristic unit detection from parameter names
-function imputeUnit(name) {
-    const n = name.toLowerCase();
-    if (/_mm\b/.test(n) || n.endsWith('_mm')) return 'mm';
-    if (/_cm\b/.test(n) || n.endsWith('_cm')) return 'cm';
-    if (/_in\b/.test(n) || n.endsWith('_in')) return 'in';
-    if (/_deg\b/.test(n) || n.endsWith('_deg')) return '°';
-    if (/_pct\b|_percent\b/.test(n)) return '%';
-    if (/angle|rotation|twist/.test(n)) return '°';
-    if (/\b(height|width|depth|length|size|radius|diameter|thickness|offset|spacing|gap|padding|margin|tolerance)\b/.test(n)) return 'mm';
-    return '';
-}
 
 function buildParamUI(groups) {
     const grid = document.getElementById('paramGrid');
@@ -131,10 +119,7 @@ function buildParamItem(p) {
 
     const lbl = document.createElement('label');
     lbl.className = 'param-label';
-    const unit = imputeUnit(p.name);
-    lbl.innerHTML = unit
-        ? `${p.label} <span class="param-unit">${unit}</span>`
-        : p.label;
+    lbl.textContent = p.label;
     item.appendChild(lbl);
 
     // ── RANGE SLIDER ──

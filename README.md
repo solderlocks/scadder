@@ -19,12 +19,19 @@ Scadder is an open-source toolchain designed to fix the distribution pipeline fo
 * `/web`: The frontend web application.
 * `/cli`: The local package manager and terminal utility.
 
-## The "Cursed" Architecture (Why serverless?)
+## Why serverless?
 Scadder is designed to be completely decentralized. There is no central database to go down, and no server costs to maintain. 
 * Models are fetched directly from GitHub on the client side.
 * Model discussion and comments are handled by hijacking GitHub Discussions via Giscus, turning a designated repo into a free, zero-maintenance relational database. 
 
 You can easily fork this repo and point it at your own `config.json` to host your own standalone viewer and discussion board.
+
+## Using Scadder
+
+### The Web Viewer
+
+### The CLI Package Manager
+In the root directory, run "./scadder install [library-id]" to pull a model and its dependencies from the library into the root directory of scadder. For example, to install the parametric-sign model, run "./scadder install parametric-sign". All model IDs are defined in /core/library.json.
 
 ## Acknowledgements & Licensing
 Scadder is released under the [GPLv3 License](LICENSE).

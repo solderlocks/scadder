@@ -74,7 +74,7 @@ function parseScadParams(code) {
                 rawValue: val,
                 min, max, step,
                 lineIndex: i,
-                label: name,
+                label: name.replace(/_(mm|cm|in|inches|deg|pct|percent)\b/gi, ''),
                 isMagic: false
             });
 
