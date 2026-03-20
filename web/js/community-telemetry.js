@@ -13,7 +13,7 @@ function updateCommunityTelemetry(decodedScadUrl) {
     // Create the script element with required Giscus attributes
     const script = document.createElement('script');
     script.src = 'https://giscus.app/client.js';
-    script.setAttribute('data-repo', 'pollesbog/scadder');
+    script.setAttribute('data-repo', 'solderlocks/scadder');
     script.setAttribute('data-repo-id', 'R_kgDORRNb3Q');
     script.setAttribute('data-category', 'Object Feedback');
     script.setAttribute('data-category-id', 'DIC_kwDORRNb3c4C3BUE');
