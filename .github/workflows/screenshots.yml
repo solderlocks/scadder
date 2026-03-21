@@ -35,7 +35,7 @@ jobs:
       - name: Run Snapshot Script
         env:
           BASE_URL: "http://localhost:8080/web/index.html"
-        run: node web/scripts/snap.js
+        run: node web/scripts/snap.cjs
 
       # Upgraded to v5 to prevent deprecation warnings with Node 20
       - name: Commit and Push New Images
