@@ -48,6 +48,15 @@ Navigate to any OpenSCAD project directory on your computer and run:
 
 This will fetch the model and all of its nested `include` and `use` dependencies, dropping them into a `.scadder_modules` folder in your current directory so your local renders never break. (All model IDs are defined in `/core/library.json`).
 
+### Install via Direct URL
+Scadder isn't restricted to the community library. You can pass a direct URL to *any* `.scad` file, and the crawler will recursively resolve and download all nested `include` and `use` dependencies. 
+
+*(Note: The host must have a permissive CORS policy, such as `raw.githubusercontent.com` or a standard static file server).*
+
+```bash
+npx scadder install [https://raw.githubusercontent.com/user/repo/main/model.scad](https://raw.githubusercontent.com/user/repo/main/model.scad)
+```
+
 ## Acknowledgements & Licensing
 Scadder is released under the **[GPLv3 License](LICENSE)**.
 
