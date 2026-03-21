@@ -42,7 +42,7 @@
   {
     "id": "honeycomb-wall",
     "title": "Honeycomb Wall",
-    "description": "Generates a hexagonal storage wall pattern. Great test for the 'include' fetcher.",
+    "description": "Generates a hexagonal storage wall pattern.",
     "author": "smkent",
     "url": "https://github.com/smkent/honeycomb-openscad/blob/main/example.scad",
     "tags": [
