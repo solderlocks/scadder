@@ -10,3 +10,4 @@ node_modules/
 
 # Web build artifacts (if applicable)
 dist/
+*/.DS_Store
