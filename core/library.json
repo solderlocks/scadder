@@ -54,6 +54,46 @@
     "image": "assets/previews/honeycomb-wall.png"
   },
   {
+    "id": "yapp-box",
+    "title": "YAPP Box (v3)",
+    "description": "The 'Yet Another Parametric Projectbox' generator. A comprehensive system for creating electronics enclosures.",
+    "author": "mrWheel",
+    "url": "https://github.com/mrWheel/YAPP_Box/blob/main/YAPP_Template_v3.scad",
+    "tags": [
+      "electronics",
+      "enclosure",
+      "project-box"
+    ],
+    "image": "assets/previews/yapp-box.png"
+  },
+  {
+    "id": "gridfinity-rebuilt-baseplate",
+    "title": "Gridfinity Rebuilt: Baseplate",
+    "description": "The high-performance foundation for any Gridfinity drawer setup.",
+    "author": "kennetek",
+    "url": "https://github.com/kennetek/gridfinity-rebuilt-openscad/blob/master/gridfinity-rebuilt-baseplate.scad",
+    "tags": [
+      "gridfinity",
+      "base",
+      "organization"
+    ],
+    "image": "assets/previews/gridfinity-rebuilt-baseplate.png"
+  },
+  {
+    "id": "yapp-esp32-box",
+    "title": "ESP32 CAM USB Case",
+    "description": "A professional-grade electronics enclosure generated with the YAPP Box system.",
+    "author": "mrWheel",
+    "url": "https://github.com/mrWheel/YAPP_Box/blob/main/examples/ESP32-CAM-USB_v30.scad",
+    "tags": [
+      "enclosure",
+      "electronics",
+      "yapp-box",
+      "esp32"
+    ],
+    "image": "assets/previews/yapp-esp32-box.png"
+  },
+  {
     "id": "openscad-logo",
     "title": "OpenSCAD Logo",
     "description": "The official, parametric logo. A classic test of boolean operations.",
@@ -158,19 +198,6 @@
       "mechanical"
     ],
     "image": "assets/previews/rugged-box.png"
-  },
-  {
-    "id": "yapp-box",
-    "title": "YAPP Box (v3)",
-    "description": "The 'Yet Another Parametric Projectbox' generator. A comprehensive system for creating electronics enclosures.",
-    "author": "mrWheel",
-    "url": "https://github.com/mrWheel/YAPP_Box/blob/main/YAPP_Template_v3.scad",
-    "tags": [
-      "electronics",
-      "enclosure",
-      "project-box"
-    ],
-    "image": "assets/previews/yapp-box.png"
   },
   {
     "id": "key-v2",
@@ -281,19 +308,6 @@
       "adapter"
     ],
     "image": "assets/previews/duct-adapter.png"
-  },
-  {
-    "id": "gridfinity-rebuilt-baseplate",
-    "title": "Gridfinity Rebuilt: Baseplate",
-    "description": "The high-performance foundation for any Gridfinity drawer setup.",
-    "author": "kennetek",
-    "url": "https://github.com/kennetek/gridfinity-rebuilt-openscad/blob/master/gridfinity-rebuilt-baseplate.scad",
-    "tags": [
-      "gridfinity",
-      "base",
-      "organization"
-    ],
-    "image": "assets/previews/gridfinity-rebuilt-baseplate.png"
   },
   {
     "id": "gridfinity-rebuilt-standard-bin",
@@ -614,19 +628,95 @@
     "image": "assets/previews/easy-bolt.png"
   },
   {
-    "id": "gridfinity-rugged-box",
-    "title": "Gridfinity Rugged Box",
-    "description": "Rugged enclosed box variant for the Gridfinity system. Stackable with latching lid and waterproof options.",
-    "author": "ostat",
-    "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_item_holder.scad",
+    "id": "smart-card-proxy",
+    "title": "Smart Card Proxy",
+    "description": "A plastic slot-filler for a smart card port.",
+    "author": "mbugert",
+    "url": "https://github.com/mbugert/openscad-projects/blob/main/smart_card_dummy/dummy.scad",
     "tags": [
-      "gridfinity",
-      "box",
-      "rugged",
-      "storage",
+      "smart-card",
+      "proxy",
       "functional"
     ],
-    "image": "assets/previews/gridfinity-rugged-box.png"
+    "image": "assets/previews/smart-card-proxy.png"
+  },
+  {
+    "id": "straw-rack",
+    "title": "Straw Rack",
+    "description": "A rack for holding straws.",
+    "author": "mbugert",
+    "url": "https://github.com/mbugert/openscad-projects/blob/main/straw_rack/rack.scad",
+    "tags": [
+      "straw",
+      "rack",
+      "functional"
+    ],
+    "image": "assets/previews/straw-rack.png"
+  },
+  {
+    "id": "cartographers-tiles",
+    "title": "Cartographers Tiles",
+    "description": "A set of tiles for the board game Cartographers.",
+    "author": "mbugert",
+    "url": "https://github.com/mbugert/openscad-projects/blob/main/cartographers_tiles/tiles.scad",
+    "tags": [
+      "cartographers",
+      "tiles",
+      "functional"
+    ],
+    "image": "assets/previews/cartographers-tiles.png"
+  },
+  {
+    "id": "gopro3-lens-adapter",
+    "title": "GoPro3 Lens Adapter",
+    "description": "A plastic adapter for holding a lens to a GoPro3.",
+    "author": "mbugert",
+    "url": "https://github.com/mbugert/openscad-projects/blob/main/gopro3_lens_adapter/gopro3_lens_adapter.scad",
+    "tags": [
+      "gopro",
+      "lens",
+      "functional"
+    ],
+    "image": "assets/previews/gopro3-lens-adapter.png"
+  },
+  {
+    "id": "gopro-la2205wg-mount",
+    "title": "GoPro Mount for HP LA2205WG",
+    "description": "A plastic mount for holding a GoPro to a HP LA2205WG monitor.",
+    "author": "mbugert",
+    "url": "https://github.com/mbugert/openscad-projects/blob/main/gopro_la2205wg_mount/gopro_la2205wg_mount.scad",
+    "tags": [
+      "gopro",
+      "monitor",
+      "functional"
+    ],
+    "image": "assets/previews/gopro-la2205wg-mount.png"
+  },
+  {
+    "id": "gopro-monitor-pole-mount",
+    "title": "Gopro monitor pole mount",
+    "description": "A plastic mount for holding a monitor to a pole.",
+    "author": "mbugert",
+    "url": "https://github.com/mbugert/openscad-projects/blob/main/gopro_monitor_pole_mount/gopro_monitor_pole_mount.scad",
+    "tags": [
+      "gopro",
+      "monitor",
+      "pole-mount",
+      "functional"
+    ],
+    "image": "assets/previews/gopro-monitor-pole-mount.png"
+  },
+  {
+    "id": "shelf-cable-clip",
+    "title": "Shelf Cable Clip",
+    "description": "A plastic clip for holding cables to a shelf.",
+    "author": "mbugert",
+    "url": "https://github.com/mbugert/openscad-projects/blob/main/shelf_cable_clip/clip.scad",
+    "tags": [
+      "cable-clip",
+      "functional"
+    ],
+    "image": "assets/previews/shelf-cable-clip.png"
   },
   {
     "id": "camera-mount",
@@ -797,20 +887,6 @@
       "fun"
     ],
     "image": "assets/previews/gridfinity-marble-run.png"
-  },
-  {
-    "id": "yapp-esp32-box",
-    "title": "ESP32 CAM USB Case",
-    "description": "A professional-grade electronics enclosure generated with the YAPP Box system.",
-    "author": "mrWheel",
-    "url": "https://github.com/mrWheel/YAPP_Box/blob/main/examples/ESP32-CAM-USB_v30.scad",
-    "tags": [
-      "enclosure",
-      "electronics",
-      "yapp-box",
-      "esp32"
-    ],
-    "image": "assets/previews/yapp-esp32-box.png"
   },
   {
     "id": "gridfinity-lid",
