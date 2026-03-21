@@ -1175,7 +1175,7 @@ header {
   background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 4px;
-  padding: 0.2rem 0.5rem;
+  padding: 0.5rem 0.5rem;
   font-family: var(--mono);
   font-size: 0.68rem;
   color: var(--text-dim);
