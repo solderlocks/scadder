@@ -29,15 +29,39 @@ async function init() {
 }
 
 async function install(target) {
+    // CASE 1: BARE INSTALL (Install everything from scadder.json)
     if (!target) {
-        console.error('Error: Please specify a target to install (e.g., scadder install gridfinity-cup)');
-        process.exit(1);
+        let config;
+        try {
+            const data = await fs.readFile(SCADDER_JSON, 'utf8');
+            config = JSON.parse(data);
+        } catch (e) {
+            console.error(`Error: Could not read scadder.json. Specify a target or run "scadder init" first.`);
+            process.exit(1);
+        }
+
+        const deps = Object.entries(config.dependencies || {});
+        if (deps.length === 0) {
+            console.log('> No dependencies to install in scadder.json.');
+            return;
+        }
+
+        console.log(`> Installing ${deps.length} dependencies from scadder.json...`);
+        for (const [id, url] of deps) {
+            try {
+                await fetchAndSave(id, url);
+            } catch (e) {
+                console.error(`  Failed to install ${id}: ${e.message}`);
+            }
+        }
+        console.log('> Bulk install complete.');
+        return;
     }
 
+    // CASE 2: SINGLE TARGET INSTALL
     let url = target;
     let id = target;
 
-    // 1. Resolve ID from registry if not a URL
     if (!target.startsWith('http')) {
         console.log(`> resolving ${target} from registry...`);
         try {
@@ -56,46 +80,43 @@ async function install(target) {
             process.exit(1);
         }
     } else {
-        // If it's a URL, use a hash or slug for the ID
         id = target.split('/').pop().replace('.scad', '') || 'unnamed-dependency';
     }
 
-    // 2. Normalize GitHub URLs
-    url = toRawUrl(url);
-
-    // 3. Fetch dependencies
-    console.log(`> fetching dependencies for ${id}...`);
     try {
-        const files = await resolveDependencies(url, {
-            onLog: (msg) => console.log(`  ${msg}`),
-            onError: (err) => console.error(`  ${err}`)
-        });
-
-        if (files.length === 0) {
-            console.error(`Error: No files found for ${id}`);
-            process.exit(1);
-        }
-
-        // 4. Write files to local storage
-        const targetDir = path.join(MODULES_DIR, id);
-        await fs.mkdir(targetDir, { recursive: true });
-
-        for (const file of files) {
-            const filePath = path.join(targetDir, file.name);
-            const fileDir = path.dirname(filePath);
-            await fs.mkdir(fileDir, { recursive: true });
-            await fs.writeFile(filePath, file.txt);
-        }
-
-        console.log(`> installed ${files.length} files to ${targetDir}/`);
-
-        // 5. Update scadder.json
+        await fetchAndSave(id, url);
         await updateConfig(id, url);
-
     } catch (e) {
         console.error(`Error: Installation failed: ${e.message}`);
         process.exit(1);
     }
+}
+
+// HELPER: Core fetching and writing logic to prevent duplication
+async function fetchAndSave(id, url) {
+    url = toRawUrl(url);
+    console.log(`> fetching dependencies for ${id}...`);
+
+    const files = await resolveDependencies(url, {
+        onLog: (msg) => console.log(`  ${msg}`),
+        onError: (err) => console.error(`  ${err}`)
+    });
+
+    if (files.length === 0) {
+        throw new Error(`No files found for ${id}`);
+    }
+
+    const targetDir = path.join(MODULES_DIR, id);
+    await fs.mkdir(targetDir, { recursive: true });
+
+    for (const file of files) {
+        const filePath = path.join(targetDir, file.name);
+        const fileDir = path.dirname(filePath);
+        await fs.mkdir(fileDir, { recursive: true });
+        await fs.writeFile(filePath, file.txt);
+    }
+
+    console.log(`> installed ${files.length} files to ${targetDir}/`);
 }
 
 async function updateConfig(id, url) {
@@ -139,7 +160,7 @@ Scadder CLI - OpenSCAD Package Manager
 
 Commands:
   init             Initialize a new scadder.json project
-  install <target> Install a package by ID or URL
+  install [target] Install a package, or all packages in scadder.json
             `);
             break;
         default:
