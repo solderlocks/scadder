@@ -1,31 +1,50 @@
-name: 🚀 Sync to Hostinger
+name: Deploy to GitHub Pages
+
 on:
   push:
-    branches:
-      - main 
+    branches: ["main"]
+    # Only run this if files in web or core change, to save action minutes
+    paths:
+      - "web/**"
+      - "core/**"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-  web-deploy:
-    name: 🎉 Sync
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-    - name: 🚚 Get latest code
-      uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: 📂 FTP Deploy
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      with:
-        server: ${{ secrets.FTP_SERVER }}
-        username: ${{ secrets.FTP_USERNAME }}
-        password: ${{ secrets.FTP_PASSWORD }}
-        # Since the user lands in the real public_html, this creates scadder right next to portfolio
-        server-dir: ./scadder/
-        local-dir: ./ 
-        exclude: |
-          **/.git*
-          **/.git*/**
-          **/node_modules/**
-          **/.DS_Store
-          README.md
-          .github/**
-          .vscode/**  
+      - name: Prepare Deployment Directory
+        run: |
+          mkdir _site
+          # 1. Move everything inside /web to the root of /_site
+          cp -r web/* _site/
+          # 2. Copy the /core folder to the root of /_site so relative paths still resolve
+          cp -r core _site/core
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "_site"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
