@@ -19,7 +19,7 @@ const OUTPUT_DIR = path.join(__dirname, '../assets/previews');
     const validIds = new Set(library.map(item => item.id));
 
     const browser = await puppeteer.launch({
-        headless: "new",
+        headless: true,
         args: [
             '--no-sandbox',
             '--disable-setuid-sandbox',

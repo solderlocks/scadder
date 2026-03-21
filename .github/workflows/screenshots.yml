@@ -2,45 +2,44 @@ name: Auto-Generate Screenshots
 on:
   push:
     paths:
-      - 'core/library.json'  # ONLY run when the library changes
+      - "core/library.json" # ONLY run when the library changes
     branches:
       - main
 
 permissions:
-  contents: write      # Allow the robot to commit changes back
+  contents: write # Allow the robot to commit changes back
 
 jobs:
   snap:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      # Upgraded to v4
+      - uses: actions/checkout@v4
 
+      # Upgraded to v4 and bumped Node to 20 for better Puppeteer support
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
-      - name: Install Dependencies
-        run: |
-          npm init -y
-          npm install puppeteer http-server
+      - name: Install Snapshot Dependencies
+        # --no-save prevents it from altering your CLI's package.json
+        run: npm install puppeteer http-server --no-save
 
       - name: Start Local Server
         run: |
-          # Start a simple server on port 8080 in the background (&)
           npx http-server . -p 8080 &
           echo "Server started on 8080"
-          sleep 5 # Give it a moment to boot up
+          sleep 5
 
       - name: Run Snapshot Script
         env:
-          # FIX 1: Point to the root where index.html is (in web/)
-          BASE_URL: 'http://localhost:8080/web/index.html' 
+          BASE_URL: "http://localhost:8080/web/index.html"
         run: node web/scripts/snap.js
 
+      # Upgraded to v5 to prevent deprecation warnings with Node 20
       - name: Commit and Push New Images
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: "📸 Auto-generated screenshots for library update"
-          # FIX 2: Look for images in the web/assets/previews folder and library in core/
           file_pattern: "web/assets/previews/*.png core/library.json"
