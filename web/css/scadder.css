@@ -266,6 +266,10 @@ header {
     padding: 0.42rem 0.5rem;
     /* Tighter padding for icon-only */
   }
+
+  .btn-ghost:hover {
+    border-color: var(--border);
+  }
 }
 
 .lbl {

@@ -1,7 +1,7 @@
 {
   "name": "scadder",
   "type": "module",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A decentralized OpenSCAD package manager and dependency crawler.",
   "main": "cli/index.js",
   "bin": "./scadder",
@@ -15,7 +15,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "http-server . -p 3002",
-    "dev": "http-server . -p 3001"
+    "dev": "http-server . -p 3001",
+    "prepublishOnly": "cp README-npm.md README.md",
+    "postpublish": "git restore README.md"
   },
   "repository": {
     "type": "git",
