@@ -37,6 +37,7 @@ function setProgress(percent, isCreeping = false) {
     } else {
         bar.classList.remove('creeping');
         bar.style.width = percent + '%';
+        bar.style.background = '';
     }
 }
 
