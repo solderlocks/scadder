@@ -33,13 +33,14 @@ jobs:
         run: |
           mkdir _site
 
-          # 1. Move everything inside /web to the root of /_site
+          # 1. Move contents and core
           cp -r web/* _site/
-
-          # 2. Copy the /core folder to the root of /_site
           cp -r core _site/core
 
-          # 3. Prevent Link Rot: Create a redirect map for the old /web/ path
+          # 2. Disable Jekyll processing so GitHub doesn't drop files
+          touch _site/.nojekyll
+
+          # 3. Create the redirect map for the old /web/ path
           mkdir -p _site/web
           cat << 'EOF' > _site/web/index.html
           <!DOCTYPE html>
@@ -49,7 +50,6 @@ jobs:
               <title>Redirecting...</title>
               <meta http-equiv="refresh" content="0; url=https://scadder.dev/">
               <script>
-                // Instantly redirect while preserving the query string and hash
                 const newUrl = "https://scadder.dev/" + window.location.search + window.location.hash;
                 window.location.replace(newUrl);
               </script>
@@ -59,3 +59,6 @@ jobs:
             </body>
           </html>
           EOF
+
+          # 4. Copy the redirect to web.html to catch exact /web routes
+          cp _site/web/index.html _site/web.html
