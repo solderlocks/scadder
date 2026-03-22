@@ -3,7 +3,6 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: ["main"]
-    # Only run this if files in web or core change, to save action minutes
     paths:
       - "web/**"
       - "core/**"
@@ -62,3 +61,15 @@ jobs:
 
           # 4. Copy the redirect to web.html to catch exact /web routes
           cp _site/web/index.html _site/web.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "_site"
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
