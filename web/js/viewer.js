@@ -79,6 +79,39 @@ function toggleWireframeMode() {
     if (btn) btn.classList.toggle('active', meshWire.visible);
 }
 
+function toggleOrthographic() {
+    const s = SceneHandler.getScene("scene-0");
+    if (!s) return;
+
+    const btn = document.getElementById('btnOrthoToggle');
+
+    if (s.camera === s.perspectiveCamera) {
+        // Switch to orthographic
+        s.orthographicCamera.position.copy(s.camera.position);
+        s.orthographicCamera.rotation.copy(s.camera.rotation);
+        s.camera = s.orthographicCamera;
+        if (btn) btn.classList.add('active');
+    } else {
+        // Switch to perspective
+        s.perspectiveCamera.position.copy(s.camera.position);
+        // Step back if transitioning from tight ortho
+        if (s.perspectiveCamera.position.length() < 50) {
+            s.perspectiveCamera.position.setLength(200);
+        }
+        s.perspectiveCamera.rotation.copy(s.camera.rotation);
+        s.camera = s.perspectiveCamera;
+        if (btn) btn.classList.remove('active');
+    }
+
+    // Update orbit controls global camControl references
+    const camControl = camControlMap.get(s.containerID);
+    if (camControl) {
+        camControl.object = s.camera;
+    }
+    
+    SceneHandler.adjustCamera("scene-0");
+}
+
 // ── Ruler ─────────────────────────────────────────────────────────────────────
 
 var rulerMesh = null;

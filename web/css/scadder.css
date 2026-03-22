@@ -6,7 +6,7 @@
   --surface2: #1e1b17;
   --border: #2a2520;
   --amber: #c8922a;
-  --amber-dim: #7a5618;
+  --amber-dim: #88601B;
   --text: #e8e0d0;
   --text-dim: #7a7060;
   --text-mid: #a89880;
@@ -251,10 +251,8 @@ header {
 }
 
 @media (max-width: 600px) {
-  .vtb-right {
-    display: none;
-  }
 
+  /* Let vtb-right remain visible for the camera toggle */
   .vtb-left .lbl {
     display: none;
   }
@@ -681,6 +679,24 @@ header {
 .btn-ghost:hover {
   border-color: var(--amber-dim);
   color: var(--text);
+}
+
+.btn-ghost.active {
+  background: var(--surface2);
+  border-color: var(--amber-dim);
+  color: var(--amber);
+}
+
+.icon-isometric {
+  display: inline-block;
+  transition: transform 0.25s ease;
+  -webkit-font-smoothing: antialiased;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+.btn-ghost:not(.active) .icon-isometric {
+  transform: perspective(20px) rotateX(30deg);
 }
 
 /* ── BOM Table ─────────────────────────────────────────────────────────────── */
@@ -1128,7 +1144,7 @@ header {
 
 .modal h3 {
   font-family: var(--mono);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--amber-dim);

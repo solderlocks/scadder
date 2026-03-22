@@ -32,13 +32,11 @@ SceneHandler = {
 			renderObjQueue.delete(sName);
 		}
 
-		// create a perspective camera for this scene
-		//this.camera = new THREE.PerspectiveCamera(45, container.width() / container.height(), 0.1, 1000);
-		//camPerspective = new THREE.OrthographicCamera( container.width() / 2, container.width() / 2,   container.height()/2, container.height()/2 , 0.1, 1000);
-		this.camera =  new THREE.OrthographicCamera( container.width() / - 2, container.width() / 2, container.height() / 2, container.height() / - 2, -10000, 150000 );
+		// create both cameras for this scene (Orthographic default) //
+		this.perspectiveCamera = new THREE.PerspectiveCamera(45, container.width() / container.height(), 0.1, 150000);
+		this.orthographicCamera = new THREE.OrthographicCamera( container.width() / - 2, container.width() / 2, container.height() / 2, container.height() / - 2, -10000, 150000 );
+		this.camera = this.orthographicCamera;
 		
-		
-		//this.camera = camOrtho;
 		this.camera.position.set(
 			this.config.defaultCameraPosition.x,
 			this.config.defaultCameraPosition.y,
@@ -52,14 +50,18 @@ SceneHandler = {
 
 		this.camera.zoom = 3;
 
-
-
+		this.perspectiveCamera.position.copy(this.camera.position);
+		this.perspectiveCamera.position.setLength(200);
+		this.perspectiveCamera.rotation.copy(this.camera.rotation);
+		this.perspectiveCamera.zoom = 1;
 
 		// save this scene to the map of scenes
 		sceneMap.set(sName, {
 			scene: newScene,
 			name: sName,
 			camera: this.camera,
+			perspectiveCamera: this.perspectiveCamera,
+			orthographicCamera: this.orthographicCamera,
 			picking: isPickingScene,
 			backgroundColor: bgColor,
 			activeID: sceneID,
@@ -127,7 +129,14 @@ SceneHandler = {
 		const s = sceneMap.get(sceneName);
 		const c = $(`#${s.containerID}`);
 
-		s.camera.aspect = c.width() / c.height();
+		if (s.camera.isOrthographicCamera) {
+			s.camera.left = c.width() / -2;
+			s.camera.right = c.width() / 2;
+			s.camera.top = c.height() / 2;
+			s.camera.bottom = c.height() / -2;
+		} else {
+			s.camera.aspect = c.width() / c.height();
+		}
 		s.camera.updateProjectionMatrix();
 	},
 	config: {
