@@ -22,7 +22,7 @@ Navigate to any OpenSCAD project directory on your computer and run:
 scadder install <model-id>
 ```
 
-This will fetch the model and all of its nested `include` and `use` dependencies, dropping them into a `.scadder_modules` folder in your current directory so your local renders never break. (Available community model IDs are defined in the project's `library.json`).
+This will fetch the model and all of its nested `include` and `use` dependencies, dropping them into a `.scadder_modules` folder in your current directory so your local renders never break. (Available community model IDs are defined in the project's `library.json` , like `parametric-sign`).
 
 ### Install via Direct URL
 
@@ -31,7 +31,7 @@ Scadder isn't restricted to a curated community library. You can pass a direct U
 *(Note: The host must have a permissive CORS policy, such as `raw.githubusercontent.com` or a standard static file server).*
 
 ```bash
-scadder install [https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad](https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad)
+scadder install https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad
 ```
 
 ## Licensing
