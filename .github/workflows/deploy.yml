@@ -32,19 +32,30 @@ jobs:
       - name: Prepare Deployment Directory
         run: |
           mkdir _site
+
           # 1. Move everything inside /web to the root of /_site
           cp -r web/* _site/
-          # 2. Copy the /core folder to the root of /_site so relative paths still resolve
+
+          # 2. Copy the /core folder to the root of /_site
           cp -r core _site/core
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: "_site"
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          # 3. Prevent Link Rot: Create a redirect map for the old /web/ path
+          mkdir -p _site/web
+          cat << 'EOF' > _site/web/index.html
+          <!DOCTYPE html>
+          <html>
+            <head>
+              <meta charset="utf-8">
+              <title>Redirecting...</title>
+              <meta http-equiv="refresh" content="0; url=https://scadder.dev/">
+              <script>
+                // Instantly redirect while preserving the query string and hash
+                const newUrl = "https://scadder.dev/" + window.location.search + window.location.hash;
+                window.location.replace(newUrl);
+              </script>
+            </head>
+            <body style="background: #111; color: #fff; font-family: monospace; padding: 2rem;">
+              <p>Redirecting to <a href="https://scadder.dev/" style="color: #4da6ff;">scadder.dev</a>...</p>
+            </body>
+          </html>
+          EOF
