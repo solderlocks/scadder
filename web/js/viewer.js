@@ -90,7 +90,7 @@ function toggleOrthographic() {
         s.orthographicCamera.position.copy(s.camera.position);
         s.orthographicCamera.rotation.copy(s.camera.rotation);
         s.camera = s.orthographicCamera;
-        if (btn) btn.classList.add('active');
+        if (btn) btn.classList.remove('active');
     } else {
         // Switch to perspective
         s.perspectiveCamera.position.copy(s.camera.position);
@@ -100,7 +100,7 @@ function toggleOrthographic() {
         }
         s.perspectiveCamera.rotation.copy(s.camera.rotation);
         s.camera = s.perspectiveCamera;
-        if (btn) btn.classList.remove('active');
+        if (btn) btn.classList.add('active');
     }
 
     // Update orbit controls global camControl references

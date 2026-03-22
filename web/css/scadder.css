@@ -261,6 +261,11 @@ header {
     padding: 0.42rem 0.5rem;
     /* Tighter padding for icon-only */
   }
+
+  .vtb-right .btn {
+    padding: 0.42rem 0.5rem;
+    /* Tighter padding for icon-only */
+  }
 }
 
 .lbl {
@@ -693,9 +698,6 @@ header {
   -webkit-font-smoothing: antialiased;
   transform-style: preserve-3d;
   backface-visibility: hidden;
-}
-
-.btn-ghost:not(.active) .icon-isometric {
   transform: perspective(20px) rotateX(30deg);
 }
 
