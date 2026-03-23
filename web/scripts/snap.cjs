@@ -13,7 +13,6 @@ const OUTPUT_DIR = path.join(__dirname, '../assets/previews');
     }
 
     const library = JSON.parse(fs.readFileSync(LIBRARY_PATH, 'utf8'));
-    let hasChanges = false;
 
     // 1. Collect all valid IDs from the JSON
     const validIds = new Set(library.map(item => item.id));
@@ -48,10 +47,6 @@ const OUTPUT_DIR = path.join(__dirname, '../assets/previews');
 
         if (fs.existsSync(filepath)) {
             console.log(`⏩ Skipping ${item.title} (Image exists)`);
-            if (item.image !== relativePath) {
-                item.image = relativePath;
-                hasChanges = true;
-            }
             continue;
         }
 
@@ -93,9 +88,6 @@ const OUTPUT_DIR = path.join(__dirname, '../assets/previews');
             if (element) await element.screenshot({ path: filepath });
             else await page.screenshot({ path: filepath });
 
-            item.image = relativePath;
-            hasChanges = true;
-
         } catch (e) {
             console.error(`❌ Failed to capture ${item.title}: ${e.message}`);
         }
@@ -116,15 +108,7 @@ const OUTPUT_DIR = path.join(__dirname, '../assets/previews');
         if (!validIds.has(id)) {
             console.log(`🗑️ Deleting orphan: ${file}`);
             fs.unlinkSync(path.join(OUTPUT_DIR, file));
-            // No need to set hasChanges=true because this doesn't affect library.json
         }
-    }
-
-    if (hasChanges) {
-        fs.writeFileSync(LIBRARY_PATH, JSON.stringify(library, null, 2));
-        console.log("✨ Library index updated.");
-    } else {
-        console.log("✨ No changes to library index needed.");
     }
 
 })();
