@@ -841,7 +841,7 @@
   {
     "id": "gridfinity-glue-stick",
     "title": "Gridfinity Glue Stick Holder",
-    "description": "Holder insert for glue sticks that fits into a Gridfinity grid cell.",
+    "description": " Holder insert for glue sticks that fits into a Gridfinity grid cell.",
     "author": "ostat",
     "url": "https://github.com/ostat/gridfinity_extended_openscad/blob/main/gridfinity_glue_stick.scad",
     "tags": [
