@@ -4,6 +4,8 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src * 'unsafe-inline'; script-src 'self' 'unsafe-inline';">
   <title>Scadder — OpenSCAD Web Viewer & Package Manager</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,6 +29,18 @@
   <link rel="stylesheet" href="css/scadder.css">
 
   <!-- App Scripts (load order matters) -->
+  <script>
+    window.isWasmSupported = (function () {
+      try {
+        if (typeof WebAssembly === "object" && typeof WebAssembly.instantiate === "function") {
+          const module = new WebAssembly.Module(Uint8Array.of(0x0, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00));
+          if (module instanceof WebAssembly.Module)
+            return new WebAssembly.Instance(module) instanceof WebAssembly.Instance;
+        }
+      } catch (e) { }
+      return false;
+    })();
+  </script>
   <script src="js/url-helpers.js"></script>
   <script src="js/scad-parser.js"></script>
   <script src="js/param-ui.js"></script>
@@ -228,6 +242,17 @@
           </div>
           <p id="renderStatus">Initializing system…</p>
         </div>
+        <div id="wasmErrorOverlay"
+          style="display:none; position:absolute; inset:0; background:var(--bg); z-index:999; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 2rem;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem;">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <p class="empty-note" style="margin:0; max-width:280px;">Your browser does not support WebAssembly
+            or it has been disabled. WebAssembly must be available to render 3D models.</p>
+        </div>
       </div>
 
       <!-- Parameters -->
@@ -336,6 +361,8 @@
     let worker = null;
 
     window.runAndShowScad = async function () {
+      if (!window.isWasmSupported) return;
+
       const mainFile = virtualFileSystem.find(f => f.name === 'main.scad');
       if (!mainFile) return;
 

@@ -12,8 +12,6 @@ async function loadScadFromUrl(url) {
     document.getElementById('landingState').style.display = 'none';
     document.getElementById('modelView').style.display = 'block';
 
-    init3D();
-
     const filename = rawUrl.split('/').pop().replace(/\.scad$/i, '');
     document.getElementById('modelTitle').textContent = filename.replace(/[-_]/g, ' ');
 
@@ -36,6 +34,17 @@ async function loadScadFromUrl(url) {
             }
         }
     } catch (e) { console.warn('Library lookup skipped:', e); }
+
+    if (!window.isWasmSupported) {
+        document.getElementById('wasmErrorOverlay').style.display = 'flex';
+        const renderOverlay = document.getElementById('renderOverlay');
+        if (renderOverlay) renderOverlay.style.display = 'none';
+        const runBtn = document.getElementById('runBtn');
+        if (runBtn) runBtn.disabled = true;
+        return;
+    }
+
+    init3D();
 
     // Show the overlay immediately
     document.getElementById('renderOverlay').classList.remove('hidden');
