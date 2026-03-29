@@ -2,6 +2,8 @@
 var virtualFileSystem = [{ name: "main.scad", txt: "" }];
 var meshWire, meshSolid;
 var parsedParams = [];
+var baseScadState = "";
+var patchTimeout = null;
 
 // ── Load Model from URL ───────────────────────────────────────────────────────
 
@@ -64,9 +66,59 @@ async function loadScadFromUrl(url) {
         const mainFile = virtualFileSystem.find(f => f.name === "main.scad");
         if (!mainFile) throw new Error("Failed to load main file");
 
-        document.getElementById('sourceDisplay').innerHTML = mainFile.txt.split('\n')
-            .map((l, i) => `<span class="src-ln">${String(i + 1).padStart(3, ' ')}</span>${esc(l)}`)
-            .join('\n');
+        baseScadState = mainFile.txt;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const patchParam = urlParams.get('patch');
+        
+        if (patchParam) {
+            try {
+                const decompressedPatch = LZString.decompressFromEncodedURIComponent(patchParam);
+                if (!decompressedPatch) throw new Error("Decompression failed");
+                const patchedText = Diff.applyPatch(baseScadState, decompressedPatch);
+                if (patchedText === false) throw new Error("Patch conflict");
+                mainFile.txt = patchedText;
+                document.getElementById('patchBadge').classList.add('visible');
+            } catch (err) {
+                document.getElementById('consoleOutput').textContent += "Failed to apply URL patch to base file\n";
+            }
+        }
+
+        const editor = document.getElementById('sourceDisplay');
+        editor.value = mainFile.txt;
+        editor.textContent = mainFile.txt;
+
+        // Cmd/Ctrl + Enter to render
+        editor.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                e.preventDefault();
+                window.runAndShowScad();
+            }
+        });
+
+        editor.addEventListener('input', () => {
+            const currentText = editor.value;
+            const mf = virtualFileSystem.find(f => f.name === "main.scad");
+            if (mf) mf.txt = currentText;
+
+            clearTimeout(patchTimeout);
+            patchTimeout = setTimeout(() => {
+                const patch = Diff.createPatch('main.scad', baseScadState, currentText);
+                
+                // Diff.createPatch returns a full patch text. If no differences, the diff might be empty or 
+                // just headers. A simple check is if currentText === baseScadState.
+                const u = new URL(window.location.href);
+                if (currentText === baseScadState) {
+                    u.searchParams.delete('patch');
+                    document.getElementById('patchBadge').classList.remove('visible');
+                } else {
+                    const compressed = LZString.compressToEncodedURIComponent(patch);
+                    u.searchParams.set('patch', compressed);
+                    document.getElementById('patchBadge').classList.add('visible');
+                }
+                window.history.replaceState({}, '', u.toString());
+            }, 500);
+        });
 
         loadGithubMeta(rawUrl);
         loadSidecars(rawUrl);
@@ -77,6 +129,7 @@ async function loadScadFromUrl(url) {
         // YIELD: Let the UI update text
         await new Promise(r => setTimeout(r, 50));
 
+        // Initial parse for linear pipeline
         const groups = parseScadParams(mainFile.txt);
         parsedParams = groups.flatMap(g => g.params);
         applyUrlState();
@@ -95,6 +148,25 @@ async function loadScadFromUrl(url) {
         console.error(e);
     }
 }
+
+// ── Drop Patch Logic ──────────────────────────────────────────────────────────
+
+window.dropPatch = function() {
+    const editor = document.getElementById('sourceDisplay');
+    editor.value = baseScadState;
+    editor.textContent = baseScadState;
+    
+    const mf = virtualFileSystem.find(f => f.name === "main.scad");
+    if (mf) mf.txt = baseScadState;
+
+    const u = new URL(window.location.href);
+    u.searchParams.delete('patch');
+    window.history.replaceState({}, '', u.toString());
+    
+    document.getElementById('patchBadge').classList.remove('visible');
+    
+    window.runAndShowScad();
+};
 
 // ── URL Bar Handler ───────────────────────────────────────────────────────────
 

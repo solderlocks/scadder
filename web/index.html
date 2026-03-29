@@ -23,6 +23,10 @@
   <script src="./stlViewer/engine/parts/engine-render/renderHandler.js"></script>
   <script src='./stlViewer/engine/engine.js'></script>
 
+  <!-- Patching / Serialization Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/diff@5.2.0/dist/diff.min.js"></script>
+
   <!-- App Styles -->
   <link rel="stylesheet" href="css/scadder.css">
 
@@ -57,11 +61,6 @@
       <button class="modal-close" onclick="closeAbout()">✕</button>
       <h2>Scadder</h2>
       <div class="modal-content">
-        <p>Browse a collection of configurable 3D&nbsp;objects, tweak the
-          parameters to your needs, and download production-ready STL&nbsp;files. No login or software to install.</p>
-        <p>Designs live on GitHub as OpenSCAD source files. Fork them, improve them, and share your link. </p>
-
-        <h3>How It Works</h3>
         <p>Paste any GitHub link to a <code>.scad</code> file, or pick one from the library. Scadder compiles the model
           in
           your browser using OpenSCAD compiled to WebAssembly, so nothing is uploaded to a server. Adjust the
@@ -246,15 +245,14 @@
           </div>
           <p id="renderStatus">Initializing system…</p>
         </div>
-        <div id="wasmErrorOverlay"
-          style="display:none; position:absolute; inset:0; background:var(--bg); z-index:999; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 2rem;">
+        <div id="wasmErrorOverlay">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--text-dim)" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.75rem;">
+            stroke-linecap="round" stroke-linejoin="round">
             <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
             <line x1="12" y1="9" x2="12" y2="13"></line>
             <line x1="12" y1="17" x2="12.01" y2="17"></line>
           </svg>
-          <p class="empty-note" style="margin:0; max-width:280px;">Your browser does not support WebAssembly
+          <p class="empty-note">Your browser does not support WebAssembly
             or it has been disabled. WebAssembly must be available to render 3D models.</p>
         </div>
       </div>
@@ -330,11 +328,23 @@
         <div class="section-header" onclick="toggleSection(this)">
           <div class="shl">
             <span class="section-label">Source .scad</span>
+            <span id="patchBadge" class="section-desc revert-badge"
+              onclick="event.stopPropagation(); window.dropPatch();" title="Revert edits">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 7v6h6"></path>
+                <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+              </svg>
+              Edited
+            </span>
           </div>
           <span class="chevron">▼</span>
         </div>
         <div class="section-body">
-          <div class="source-view" id="sourceDisplay"></div>
+          <textarea class="source-view param-input" id="sourceDisplay" spellcheck="false"></textarea>
+          <div class="render-action-row">
+            <button class="btn btn-primary" onclick="window.runAndShowScad()">▶ Re-Render</button>
+          </div>
         </div>
       </div>
 
@@ -369,6 +379,14 @@
 
       const mainFile = virtualFileSystem.find(f => f.name === 'main.scad');
       if (!mainFile) return;
+
+      // Ensure linear execution pipeline: Parse parameters -> Build UI
+      if (typeof parseScadParams === 'function') {
+        const groups = parseScadParams(mainFile.txt);
+        parsedParams = groups.flatMap(g => g.params);
+        if (typeof applyUrlState === 'function') applyUrlState();
+        if (typeof buildParamUI === 'function') buildParamUI(groups);
+      }
 
       // Snapshot current params as "clean" state
       window.lastRenderedValues = {};

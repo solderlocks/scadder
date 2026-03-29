@@ -269,6 +269,9 @@ function applyUrlState() {
                 p.value = cleanValue(state[p.name]);
             }
         }
+        
+        // Prune orphaned variables out of the URL
+        updateUrlState();
     } catch (e) {
         console.error("Failed to parse URL vars:", e);
     }

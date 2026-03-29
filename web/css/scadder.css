@@ -299,6 +299,28 @@ header {
   pointer-events: none;
 }
 
+#wasmErrorOverlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  z-index: 999;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+
+#wasmErrorOverlay svg {
+  margin-bottom: 0.75rem;
+}
+
+#wasmErrorOverlay p {
+  margin: 0;
+  max-width: 280px;
+}
+
 /* ── Progress Bar ──────────────────────────────────────────────────────────── */
 
 .progress-container {
@@ -412,6 +434,28 @@ header {
   font-size: 0.72rem;
   color: var(--text-dim);
   font-family: var(--mono);
+}
+
+.revert-badge {
+  cursor: pointer;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  display: none;
+  align-items: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+.revert-badge.visible {
+  display: inline-flex;
+}
+
+.revert-badge svg {
+  margin-right: 4px;
+}
+
+.revert-badge:hover {
+  background: #222018;
+  color: var(--text-mid);
 }
 
 .chevron {
@@ -588,6 +632,14 @@ header {
   line-height: 1.6;
 }
 
+textarea.source-view {
+  width: 100%;
+  min-height: 280px;
+  resize: vertical;
+  white-space: pre;
+  tab-size: 4;
+}
+
 .console-output {
   color: var(--text-dim);
   white-space: pre-wrap;
@@ -703,6 +755,19 @@ header {
   transform-style: preserve-3d;
   backface-visibility: hidden;
   transform: perspective(20px) rotateX(30deg);
+}
+
+.render-action-row {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.shortcut-hint {
+  font-family: inherit;
+  font-size: 0.6rem;
+  opacity: 0.8;
+  margin-left: 4px;
 }
 
 /* ── BOM Table ─────────────────────────────────────────────────────────────── */
@@ -1116,7 +1181,7 @@ header {
 
 .modal-content {
   overflow-y: auto;
-  height: calc(100vh - 19rem);
+  max-height: 60vh;
 }
 
 .modal-backdrop.open .modal {

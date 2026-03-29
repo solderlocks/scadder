@@ -876,5 +876,30 @@
       "tool",
       "workshop"
     ]
+  },
+  {
+    "id": "peg-smith",
+    "title": "Peg Smith",
+    "description": "Pegboard Parametric Supports Generator.",
+    "author": "trx1",
+    "url": "https://github.com/trx1/PegSmith/blob/master/PegSmith.scad",
+    "tags": [
+      "pegboard",
+      "tool",
+      "workshop"
+    ]
+  },
+  {
+    "id": "cage-maker-prcg",
+    "title": "Cage Maker PRCG",
+    "description": "Parametric Rack and Cage Generator.",
+    "author": "WebMaka",
+    "url": "https://github.com/WebMaka/CageMakerPRCG/blob/main/parametric_rack_cage_generator.scad",
+    "tags": [
+      "rack",
+      "cage",
+      "tool",
+      "workshop"
+    ]
   }
 ]
