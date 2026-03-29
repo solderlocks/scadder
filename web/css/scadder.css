@@ -1107,11 +1107,16 @@ header {
   max-width: 540px;
   width: 90%;
   max-height: 85vh;
-  overflow-y: auto;
+  /* overflow-y: auto; */
   padding: 2rem;
   position: relative;
   transform: translateY(12px) scale(0.97);
   transition: transform 0.25s;
+}
+
+.modal-content {
+  overflow-y: auto;
+  height: calc(100vh - 19rem);
 }
 
 .modal-backdrop.open .modal {
@@ -1150,10 +1155,10 @@ header {
 
 .modal h3 {
   font-family: var(--mono);
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--amber-dim);
+  color: var(--amber);
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
 }
@@ -1235,7 +1240,7 @@ header {
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: var(--amber-dim);
+  color: var(--amber);
 }
 
 .param-group-chevron {
