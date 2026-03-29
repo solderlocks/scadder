@@ -38,23 +38,32 @@ You don't need to install anything to use the viewer. Just visit the live site. 
 4. Open `http://localhost:3001/web/` in your browser.
 
 ### The CLI Package Manager
-Scadder brings `npm`-style dependency management to OpenSCAD, allowing you to pull cloud-hosted models into your local projects.
+Scadder brings `npm`-style dependency management to OpenSCAD, allowing you to pull cloud-hosted models into your local projects with deterministic lockfiles.
 
 Install the CLI globally:
-`npm install -g scadder`
+```bash
+npm install -g scadder
+```
 
 Navigate to any OpenSCAD project directory on your computer and run:
-`scadder install parametric-sign`
+```bash
+scadder install parametric-sign
+```
 
-This will fetch the model and all of its nested `include` and `use` dependencies, dropping them into a `.scadder_modules` folder in your current directory so your local renders never break. (All model IDs are defined in `/core/library.json`).
+This fetches the model and its nested `include` and `use` dependencies, dropping them into a `.scadder_modules` folder. It also generates a `scadder.json` file, locking the dependency to its specific GitHub commit hash so your project won't break if the upstream author pushes changes.
+
+To update your locked packages to the latest commits:
+```bash
+scadder update all
+```
 
 ### Install via Direct URL
-Scadder isn't restricted to the community library. You can pass a direct URL to any `.scad` file, and the crawler will recursively resolve and download all nested `include` and `use` dependencies. 
+Scadder isn't restricted to the community library. You can pass a direct URL to any `.scad` file, and the crawler will recursively resolve and download all nested files. 
 
 *(Note: The host must have a permissive CORS policy, such as `raw.githubusercontent.com` or a standard static file server).*
 
 ```bash
-npx scadder install https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad
+scadder install [https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad](https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad)
 ```
 
 ## Acknowledgements & Licensing

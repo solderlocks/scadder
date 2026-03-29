@@ -34,6 +34,26 @@ Scadder isn't restricted to a curated community library. You can pass a direct U
 scadder install https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad
 ```
 
+## Deterministic Builds (scadder.json)
+
+When you install a dependency, Scadder automatically generates a `scadder.json` file to track your project's graph. 
+
+If you install a package from a GitHub repository, Scadder contacts the GitHub API to intercept the latest `HEAD` commit and permanently locks your dependency to that specific SHA hash. This ensures that your local OpenSCAD project will not unexpectedly break if an upstream author pushes a breaking change to their `main` branch. 
+
+## Updating Dependencies
+
+To fast-forward your locked dependencies to their latest upstream commits, run:
+
+```bash
+scadder update all
+```
+
+You can also target specific packages:
+
+```bash
+scadder update <package-name>
+```
+
 ## Licensing
 
 Scadder is released under the **GPLv3 License**.
