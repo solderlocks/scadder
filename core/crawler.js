@@ -25,16 +25,27 @@ export async function resolveDependencies(rootUrl, options = {}) {
             // Store in VFS with its relative directory path
             virtualFileSystem.push({ name: vfsPath, txt: text });
 
-            // Scan for 'include <...>' and 'use <...>'
+            // 1. Strip block comments (/* ... */)
+            let cleanText = text.replace(/\/\*[\s\S]*?\*\//g, '');
+            // 2. Strip single-line comments (// ...)
+            cleanText = cleanText.replace(/\/\/.*$/gm, '');
+
             const importRegex = /^\s*(?:include|use)\s*[<"]([^>"]+)[>"]/gm;
             let match;
             const promises = [];
 
-            while ((match = importRegex.exec(text)) !== null) {
+            while ((match = importRegex.exec(cleanText)) !== null) {
                 const relativeRef = match[1];
 
-                // Skip non-scad files (like .stl or .png)
-                if (relativeRef.toLowerCase().endsWith('.stl')) continue;
+                // Skip non-scad files
+                if (relativeRef.toLowerCase().endsWith('.stl') || relativeRef.toLowerCase().endsWith('.dxf')) continue;
+
+                // Check if this is a call to a standard global library
+                const isGlobalLib = GLOBAL_LIBRARY_PREFIXES.some(prefix => relativeRef.startsWith(prefix));
+                if (isGlobalLib) {
+                    if (onLog) onLog(`  ⏭️ Skipping global library ref: ${relativeRef}`);
+                    continue;
+                }
 
                 // Resolve Network URL
                 const depUrl = new URL(relativeRef, url).href;
@@ -47,7 +58,6 @@ export async function resolveDependencies(rootUrl, options = {}) {
                 promises.push(crawlAndFetch(depUrl, depVfsPath));
             }
 
-            // Fetch all dependencies in parallel
             await Promise.all(promises);
         } catch (e) {
             const errText = `❌ Failed to fetch dependency: ${vfsPath} (${e.message})`;

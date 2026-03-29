@@ -47,9 +47,17 @@ async function install(target) {
         }
 
         console.log(`> Installing ${deps.length} dependencies from scadder.json...`);
-        for (const [id, url] of deps) {
+        for (const [id, val] of deps) {
             try {
-                await fetchAndSave(id, url);
+                let sourceUrl = typeof val === 'string' ? val : val.source;
+                let commitHash = typeof val === 'string' ? null : val.commit_hash;
+
+                let fetchUrl = sourceUrl;
+                if (commitHash && !noLock) {
+                    fetchUrl = applyHashToUrl(fetchUrl, commitHash);
+                }
+
+                await fetchAndSave(id, fetchUrl);
             } catch (e) {
                 console.error(`  Failed to install ${id}: ${e.message}`);
             }
@@ -83,9 +91,22 @@ async function install(target) {
         id = target.split('/').pop().replace('.scad', '') || 'unnamed-dependency';
     }
 
+    let sourceUrl = url;
+    let fetchUrl = toRawUrl(url);
+    let commitHash = null;
+
+    if (!noLock) {
+        const lockInfo = await resolveLatestCommitUrl(fetchUrl);
+        if (lockInfo.sha) {
+            commitHash = lockInfo.sha;
+            fetchUrl = lockInfo.lockedUrl;
+            console.log(`> locked to commit ${commitHash.substring(0, 7)}`);
+        }
+    }
+
     try {
-        await fetchAndSave(id, url);
-        await updateConfig(id, url);
+        await fetchAndSave(id, fetchUrl);
+        await updateConfig(id, sourceUrl, commitHash);
     } catch (e) {
         console.error(`Error: Installation failed: ${e.message}`);
         process.exit(1);
@@ -119,7 +140,7 @@ async function fetchAndSave(id, url) {
     console.log(`> installed ${files.length} files to ${targetDir}/`);
 }
 
-async function updateConfig(id, url) {
+async function updateConfig(id, sourceUrl, commitHash) {
     let config = { dependencies: {} };
     try {
         const data = await fs.readFile(SCADDER_JSON, 'utf8');
@@ -128,9 +149,80 @@ async function updateConfig(id, url) {
         // scadder.json might not exist yet, that's fine
     }
 
-    config.dependencies[id] = url;
+    if (commitHash) {
+        config.dependencies[id] = {
+            source: sourceUrl,
+            commit_hash: commitHash
+        };
+    } else {
+        config.dependencies[id] = {
+            source: sourceUrl
+        };
+    }
     await fs.writeFile(SCADDER_JSON, JSON.stringify(config, null, 2));
     console.log(`> updated ${SCADDER_JSON}`);
+}
+
+async function updateCmd(target) {
+    if (!target) {
+        console.error(`Error: Specify a dependency to update, or use "all".`);
+        process.exit(1);
+    }
+
+    let config;
+    try {
+        const data = await fs.readFile(SCADDER_JSON, 'utf8');
+        config = JSON.parse(data);
+    } catch (e) {
+        console.error(`Error: Could not read scadder.json.`);
+        process.exit(1);
+    }
+
+    if (!config.dependencies || Object.keys(config.dependencies).length === 0) {
+        console.log(`> No dependencies found in scadder.json.`);
+        return;
+    }
+
+    if (target === 'all') {
+        const deps = Object.keys(config.dependencies);
+        console.log(`> Updating all ${deps.length} dependencies...`);
+        for (const dep of deps) {
+            await processSingleUpdate(dep, config.dependencies[dep]);
+        }
+        console.log(`> Bulk update complete.`);
+    } else {
+        if (!config.dependencies[target]) {
+            console.error(`Error: Dependency "${target}" not found in scadder.json.`);
+            process.exit(1);
+        }
+        await processSingleUpdate(target, config.dependencies[target]);
+    }
+}
+
+async function processSingleUpdate(target, val) {
+    let sourceUrl = typeof val === 'string' ? val : val.source;
+
+    console.log(`\n> Updating ${target}...`);
+    let fetchUrl = toRawUrl(sourceUrl);
+    let commitHash = null;
+
+    if (!noLock) {
+        console.log(`> fetching latest HEAD for ${sourceUrl}...`);
+        const lockInfo = await resolveLatestCommitUrl(fetchUrl);
+        if (lockInfo.sha) {
+            commitHash = lockInfo.sha;
+            fetchUrl = lockInfo.lockedUrl;
+            console.log(`> locked to new commit ${commitHash.substring(0, 7)}`);
+        }
+    }
+
+    try {
+        await fetchAndSave(target, fetchUrl);
+        await updateConfig(target, sourceUrl, commitHash);
+    } catch (e) {
+        // Log the error but don't exit the process, allowing bulk updates to continue
+        console.error(`Error: Update failed for ${target}: ${e.message}`);
+    }
 }
 
 function toRawUrl(url) {
@@ -141,8 +233,55 @@ function toRawUrl(url) {
     return url;
 }
 
+function applyHashToUrl(url, hash) {
+    let cleanUrl = url.trim();
+    let match = cleanUrl.match(/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)/);
+    if (!match) match = cleanUrl.match(/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)/);
+    if (match) {
+        return cleanUrl.replace(`/${match[3]}/`, `/${hash}/`);
+    }
+    return cleanUrl;
+}
+
+async function resolveLatestCommitUrl(cleanUrl) {
+    let match = cleanUrl.match(/github\.com\/([^/]+)\/([^/]+)\/blob\/([^/]+)/);
+    if (!match) {
+        match = cleanUrl.match(/raw\.githubusercontent\.com\/([^/]+)\/([^/]+)\/([^/]+)/);
+    }
+
+    if (!match) return { lockedUrl: cleanUrl, sha: null };
+
+    const owner = match[1];
+    const repo = match[2];
+    const branch = match[3];
+
+    if (/^[0-9a-f]{40}$/i.test(branch)) {
+        return { lockedUrl: cleanUrl, sha: branch };
+    }
+
+    try {
+        const fetchUrl = `https://api.github.com/repos/${owner}/${repo}/commits/${branch}`;
+        const res = await fetch(fetchUrl, {
+            headers: { 'User-Agent': 'Scadder-CLI' }
+        });
+        if (!res.ok) {
+            throw new Error(`API returned ${res.status}`);
+        }
+        const data = await res.json();
+        const sha = data.sha;
+        const lockedUrl = cleanUrl.replace(`/${branch}/`, `/${sha}/`);
+        return { lockedUrl, sha };
+    } catch (e) {
+        console.warn(`> Warning: Failed to resolve commit hash (${e.message}). Falling back to floating branch.`);
+        return { lockedUrl: cleanUrl, sha: null };
+    }
+}
+
 // CLI Router
-const [, , command, ...args] = process.argv;
+const rawArgs = process.argv.slice(2);
+const command = rawArgs[0];
+const noLock = rawArgs.includes('--no-lock');
+const args = rawArgs.slice(1).filter(a => !a.startsWith('--'));
 
 (async () => {
     switch (command) {
@@ -151,6 +290,9 @@ const [, , command, ...args] = process.argv;
             break;
         case 'install':
             await install(args[0]);
+            break;
+        case 'update':
+            await updateCmd(args[0]);
             break;
         case 'help':
         case '--help':
@@ -161,6 +303,7 @@ Scadder CLI - OpenSCAD Package Manager
 Commands:
   init             Initialize a new scadder.json project
   install [target] Install a package, or all packages in scadder.json
+  update [target]  Fetch the latest commit hash for a dependency (or "all") and reinstall
             `);
             break;
         default:
