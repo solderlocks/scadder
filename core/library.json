@@ -901,5 +901,118 @@
       "tool",
       "workshop"
     ]
+  },
+  {
+    "id": "parapart-brackets",
+    "title": "Parapart Brackets",
+    "description": "Parametric brackets from Parapart.",
+    "author": "nbr0wn",
+    "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/brackets.scad",
+    "tags": [
+      "parapart",
+      "brackets"
+    ]
+  },
+  {
+    "id": "parapart-containers",
+    "title": "Parapart Containers",
+    "description": "Parametric containers from Parapart.",
+    "author": "nbr0wn",
+    "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/containers.scad",
+    "tags": [
+      "parapart",
+      "containers"
+    ]
+  },
+  {
+    "id": "parapart-fans",
+    "title": "Parapart Fans",
+    "description": "Parametric fans from Parapart.",
+    "author": "nbr0wn",
+    "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/fans.scad",
+    "tags": [
+      "parapart",
+      "fans"
+    ],
+    "vars": {
+      "blade_divisions": 5
+    }
+  },
+  {
+    "id": "parapart-four-sides",
+    "title": "Four Sides",
+    "description": "Parametric four sides from Parapart.",
+    "author": "nbr0wn",
+    "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/four_sides.scad",
+    "tags": [
+      "parapart",
+      "four-sides"
+    ]
+  },
+  {
+    "id": "parapart-hinges",
+    "title": "Parapart Hinges",
+    "description": "Parametric hinges from Parapart.",
+    "author": "nbr0wn",
+    "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/hinges.scad",
+    "tags": [
+      "parapart",
+      "hinges"
+    ]
+  },
+  {
+    "id": "parapart-home",
+    "title": "Parapart Home",
+    "description": "Parametric home components from Parapart.",
+    "author": "nbr0wn",
+    "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/home.scad",
+    "tags": [
+      "parapart",
+      "home"
+    ]
+  },
+  {
+    "id": "parapart-more-sides",
+    "title": "Parapart More Sides",
+    "description": "Parametric more sides from Parapart.",
+    "author": "nbr0wn",
+    "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/more_sides.scad",
+    "tags": [
+      "parapart",
+      "more-sides"
+    ]
+  },
+  {
+    "id": "parapart-standoffs",
+    "title": "Parapart Standoffs",
+    "description": "Parametric standoffs from Parapart.",
+    "author": "nbr0wn",
+    "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/standoffs.scad",
+    "tags": [
+      "parapart",
+      "standoffs"
+    ]
+  },
+  {
+    "id": "parapart-tools",
+    "title": "Parapart Tools",
+    "description": "Parametric tools from Parapart.",
+    "author": "nbr0wn",
+    "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/tools.scad",
+    "tags": [
+      "parapart",
+      "tools"
+    ]
+  },
+  {
+    "id": "parapart-wheels",
+    "title": "Parapart Wheels",
+    "description": "Parametric wheels from Parapart.",
+    "author": "nbr0wn",
+    "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/wheels.scad",
+    "tags": [
+      "parapart",
+      "wheels"
+    ]
   }
 ]
