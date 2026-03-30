@@ -1,20 +1,56 @@
 {
+  "BOSL": {
+    "repo": "revarbat/BOSL"
+  },
   "BOSL2": {
     "repo": "BelfrySCAD/BOSL2"
   },
-  "NopSCADlib": {
-    "repo": "nophead/NopSCADlib"
+  "closepoints": {
+    "repo": "rcolyer/closepoints"
   },
-  "Round-Anything": {
-    "repo": "Irev-Dev/Round-Anything"
+  "dotSCAD": {
+    "repo": "JustinSDK/dotSCAD"
   },
-  "openscad-threads": {
-    "repo": "dkprojects/openscad-threads"
+  "FunctionalOpenSCAD": {
+    "repo": "thehans/FunctionalOpenSCAD"
+  },
+  "funcutils": {
+    "repo": "thehans/funcutils"
   },
   "gridfinity-rebuilt": {
     "repo": "kennetek/gridfinity-rebuilt-openscad"
   },
   "MCAD": {
     "repo": "openscad/MCAD"
+  },
+  "NopSCADlib": {
+    "repo": "nophead/NopSCADlib"
+  },
+  "openscad-threads": {
+    "repo": "rcolyer/threads-scad"
+  },
+  "openscad-tray": {
+    "repo": "sofian/openscad-tray"
+  },
+  "plot-function": {
+    "repo": "rcolyer/plot-function"
+  },
+  "Round-Anything": {
+    "repo": "Irev-Dev/Round-Anything"
+  },
+  "scad-utils": {
+    "repo": "OskarLinde/scad-utils"
+  },
+  "smooth-prim": {
+    "repo": "rcolyer/smooth-prim"
+  },
+  "Stemfie_OpenSCAD": {
+    "repo": "Cantareus/Stemfie_OpenSCAD"
+  },
+  "UB.scad": {
+    "repo": "UBaer21/UB.scad"
+  },
+  "YAPP_Box": {
+    "repo": "mrWheel/YAPP_Box"
   }
 }
