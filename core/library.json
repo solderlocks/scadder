@@ -879,8 +879,8 @@
   },
   {
     "id": "peg-smith",
-    "title": "Peg Smith",
-    "description": "Pegboard Parametric Supports Generator.",
+    "title": "PegSmith",
+    "description": "Advanced Pegboard Wizard. Parametric Peg Board Mounts Generator for US-style pegboards.",
     "author": "trx1",
     "url": "https://github.com/trx1/PegSmith/blob/master/PegSmith.scad",
     "tags": [
@@ -892,7 +892,7 @@
   {
     "id": "cage-maker-prcg",
     "title": "Cage Maker PRCG",
-    "description": "Parametric Rack and Cage Generator.",
+    "description": "Parametric Rack and Cage Generator. Create a 3D-printable rack cage for any device.",
     "author": "WebMaka",
     "url": "https://github.com/WebMaka/CageMakerPRCG/blob/main/parametric_rack_cage_generator.scad",
     "tags": [
@@ -905,34 +905,46 @@
   {
     "id": "parapart-brackets",
     "title": "Parapart Brackets",
-    "description": "Parametric brackets from Parapart.",
+    "description": "Customizable shelf brackets and mounting plates with configurable hole patterns.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/brackets.scad",
     "tags": [
       "parapart",
-      "brackets"
+      "brackets",
+      "parametric",
+      "part-library",
+      "hardware",
+      "mount"
     ]
   },
   {
     "id": "parapart-containers",
     "title": "Parapart Containers",
-    "description": "Parametric containers from Parapart.",
+    "description": "Parametric trays, boxes, and hexagonal containers for organization.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/containers.scad",
     "tags": [
       "parapart",
-      "containers"
+      "containers",
+      "parametric",
+      "part-library",
+      "storage",
+      "organizer"
     ]
   },
   {
     "id": "parapart-fans",
     "title": "Parapart Fans",
-    "description": "Parametric fans from Parapart.",
+    "description": "Customizable cooling fan blades and propellers for DIY projects.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/fans.scad",
     "tags": [
       "parapart",
-      "fans"
+      "fans",
+      "parametric",
+      "part-library",
+      "cooling",
+      "electronics"
     ],
     "vars": {
       "blade_divisions": 5
@@ -941,84 +953,102 @@
   {
     "id": "parapart-four-sides",
     "title": "Four Sides",
-    "description": "Parametric four sides from Parapart.",
+    "description": "Rectangular frames and enclosures with adjustable dimensions.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/four_sides.scad",
     "tags": [
       "parapart",
-      "four-sides"
+      "four-sides",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "parapart-hinges",
     "title": "Parapart Hinges",
-    "description": "Parametric hinges from Parapart.",
+    "description": "Functional door and cabinet hinges with configurable leaf sizes.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/hinges.scad",
     "tags": [
       "parapart",
-      "hinges"
+      "hinges",
+      "parametric",
+      "part-library",
+      "hardware",
+      "furniture"
     ]
   },
   {
     "id": "parapart-home",
     "title": "Parapart Home",
-    "description": "Parametric home components from Parapart.",
+    "description": "Everyday home items like furniture feet, hooks, and kitchen accessories.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/home.scad",
     "tags": [
       "parapart",
-      "home"
+      "home",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "parapart-more-sides",
     "title": "Parapart More Sides",
-    "description": "Parametric more sides from Parapart.",
+    "description": "Polygonal shapes and stars with a configurable number of sides.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/more_sides.scad",
     "tags": [
       "parapart",
-      "more-sides"
+      "more-sides",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "parapart-standoffs",
     "title": "Parapart Standoffs",
-    "description": "Parametric standoffs from Parapart.",
+    "description": "PCB standoffs, spacers, and mounting pillars for electronics.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/standoffs.scad",
     "tags": [
       "parapart",
-      "standoffs"
+      "standoffs",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "parapart-tools",
     "title": "Parapart Tools",
-    "description": "Parametric tools from Parapart.",
+    "description": "Tool organization components like wrench holders and bit organizers.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/tools.scad",
     "tags": [
       "parapart",
-      "tools"
+      "tools",
+      "parametric",
+      "part-library",
+      "workshop",
+      "organizer"
     ]
   },
   {
     "id": "parapart-wheels",
     "title": "Parapart Wheels",
-    "description": "Parametric wheels from Parapart.",
+    "description": "Toy wheels, pulleys, and rollers for small mechanical projects.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/wheels.scad",
     "tags": [
       "parapart",
-      "wheels"
+      "wheels",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "johnboiles-hyperorganizer",
     "title": "Hyperorganizer",
-    "description": "Parametric hyperorganizer from John Boiles.",
+    "description": "Custom-sized hyperorganizer holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/lib/hyperorganizer.scad",
     "tags": [
@@ -1030,7 +1060,7 @@
   {
     "id": "johnboiles-pegstr",
     "title": "Pegstr",
-    "description": "Parametric pegstr from John Boiles.",
+    "description": "Custom-sized pegstr holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/lib/pegstr.scad",
     "tags": [
@@ -1042,29 +1072,31 @@
   {
     "id": "timschmidt-guide-rail-mount",
     "title": "Guide Rail Mount",
-    "description": "Parametric guide rail mount from Tim Schmidt.",
+    "description": "Mounting bracket for the guide rails used in the Skeinosaur knitting machine.",
     "author": "timschmidt",
     "url": "https://raw.githubusercontent.com/timschmidt/skeinosaur/master/guide_rail_mount.scad",
     "tags": [
       "skeinosaur",
       "guide-rail",
-      "mount"
+      "mount",
+      "knitting-machine"
     ]
   },
   {
     "id": "timschmidt-skeinosaur",
     "title": "Skeinosaur",
-    "description": "Parametric skeinosaur from Tim Schmidt.",
+    "description": "Main assembly for the Skeinosaur open-source automated knitting machine.",
     "author": "timschmidt",
     "url": "https://raw.githubusercontent.com/timschmidt/skeinosaur/master/skeinosaur.scad",
     "tags": [
-      "skeinosaur"
+      "skeinosaur",
+      "knitting-machine"
     ]
   },
   {
     "id": "franpoli-cabletie",
     "title": "Cable Tie",
-    "description": "Parametric cable tie from Fran Poli.",
+    "description": "Generates simple, quick and easy to print TPU cable ties.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/cabletie/cabletie.scad",
     "tags": [
@@ -1076,7 +1108,7 @@
   {
     "id": "franpoli-escutcheon",
     "title": "Escutcheon",
-    "description": "Parametric escutcheon from Fran Poli.",
+    "description": "Parametric escutcheon generator.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/escutcheon/escutcheon.scad",
     "tags": [
@@ -1088,7 +1120,7 @@
   {
     "id": "franpoli-floor-drain-filter",
     "title": "Floor Drain Filter",
-    "description": "Parametric floor drain filter from Fran Poli.",
+    "description": "Generates floor drain filters.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/floor_drain_filter/floor_drain_filter.scad",
     "tags": [
@@ -1101,7 +1133,7 @@
   {
     "id": "franpoli-hakko-fx-888-sponge",
     "title": "Hakko FX-888 Sponge Template",
-    "description": "Parametric Hakko FX-888 soldering sponge template.",
+    "description": "Hakko soldering sponge template.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/hakko_fx_888_soldering_sponge_template/hakko_fx_888_sponge_template.scad",
     "tags": [
@@ -1113,7 +1145,7 @@
   {
     "id": "franpoli-kitaboshi",
     "title": "Kitaboshi",
-    "description": "Parametric kitaboshi from Fran Poli.",
+    "description": "Barrel generator for the Kita-Boshi 2mm mechanical pencil.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/kitaboshi/kitaboshi.scad",
     "tags": [
@@ -1125,7 +1157,7 @@
   {
     "id": "franpoli-knurled-knob",
     "title": "Knurled Knob",
-    "description": "Parametric knurled knob from Fran Poli.",
+    "description": "Knurled knobs generator for bolts and nuts.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/knurled_knob/knurled_knob.scad",
     "tags": [
@@ -1137,7 +1169,7 @@
   {
     "id": "franpoli-pipe-locks",
     "title": "Pipe Locks Generator",
-    "description": "Parametric pipe locks generator from Fran Poli.",
+    "description": "Generates customizable locking mechanisms for pipes and tubes.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/pipe_locks_generator/pipe_locks_generator.scad",
     "tags": [
@@ -1149,7 +1181,7 @@
   {
     "id": "franpoli-thumbdrive-housing",
     "title": "Thumbdrive Housing",
-    "description": "Parametric thumbdrive housing from Fran Poli.",
+    "description": "Generates customizable USB drive cases.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/thumb_drive_housing/thumbdrive_housing.scad",
     "tags": [
@@ -1161,7 +1193,7 @@
   {
     "id": "michaelmob-pegboard",
     "title": "Pegboard (MM)",
-    "description": "Parametric pegboard from Michael Mob.",
+    "description": "Parametric pegboard generator model.",
     "author": "michaelmob",
     "url": "https://raw.githubusercontent.com/michaelmob/openscad-models/master/pegboard.scad",
     "tags": [
@@ -1172,327 +1204,388 @@
   {
     "id": "nbr0wn-8020",
     "title": "8020",
-    "description": "Parametric 8020 from nbr0wn.",
+    "description": "Connectors and adapters for 80/20 aluminum extrusion systems.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/8020.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "nbr0wn-bar-stock",
     "title": "Bar Stock",
-    "description": "Parametric bar stock from nbr0wn.",
+    "description": "Standard structural profiles and bar stock with custom lengths.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/bar_stock.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "nbr0wn-blocks",
     "title": "Blocks",
-    "description": "Parametric blocks from nbr0wn.",
+    "description": "Solid blocks and basic geometric shapes for building components.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/blocks.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "nbr0wn-boxes",
     "title": "Boxes",
-    "description": "Parametric boxes from nbr0wn.",
+    "description": "Project boxes and enclosures with lid options.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/boxes.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "nbr0wn-couplers",
     "title": "Couplers",
-    "description": "Parametric couplers from nbr0wn.",
+    "description": "Mechanical shaft couplers for connecting motors and rods.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/couplers.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "nbr0wn-electrical",
     "title": "Electrical",
-    "description": "Parametric electrical from nbr0wn.",
+    "description": "Custom switch plates, outlet covers, and wire management components.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/electrical.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library",
+      "electronics",
+      "housing"
     ]
   },
   {
     "id": "nbr0wn-gears",
     "title": "Gears",
-    "description": "Parametric gears from nbr0wn.",
+    "description": "Parametric spur gears and simple mechanical gear systems.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/gears.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library",
+      "mechanical",
+      "motion"
     ]
   },
   {
     "id": "nbr0wn-linear-slides",
     "title": "Linear Slides",
-    "description": "Parametric linear slides from nbr0wn.",
+    "description": "Linear motion components like slider blocks and rail mounts.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/linear_slides.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "nbr0wn-mechanical",
     "title": "Mechanical",
-    "description": "Parametric mechanical from nbr0wn.",
+    "description": "General mechanical components including linkages and joints.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/mechanical.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "nbr0wn-miscellaneous",
     "title": "Miscellaneous",
-    "description": "Parametric miscellaneous from nbr0wn.",
+    "description": "A collection of various useful parts and components.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/miscellaneous.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "nbr0wn-motion",
     "title": "Motion",
-    "description": "Parametric motion from nbr0wn.",
+    "description": "Mechanical motion parts such as cams, cranks, and followers.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/motion.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "nbr0wn-motors",
     "title": "Motors",
-    "description": "Parametric motors from nbr0wn.",
+    "description": "Custom mounting brackets and adapters for various motor sizes.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/motors.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library",
+      "electronics",
+      "mount"
     ]
   },
   {
     "id": "nbr0wn-pin-barrel",
     "title": "Pin Barrel",
-    "description": "Parametric pin barrel from nbr0wn.",
+    "description": "Configurable pin barrel and tumbler components for locks.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/pin_barrel.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "nbr0wn-pulleys",
     "title": "Pulleys",
-    "description": "Parametric pulleys from nbr0wn.",
+    "description": "Drive pulleys for belts and cords with adjustable diameters.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/pulleys.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "nbr0wn-structural",
     "title": "Structural",
-    "description": "Parametric structural from nbr0wn.",
+    "description": "Load-bearing elements like beams, trusses, and supports.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/structural.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "nbr0wn-switches",
     "title": "Switches",
-    "description": "Parametric switches from nbr0wn.",
+    "description": "Custom covers and mounts for toggle or rocker switches.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/switches.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "nbr0wn-washers",
     "title": "Washers",
-    "description": "Parametric washers from nbr0wn.",
+    "description": "Spacers, shims, and washers of various sizes and thicknesses.",
     "author": "nbr0wn",
     "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/washers.scad",
     "tags": [
-      "parapart"
+      "parapart",
+      "parametric",
+      "part-library"
     ]
   },
   {
     "id": "johnboiles-almay-makeup-remover",
     "title": "Almay Makeup Remover",
-    "description": "Parametric almay makeup remover from johnboiles.",
+    "description": "Custom-sized almay makeup remover holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/almay_makeup_remover.scad",
     "tags": [
-      "scad-pegboard"
+      "scad-pegboard",
+      "pegboard",
+      "bathroom"
     ]
   },
   {
     "id": "johnboiles-baebody-eye-cream",
     "title": "Baebody Eye Cream",
-    "description": "Parametric baebody eye cream from johnboiles.",
+    "description": "Custom-sized baebody eye cream holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/baebody_eye_cream.scad",
     "tags": [
-      "scad-pegboard"
+      "scad-pegboard",
+      "pegboard",
+      "bathroom"
     ]
   },
   {
     "id": "johnboiles-candle",
     "title": "Candle",
-    "description": "Parametric candle from johnboiles.",
+    "description": "Custom-sized candle holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/candle.scad",
     "tags": [
-      "scad-pegboard"
+      "scad-pegboard",
+      "pegboard"
     ]
   },
   {
     "id": "johnboiles-deodorant",
     "title": "Deodorant",
-    "description": "Parametric deodorant from johnboiles.",
+    "description": "Custom-sized deodorant holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/deodorant.scad",
     "tags": [
-      "scad-pegboard"
+      "scad-pegboard",
+      "pegboard",
+      "bathroom"
     ]
   },
   {
     "id": "johnboiles-hyperorganizer",
     "title": "Hyperorganizer",
-    "description": "Parametric hyperorganizer from johnboiles.",
+    "description": "Custom-sized hyperorganizer holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/hyperorganizer.scad",
     "tags": [
-      "scad-pegboard"
+      "scad-pegboard",
+      "pegboard"
     ]
   },
   {
     "id": "johnboiles-pegstr",
     "title": "Pegstr",
-    "description": "Parametric pegstr from johnboiles.",
+    "description": "Custom-sized pegstr holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/pegstr.scad",
     "tags": [
-      "scad-pegboard"
+      "scad-pegboard",
+      "pegboard"
     ]
   },
   {
     "id": "johnboiles-lighter",
     "title": "Lighter",
-    "description": "Parametric lighter from johnboiles.",
+    "description": "Custom-sized lighter holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/lighter.scad",
     "tags": [
-      "scad-pegboard"
+      "scad-pegboard",
+      "pegboard"
     ]
   },
   {
     "id": "johnboiles-listerene",
     "title": "Listerene",
-    "description": "Parametric listerene from johnboiles.",
+    "description": "Custom-sized listerene holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/listerene.scad",
     "tags": [
-      "scad-pegboard"
+      "scad-pegboard",
+      "pegboard",
+      "bathroom"
     ]
   },
   {
     "id": "johnboiles-qtip",
     "title": "Qtip",
-    "description": "Parametric qtip from johnboiles.",
+    "description": "Custom-sized qtip holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/qtip.scad",
     "tags": [
-      "scad-pegboard"
+      "scad-pegboard",
+      "pegboard"
     ]
   },
   {
     "id": "johnboiles-rubbing-alcohol",
     "title": "Rubbing Alcohol",
-    "description": "Parametric rubbing alcohol from johnboiles.",
+    "description": "Custom-sized rubbing alcohol holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/rubbing_alcohol.scad",
     "tags": [
-      "scad-pegboard"
+      "scad-pegboard",
+      "pegboard"
     ]
   },
   {
     "id": "johnboiles-shaver",
     "title": "Shaver",
-    "description": "Parametric shaver from johnboiles.",
+    "description": "Custom-sized shaver holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/shaver.scad",
     "tags": [
-      "scad-pegboard"
+      "scad-pegboard",
+      "pegboard",
+      "bathroom"
     ]
   },
   {
     "id": "johnboiles-small-tube",
     "title": "Small Tube",
-    "description": "Parametric small tube from johnboiles.",
+    "description": "Custom-sized small tube holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/small_tube.scad",
     "tags": [
-      "scad-pegboard"
+      "scad-pegboard",
+      "pegboard"
     ]
   },
   {
     "id": "johnboiles-stina-deodorant",
     "title": "Stina Deodorant",
-    "description": "Parametric stina deodorant from johnboiles.",
+    "description": "Custom-sized stina deodorant holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/stina_deodorant.scad",
     "tags": [
-      "scad-pegboard"
+      "scad-pegboard",
+      "pegboard",
+      "bathroom"
     ]
   },
   {
     "id": "johnboiles-super-lube-pen",
     "title": "Super Lube Pen",
-    "description": "Parametric super lube pen from johnboiles.",
+    "description": "Custom-sized super lube pen holder for pegboard organization.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/super_lube_pen.scad",
     "tags": [
-      "scad-pegboard"
+      "scad-pegboard",
+      "pegboard"
     ]
   },
   {
     "id": "timschmidt-needle-bed",
     "title": "Needle Bed",
-    "description": "Parametric needle bed from timschmidt.",
+    "description": "Precision-designed needle bed for the Skeinosaur automated knitting machine.",
     "author": "timschmidt",
     "url": "https://raw.githubusercontent.com/timschmidt/skeinosaur/master/needle_bed.scad",
     "tags": [
-      "skeinosaur"
+      "skeinosaur",
+      "knitting-machine"
     ]
   },
   {
     "id": "franpoli-grinder-handle",
     "title": "Grinder Handle",
-    "description": "Parametric grinder handle from franpoli.",
+    "description": "Generates a grinder handle.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/grinder_handle/grinder_handle.scad",
     "tags": [
@@ -1502,11 +1595,11 @@
   {
     "id": "franpoli-import-coordonate-files-demo",
     "title": "Import Coordonate Files Demo",
-    "description": "Parametric import coordonate files demo from franpoli.",
+    "description": "A python script/demo to convert simple SVG files into a list of coordinates.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/utilities/svg_to_scad/demo/import_coordonate_files_demo.scad",
     "tags": [
       "OpenSCADutil"
     ]
   }
-] 
+]
