@@ -1021,7 +1021,11 @@
     "description": "Parametric hyperorganizer from John Boiles.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/lib/hyperorganizer.scad",
-    "tags": ["scad-pegboard", "hyperorganizer", "pegboard"]
+    "tags": [
+      "scad-pegboard",
+      "hyperorganizer",
+      "pegboard"
+    ]
   },
   {
     "id": "johnboiles-pegstr",
@@ -1029,7 +1033,11 @@
     "description": "Parametric pegstr from John Boiles.",
     "author": "johnboiles",
     "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/lib/pegstr.scad",
-    "tags": ["scad-pegboard", "pegstr", "pegboard"]
+    "tags": [
+      "scad-pegboard",
+      "pegstr",
+      "pegboard"
+    ]
   },
   {
     "id": "timschmidt-guide-rail-mount",
@@ -1037,7 +1045,11 @@
     "description": "Parametric guide rail mount from Tim Schmidt.",
     "author": "timschmidt",
     "url": "https://raw.githubusercontent.com/timschmidt/skeinosaur/master/guide_rail_mount.scad",
-    "tags": ["skeinosaur", "guide-rail", "mount"]
+    "tags": [
+      "skeinosaur",
+      "guide-rail",
+      "mount"
+    ]
   },
   {
     "id": "timschmidt-skeinosaur",
@@ -1045,7 +1057,9 @@
     "description": "Parametric skeinosaur from Tim Schmidt.",
     "author": "timschmidt",
     "url": "https://raw.githubusercontent.com/timschmidt/skeinosaur/master/skeinosaur.scad",
-    "tags": ["skeinosaur"]
+    "tags": [
+      "skeinosaur"
+    ]
   },
   {
     "id": "franpoli-cabletie",
@@ -1053,7 +1067,11 @@
     "description": "Parametric cable tie from Fran Poli.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/cabletie/cabletie.scad",
-    "tags": ["openscadutil", "cable-tie", "hardware"]
+    "tags": [
+      "openscadutil",
+      "cable-tie",
+      "hardware"
+    ]
   },
   {
     "id": "franpoli-escutcheon",
@@ -1061,7 +1079,11 @@
     "description": "Parametric escutcheon from Fran Poli.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/escutcheon/escutcheon.scad",
-    "tags": ["openscadutil", "escutcheon", "hardware"]
+    "tags": [
+      "openscadutil",
+      "escutcheon",
+      "hardware"
+    ]
   },
   {
     "id": "franpoli-floor-drain-filter",
@@ -1069,7 +1091,12 @@
     "description": "Parametric floor drain filter from Fran Poli.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/floor_drain_filter/floor_drain_filter.scad",
-    "tags": ["openscadutil", "drain", "filter", "hardware"]
+    "tags": [
+      "openscadutil",
+      "drain",
+      "filter",
+      "hardware"
+    ]
   },
   {
     "id": "franpoli-hakko-fx-888-sponge",
@@ -1077,7 +1104,11 @@
     "description": "Parametric Hakko FX-888 soldering sponge template.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/hakko_fx_888_soldering_sponge_template/hakko_fx_888_sponge_template.scad",
-    "tags": ["openscadutil", "hakko", "soldering"]
+    "tags": [
+      "openscadutil",
+      "hakko",
+      "soldering"
+    ]
   },
   {
     "id": "franpoli-kitaboshi",
@@ -1085,7 +1116,11 @@
     "description": "Parametric kitaboshi from Fran Poli.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/kitaboshi/kitaboshi.scad",
-    "tags": ["openscadutil", "kitaboshi", "hardware"]
+    "tags": [
+      "openscadutil",
+      "kitaboshi",
+      "hardware"
+    ]
   },
   {
     "id": "franpoli-knurled-knob",
@@ -1093,7 +1128,11 @@
     "description": "Parametric knurled knob from Fran Poli.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/knurled_knob/knurled_knob.scad",
-    "tags": ["openscadutil", "knob", "hardware"]
+    "tags": [
+      "openscadutil",
+      "knob",
+      "hardware"
+    ]
   },
   {
     "id": "franpoli-pipe-locks",
@@ -1101,7 +1140,11 @@
     "description": "Parametric pipe locks generator from Fran Poli.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/pipe_locks_generator/pipe_locks_generator.scad",
-    "tags": ["openscadutil", "pipe", "generator"]
+    "tags": [
+      "openscadutil",
+      "pipe",
+      "generator"
+    ]
   },
   {
     "id": "franpoli-thumbdrive-housing",
@@ -1109,7 +1152,11 @@
     "description": "Parametric thumbdrive housing from Fran Poli.",
     "author": "franpoli",
     "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/libraries/thumb_drive_housing/thumbdrive_housing.scad",
-    "tags": ["openscadutil", "thumbdrive", "housing"]
+    "tags": [
+      "openscadutil",
+      "thumbdrive",
+      "housing"
+    ]
   },
   {
     "id": "michaelmob-pegboard",
@@ -1117,6 +1164,9 @@
     "description": "Parametric pegboard from Michael Mob.",
     "author": "michaelmob",
     "url": "https://raw.githubusercontent.com/michaelmob/openscad-models/master/pegboard.scad",
-    "tags": ["pegboard", "hardware"]
+    "tags": [
+      "pegboard",
+      "hardware"
+    ]
   }
 ]
