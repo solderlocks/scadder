@@ -1,29 +1,27 @@
 name: Auto-Generate Screenshots
 on:
+  workflow_dispatch: # 👈 THIS creates the "Run workflow" button
   push:
-    paths:
-      - "core/library.json" # ONLY run when the library changes
     branches:
       - main
+    paths:
+      - "core/library.json" # ONLY run when the library changes
 
 permissions:
-  contents: write # Allow the robot to commit changes back
+  contents: write
 
 jobs:
   snap:
     runs-on: ubuntu-latest
     steps:
-      # Upgraded to v4
       - uses: actions/checkout@v4
 
-      # Upgraded to v4 and bumped Node to 20 for better Puppeteer support
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
 
       - name: Install Snapshot Dependencies
-        # --no-save prevents it from altering your CLI's package.json
         run: npm install puppeteer http-server --no-save
 
       - name: Start Local Server
@@ -37,7 +35,6 @@ jobs:
           BASE_URL: "http://localhost:8080/web/index.html"
         run: node web/scripts/snap.cjs
 
-      # Upgraded to v5 to prevent deprecation warnings with Node 20
       - name: Commit and Push New Images
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
