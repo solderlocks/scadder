@@ -1,0 +1,20 @@
+{
+  "BOSL2": {
+    "repo": "BelfrySCAD/BOSL2"
+  },
+  "NopSCADlib": {
+    "repo": "nophead/NopSCADlib"
+  },
+  "Round-Anything": {
+    "repo": "Irev-Dev/Round-Anything"
+  },
+  "openscad-threads": {
+    "repo": "dkprojects/openscad-threads"
+  },
+  "gridfinity-rebuilt": {
+    "repo": "kennetek/gridfinity-rebuilt-openscad"
+  },
+  "MCAD": {
+    "repo": "openscad/MCAD"
+  }
+}

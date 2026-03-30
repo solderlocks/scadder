@@ -1,7 +1,10 @@
 export async function resolveDependencies(rootUrl, options = {}) {
     const fetchedUrls = new Set();
     const virtualFileSystem = [];
-    const { onLog = console.log, onError = console.error } = options;
+    virtualFileSystem.frameworks = {}; // Attach associative metadata to the returned array
+    
+    const { onLog = console.log, onError = console.error, frameworks = {} } = options;
+    const frameworkPrefixes = Object.keys(frameworks).map(f => f + '/');
 
     async function crawlAndFetch(url, vfsPath) {
         if (fetchedUrls.has(url)) return;
@@ -27,23 +30,27 @@ export async function resolveDependencies(rootUrl, options = {}) {
 
             // 1. Strip block comments (/* ... */)
             let cleanText = text.replace(/\/\*[\s\S]*?\*\//g, '');
-            // 2. Strip single-line comments (// ...)
-            cleanText = cleanText.replace(/\/\/.*$/gm, '');
+            // We cannot broadly strip single-line comments anymore because we need the @requires tag.
 
-            const importRegex = /^\s*(?:include|use)\s*[<"]([^>"]+)[>"]/gm;
+            const importRegex = /^\s*(?:include|use)\s*[<"]([^>"]+)[>"](?:.*?(\/\/\s*@requires:\s*([^\s]+)))?/gm;
             let match;
             const promises = [];
 
             while ((match = importRegex.exec(cleanText)) !== null) {
                 const relativeRef = match[1];
+                const requiresTag = match[3] || null;
 
                 // Skip non-scad files
                 if (relativeRef.toLowerCase().endsWith('.stl') || relativeRef.toLowerCase().endsWith('.dxf')) continue;
 
                 // Check if this is a call to a standard global library
-                const isGlobalLib = GLOBAL_LIBRARY_PREFIXES.some(prefix => relativeRef.startsWith(prefix));
+                const isGlobalLib = frameworkPrefixes.some(prefix => relativeRef.startsWith(prefix)) || requiresTag;
                 if (isGlobalLib) {
-                    if (onLog) onLog(`  ⏭️ Skipping global library ref: ${relativeRef}`);
+                    const fwId = relativeRef.split('/')[0];
+                    if (!virtualFileSystem.frameworks[fwId] || requiresTag) {
+                        virtualFileSystem.frameworks[fwId] = requiresTag || null;
+                    }
+                    if (onLog) onLog(`  ⏭️ Skipping monolithic framework ref: ${relativeRef}`);
                     continue;
                 }
 
