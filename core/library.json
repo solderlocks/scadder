@@ -1302,18 +1302,6 @@
     ]
   },
   {
-    "id": "nbr0wn-mechanical",
-    "title": "Mechanical",
-    "description": "General mechanical components including linkages and joints.",
-    "author": "nbr0wn",
-    "url": "https://raw.githubusercontent.com/nbr0wn/parapart/main/docs/assets/section_images/scad/mechanical.scad",
-    "tags": [
-      "parapart",
-      "parametric",
-      "part-library"
-    ]
-  },
-  {
     "id": "nbr0wn-miscellaneous",
     "title": "Miscellaneous",
     "description": "A collection of various useful parts and components.",
@@ -1524,18 +1512,6 @@
     "tags": [
       "scad-pegboard",
       "pegboard"
-    ]
-  },
-  {
-    "id": "johnboiles-stina-deodorant",
-    "title": "Stina Deodorant",
-    "description": "Custom-sized stina deodorant holder for pegboard organization.",
-    "author": "johnboiles",
-    "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/stina_deodorant.scad",
-    "tags": [
-      "scad-pegboard",
-      "pegboard",
-      "bathroom"
     ]
   },
   {
