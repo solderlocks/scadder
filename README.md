@@ -64,7 +64,7 @@ Scadder isn't restricted to the community library. You can pass a direct URL to 
 *(Note: The host must have a permissive CORS policy, such as `raw.githubusercontent.com` or a standard static file server).*
 
 ```bash
-scadder install [https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad](https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad)
+scadder install https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad
 ```
 
 ## Acknowledgements & Licensing
