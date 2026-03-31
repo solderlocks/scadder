@@ -2,7 +2,7 @@
 
 **A decentralized dependency manager for OpenSCAD.**
 
-> **Note:** This package contains *only* the Scadder CLI utility. The serverless web customizer and viewer are hosted live at [scadder.dev](https://scadder.dev), and the full monorepo source is available on [GitHub](https://github.com/solderlocks/scadder).
+> **Note:** This package contains only the Scadder CLI utility. The serverless web customizer and viewer are hosted live at [scadder.dev](https://scadder.dev), and the full monorepo source is available on [GitHub](https://github.com/solderlocks/scadder).
 
 Sharing parametric models usually means fighting with broken customizers or passing around massive `.zip` files full of duplicated local libraries. Scadder brings `npm`-style dependency resolution to local OpenSCAD development, allowing you to pull cloud-hosted models and their nested dependencies directly into your local workflow.
 
@@ -31,7 +31,7 @@ Scadder isn't restricted to a curated community library. You can pass a direct U
 *(Note: The host must have a permissive CORS policy, such as `raw.githubusercontent.com` or a standard static file server).*
 
 ```bash
-scadder install https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad
+scadder install [https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad](https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad)
 ```
 
 ## Deterministic Builds (scadder.json)
@@ -44,9 +44,9 @@ If you install a package from a GitHub repository, Scadder contacts the GitHub A
 
 Standard dependencies are installed locally to `.scadder_modules/` in your project directory. However, massive monolithic frameworks like **BOSL2** or **NopSCADlib** are treated differently — Scadder recognizes them as **Peer Dependencies**.
 
-Installing these frameworks into every project folder would create duplicate multi-megabyte copies and cause global namespace collisions inside OpenSCAD. Instead, Scadder expects them to live once in your OS-level OpenSCAD library directory (e.g., `~/Documents/OpenSCAD/libraries` on macOS).
+Installing these frameworks into every project folder would create duplicate multi-megabyte copies and cause global namespace collisions inside OpenSCAD. Instead, Scadder expects them to live once in your OS-level OpenSCAD library directory (e.g., `~/Documents/OpenSCAD/libraries` on macOS) or your custom `OPENSCADPATH`.
 
-By default, if a missing framework is detected during a crawl, Scadder will skip the download and log a warning:
+By default, the CLI reads your local `OPENSCADPATH` and the OS default directories as a read-only search space. If a missing framework is detected during a crawl and it cannot be found anywhere in your environment, Scadder will skip the download and log a warning:
 
 ```
 ⚠️ Missing Peer Dependency: [BOSL2]. Install it manually or re-run with --install-globals
@@ -58,7 +58,7 @@ To have Scadder automatically download and extract any missing frameworks direct
 scadder install <model-id> -g
 ```
 
-If the framework already exists globally, Scadder will detect it and skip the download automatically.
+If the framework already exists globally, Scadder will detect it and skip the download automatically. It will never attempt to overwrite or install into custom directories defined in your `OPENSCADPATH`.
 
 ## Updating Dependencies
 

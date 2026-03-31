@@ -159,3 +159,37 @@ function buildModifiedScad(originalCode) {
 
     return lines.join('\n');
 }
+
+/**
+ * Parses "Scadder Docblocks" (JSDoc-style comments at top of file)
+ * to extract authoritative metadata.
+ */
+function parseScadderDocblock(code) {
+    const docblockMatch = code.match(/^\/\*\*([\s\S]*?)\*\//);
+    if (!docblockMatch) return null;
+
+    const block = docblockMatch[1];
+    const metadata = {};
+    const tags = {
+        name: /@name\s+(.*)/,
+        description: /@description\s+(.*)/,
+        author: /@author\s+(.*)/,
+        version: /@version\s+(.*)/,
+        requires: /@requires\s+(.*)/,
+        tag: /@tag\s+(.*)/g
+    };
+
+    for (const [key, regex] of Object.entries(tags)) {
+        if (key === 'tag') {
+            const matches = [...block.matchAll(regex)];
+            if (matches.length > 0) {
+                metadata.tags = matches.map(m => m[1].trim());
+            }
+        } else {
+            const match = block.match(regex);
+            if (match) metadata[key] = match[1].trim();
+        }
+    }
+
+    return metadata;
+}

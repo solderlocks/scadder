@@ -38,16 +38,26 @@ function getOpenSCADLibraryPath() {
 }
 
 // ────────────────────────────────────────────────
-// Step 2: Presence Checker
+// Step 2: Presence Checker (Read-Only Search)
 // ────────────────────────────────────────────────
 async function frameworkExistsGlobally(frameworkId) {
-    const globalDir = path.join(getOpenSCADLibraryPath(), frameworkId);
-    try {
-        await fs.access(globalDir);
-        return true;
-    } catch {
-        return false;
+    const envPath = process.env.OPENSCADPATH || "";
+    const searchPaths = envPath ? envPath.split(path.delimiter) : [];
+    
+    // Add the default OS-specific path too
+    searchPaths.push(getOpenSCADLibraryPath());
+
+    for (const base of searchPaths) {
+        if (!base) continue;
+        const target = path.join(base, frameworkId);
+        try {
+            await fs.access(target);
+            return true;
+        } catch {
+            // Not found in this path; keep searching
+        }
     }
+    return false;
 }
 
 async function init() {

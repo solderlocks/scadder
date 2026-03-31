@@ -66,6 +66,24 @@ async function loadScadFromUrl(url) {
         const mainFile = virtualFileSystem.find(f => f.name === "main.scad");
         if (!mainFile) throw new Error("Failed to load main file");
 
+        // ── SCADDER DOCBLOCK PARSING (Authoritative Metadata) ────────────────
+        const docblock = parseScadderDocblock(mainFile.txt);
+        if (docblock) {
+            if (docblock.name) {
+                document.getElementById('modelTitle').textContent = docblock.name;
+            }
+            if (docblock.description) {
+                document.getElementById('modelSubtitle').textContent = docblock.description;
+            }
+            if (docblock.author) {
+                const authEl = document.getElementById('ghAuthor');
+                if (authEl) {
+                    authEl.textContent = `by ${docblock.author}`;
+                    document.getElementById('githubMeta').style.display = 'flex';
+                }
+            }
+        }
+
         baseScadState = mainFile.txt;
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -78,7 +96,12 @@ async function loadScadFromUrl(url) {
                 const patchedText = Diff.applyPatch(baseScadState, decompressedPatch);
                 if (patchedText === false) throw new Error("Patch conflict");
                 mainFile.txt = patchedText;
+
+                // UI Indicators
                 document.getElementById('patchBadge').classList.add('visible');
+                const modBadge = document.getElementById('modifiedBadge');
+                if (modBadge) modBadge.style.display = 'inline-flex';
+
             } catch (err) {
                 document.getElementById('consoleOutput').textContent += "Failed to apply URL patch to base file\n";
             }
@@ -111,6 +134,8 @@ async function loadScadFromUrl(url) {
                 if (currentText === baseScadState) {
                     u.searchParams.delete('patch');
                     document.getElementById('patchBadge').classList.remove('visible');
+                    const modBadge = document.getElementById('modifiedBadge');
+                    if (modBadge) modBadge.style.display = 'none';
                 } else {
                     const compressed = LZString.compressToEncodedURIComponent(patch);
                     u.searchParams.set('patch', compressed);
@@ -164,6 +189,8 @@ window.dropPatch = function() {
     window.history.replaceState({}, '', u.toString());
     
     document.getElementById('patchBadge').classList.remove('visible');
+    const modBadge = document.getElementById('modifiedBadge');
+    if (modBadge) modBadge.style.display = 'none';
     
     window.runAndShowScad();
 };
