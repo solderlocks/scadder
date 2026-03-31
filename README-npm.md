@@ -40,6 +40,26 @@ When you install a dependency, Scadder automatically generates a `scadder.json` 
 
 If you install a package from a GitHub repository, Scadder contacts the GitHub API to intercept the latest `HEAD` commit and permanently locks your dependency to that specific SHA hash. This ensures that your local OpenSCAD project will not unexpectedly break if an upstream author pushes a breaking change to their `main` branch. 
 
+## Global Frameworks vs. Local Components
+
+Standard dependencies are installed locally to `.scadder_modules/` in your project directory. However, massive monolithic frameworks like **BOSL2** or **NopSCADlib** are treated differently — Scadder recognizes them as **Peer Dependencies**.
+
+Installing these frameworks into every project folder would create duplicate multi-megabyte copies and cause global namespace collisions inside OpenSCAD. Instead, Scadder expects them to live once in your OS-level OpenSCAD library directory (e.g., `~/Documents/OpenSCAD/libraries` on macOS).
+
+By default, if a missing framework is detected during a crawl, Scadder will skip the download and log a warning:
+
+```
+⚠️ Missing Peer Dependency: [BOSL2]. Install it manually or re-run with --install-globals
+```
+
+To have Scadder automatically download and extract any missing frameworks directly into your OS-level OpenSCAD libraries folder, append the `--install-globals` (or `-g`) flag:
+
+```bash
+scadder install <model-id> -g
+```
+
+If the framework already exists globally, Scadder will detect it and skip the download automatically.
+
 ## Updating Dependencies
 
 To fast-forward your locked dependencies to their latest upstream commits, run:

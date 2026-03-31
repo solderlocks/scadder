@@ -6,6 +6,7 @@
 
 import fs from 'fs/promises';
 import path from 'path';
+import os from 'os';
 import AdmZip from 'adm-zip';
 import { resolveDependencies } from '../core/crawler.js';
 import { fileURLToPath } from 'url';
@@ -21,6 +22,34 @@ const REGISTRY_URL = 'https://raw.githubusercontent.com/solderlocks/scadder/main
 const SCADDER_JSON = path.join(process.cwd(), 'scadder.json');
 const MODULES_DIR = path.join(process.cwd(), '.scadder_modules');
 
+// ────────────────────────────────────────────────
+// Step 1: OS Path Resolution Helper
+// ────────────────────────────────────────────────
+function getOpenSCADLibraryPath() {
+    const home = os.homedir();
+    switch (process.platform) {
+        case 'darwin':
+            return path.join(home, 'Documents', 'OpenSCAD', 'libraries');
+        case 'win32':
+            return path.join(home, 'Documents', 'OpenSCAD', 'libraries');
+        default: // linux and other unix
+            return path.join(home, '.local', 'share', 'OpenSCAD', 'libraries');
+    }
+}
+
+// ────────────────────────────────────────────────
+// Step 2: Presence Checker
+// ────────────────────────────────────────────────
+async function frameworkExistsGlobally(frameworkId) {
+    const globalDir = path.join(getOpenSCADLibraryPath(), frameworkId);
+    try {
+        await fs.access(globalDir);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
 async function init() {
     try {
         await fs.access(SCADDER_JSON);
@@ -34,7 +63,7 @@ async function init() {
     }
 }
 
-async function install(target) {
+async function install(target, installGlobals = false) {
     let frameworksData = {};
     try {
         frameworksData = JSON.parse(await fs.readFile(FRAMEWORKS_JSON, 'utf8'));
@@ -62,7 +91,7 @@ async function install(target) {
             try {
                 if (frameworksData[id]) {
                     const commitHash = typeof val === 'string' ? null : val.commit_hash;
-                    await installFramework(id, commitHash, frameworksData);
+                    await installFramework(id, commitHash, frameworksData, installGlobals);
                     continue;
                 }
 
@@ -133,7 +162,7 @@ async function install(target) {
         Object.assign(requiredFrameworks, foundFrameworks || {});
         
         for (const [fwId, tag] of Object.entries(requiredFrameworks)) {
-            const fwConfig = await installFramework(fwId, tag, frameworksData);
+            const fwConfig = await installFramework(fwId, tag, frameworksData, installGlobals);
             if (fwConfig) {
                 await updateConfig(fwId, fwConfig.source, fwConfig.commitHash);
             }
@@ -175,11 +204,29 @@ async function fetchAndSave(id, url, frameworks = {}) {
     return files.frameworks;
 }
 
-async function installFramework(fwId, tag, frameworksData) {
+// ────────────────────────────────────────────────
+// Step 3: Dependency Interception + Framework Install
+// ────────────────────────────────────────────────
+async function installFramework(fwId, tag, frameworksData, installGlobals = false) {
     if (!frameworksData[fwId]) {
         console.error(`Error: Unknown framework ${fwId}`);
         return null;
     }
+
+    // --- Interception Logic ---
+    const existsGlobally = await frameworkExistsGlobally(fwId);
+    if (existsGlobally) {
+        console.log(`> ⚡ Framework [${fwId}] found globally. Skipping download.`);
+        return null;
+    }
+
+    // Framework is NOT installed globally
+    if (!installGlobals) {
+        console.warn(`> ⚠️  Missing Peer Dependency: [${fwId}]. Install it manually or re-run with --install-globals`);
+        return null;
+    }
+
+    // --install-globals flag is present: download and extract to global dir
     const repo = frameworksData[fwId].repo;
     console.log(`\n> Resolving framework [${fwId}] from ${repo}...`);
     
@@ -204,6 +251,8 @@ async function installFramework(fwId, tag, frameworksData) {
          }
     }
     
+    const globalLibPath = getOpenSCADLibraryPath();
+    const targetDir = path.join(globalLibPath, fwId);
     console.log(`> downloading monolithic zip payload: ${zipUrl}`);
     
     try {
@@ -212,7 +261,6 @@ async function installFramework(fwId, tag, frameworksData) {
         
         const buffer = Buffer.from(await res.arrayBuffer());
         const zip = new AdmZip(buffer);
-        const targetDir = path.join(MODULES_DIR, fwId);
         
         const zipEntries = zip.getEntries();
         await fs.mkdir(targetDir, { recursive: true });
@@ -240,7 +288,7 @@ async function installFramework(fwId, tag, frameworksData) {
             }
         }
         
-        console.log(`> extracted framework ${fwId} to ${targetDir}/`);
+        console.log(`> 🌐 Installed framework [${fwId}] globally to ${targetDir}/`);
         return { source: zipUrl, commitHash: commitHash };
     } catch (e) {
         console.error(`  Error downloading framework ${fwId}: ${e.message}`);
@@ -399,11 +447,14 @@ async function resolveLatestCommitUrl(cleanUrl) {
     }
 }
 
-// CLI Router
+// ────────────────────────────────────────────────
+// Step 4: CLI Argument Parsing
+// ────────────────────────────────────────────────
 const rawArgs = process.argv.slice(2);
 const command = rawArgs[0];
 const noLock = rawArgs.includes('--no-lock');
-const args = rawArgs.slice(1).filter(a => !a.startsWith('--'));
+const installGlobals = rawArgs.includes('--install-globals') || rawArgs.includes('-g');
+const args = rawArgs.slice(1).filter(a => !a.startsWith('--') && a !== '-g');
 
 (async () => {
     switch (command) {
@@ -411,7 +462,7 @@ const args = rawArgs.slice(1).filter(a => !a.startsWith('--'));
             await init();
             break;
         case 'install':
-            await install(args[0]);
+            await install(args[0], installGlobals);
             break;
         case 'update':
             await updateCmd(args[0]);
@@ -423,9 +474,13 @@ const args = rawArgs.slice(1).filter(a => !a.startsWith('--'));
 Scadder CLI - OpenSCAD Package Manager
 
 Commands:
-  init             Initialize a new scadder.json project
-  install [target] Install a package, or all packages in scadder.json
-  update [target]  Fetch the latest commit hash for a dependency (or "all") and reinstall
+  init                        Initialize a new scadder.json project
+  install [target]            Install a package, or all packages in scadder.json
+  update [target]             Fetch the latest commit hash for a dependency (or "all") and reinstall
+
+Flags:
+  --install-globals, -g       Install required frameworks to the OS-level OpenSCAD library directory
+  --no-lock                   Skip commit-hash locking
             `);
             break;
         default:

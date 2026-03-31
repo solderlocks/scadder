@@ -13,6 +13,7 @@ Scadder is an open-source toolchain designed to improve the distribution pipelin
     * **Dependency Crawling:** It recursively fetches `include` and `use` files directly from GitHub repos so renders don't break.
     * **Mobile-Friendly:** Actually usable on a phone, so you can tweak parameters and export STLs while standing next to your printer.
 * **CLI Package Manager:** A lightweight Node.js utility that brings `npm`-style dependency resolution to local OpenSCAD development. It pulls cloud-hosted dependencies into your local workflow via a `library.json` config.
+    * **Hybrid Dependency Resolution:** Standard components install locally to `.scadder_modules/`, while monolithic frameworks (like BOSL2) are treated as peer dependencies and routed directly to the OS-level OpenSCAD library folder via the `-g` flag.
 
 ## Project Structure
 * `/core`: Environment-agnostic dependency resolution and AST parsing logic.
