@@ -1459,28 +1459,6 @@
     ]
   },
   {
-    "id": "johnboiles-hyperorganizer",
-    "title": "Hyperorganizer",
-    "description": "Custom-sized hyperorganizer holder for pegboard organization.",
-    "author": "johnboiles",
-    "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/hyperorganizer.scad",
-    "tags": [
-      "scad-pegboard",
-      "pegboard"
-    ]
-  },
-  {
-    "id": "johnboiles-pegstr",
-    "title": "Pegstr",
-    "description": "Custom-sized pegstr holder for pegboard organization.",
-    "author": "johnboiles",
-    "url": "https://raw.githubusercontent.com/johnboiles/scad-pegboard/master/pegstr.scad",
-    "tags": [
-      "scad-pegboard",
-      "pegboard"
-    ]
-  },
-  {
     "id": "johnboiles-lighter",
     "title": "Lighter",
     "description": "Custom-sized lighter holder for pegboard organization.",
