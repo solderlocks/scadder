@@ -2,8 +2,6 @@
 
 **A serverless customizer, viewer, and dependency manager for OpenSCAD.**
 
-Sharing parametric models right now usually means fighting with broken customizers, closed-ecosystem web platforms, or passing around massive `.zip` files full of duplicated local libraries. 
-
 Scadder is an open-source toolchain designed to improve the distribution pipeline for OpenSCAD by letting you share, customize, and resolve dependencies directly from GitHub.
 
 ## The Toolchain
