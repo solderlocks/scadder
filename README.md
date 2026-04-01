@@ -2,7 +2,7 @@
 
 **A serverless customizer, viewer, and dependency manager for OpenSCAD.**
 
-Scadder is an open-source toolchain designed to improve the distribution pipeline for OpenSCAD by letting you share, customize, and resolve dependencies directly from GitHub.
+Scadder is a decentralized package manager and serverless web viewer that brings NPM-style dependency resolution and browser-based customization to OpenSCAD.
 
 ## The Toolchain
 
