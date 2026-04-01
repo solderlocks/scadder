@@ -2,13 +2,9 @@
 
 function parseScadParams(code) {
     const groups = [];
-
-    // 1. Keep the standard "Named Parameters" group (for variables)
     const globalGroup = { name: "Named Variables", params: [] };
-    groups.push(globalGroup);
-
-    // 2. Create a new "Magic Numbers" group
     const magicGroup = { name: "Raw Values (Magic Numbers)", params: [] };
+    groups.push(globalGroup);
     groups.push(magicGroup);
 
     const lines = code.split('\n');
@@ -17,68 +13,78 @@ function parseScadParams(code) {
     const evaluate = (str) => {
         try {
             let result = Function(`"use strict"; return (${str})`)();
-
-            // If it's an array of two numbers where the second is 0, just return the first number.
             if (Array.isArray(result) && result.length === 2 && typeof result[0] === 'number') {
                 return result[0];
             }
-
             return result;
         } catch (e) { return null; }
     };
 
+    // NEW: Flag to track when we cross out of the global parameter scope
+    let blockNamedParams = false;
+
     for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const t = line.trim();
-        if (t.startsWith('//') || t.length === 0) continue; // Skip comments/empty
+        if (t.startsWith('//') || t.length === 0) continue;
+
+        // ── BOUNDARY DETECTION ──
+        // OpenSCAD stops parsing UI parameters at the first module, function, or [Hidden] tag.
+        if (t.match(/^(module|function)\s+/) || t.includes('/* [Hidden] */')) {
+            blockNamedParams = true;
+        }
 
         // ── STRATEGY A: Named Variables ──
-        const varMatch = t.match(/^([ \t]*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*([^;]+?)\s*;(?:\s*\/\/\s*(.*))?/);
+        // Only parse if we are still in the global parameter scope
+        if (!blockNamedParams) {
+            const varMatch = t.match(/^([ \t]*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*([^;]+?)\s*;(?:\s*\/\/\s*(.*))?/);
 
-        if (varMatch) {
-            const [, indent, name, rawVal, comment] = varMatch;
+            if (varMatch) {
+                const [, indent, name, rawVal, comment] = varMatch;
 
-            // Skip system vars
-            if (name === '$fn' || name === '$fa' || name === '$fs') continue;
+                if (name === '$fn' || name === '$fa' || name === '$fs') continue;
 
-            let type = 'number';
-            let val = rawVal.trim();
-            let computedVal = val;
+                let type = 'number';
+                let val = rawVal.trim();
+                let computedVal = val;
 
-            if (val === 'true' || val === 'false') {
-                type = 'boolean';
-                computedVal = (val === 'true');
-            } else if (val.startsWith('"') || val.startsWith("'")) {
-                type = 'string';
-                computedVal = val.replace(/^["']|["']$/g, '');
-            } else {
-                const mathResult = evaluate(val);
-                if (mathResult !== null && !isNaN(mathResult)) {
-                    computedVal = mathResult;
+                if (val === 'true' || val === 'false') {
+                    type = 'boolean';
+                    computedVal = (val === 'true');
+                } else if (val.startsWith('"') || val.startsWith("'")) {
+                    type = 'string';
+                    computedVal = val.replace(/^["']|["']$/g, '');
                 } else {
-                    type = 'raw';
+                    const mathResult = evaluate(val);
+                    if (mathResult !== null && !isNaN(mathResult)) {
+                        computedVal = mathResult;
+                    } else {
+                        // FIX: It failed to evaluate cleanly (likely a derived variable). 
+                        // Drop it entirely. Do not expose it to the UI.
+                        continue;
+                    }
                 }
+
+                // Range comments
+                let min, max, step;
+                if (comment) {
+                    const range = comment.match(/\[(-?[\d.]+):(-?[\d.]+)\]/);
+                    if (range) { min = parseFloat(range[1]); max = parseFloat(range[2]); step = 1; type = 'range'; }
+                }
+
+                globalGroup.params.push({
+                    name, type,
+                    value: computedVal,
+                    defaultVal: computedVal,
+                    rawValue: val,
+                    min, max, step,
+                    lineIndex: i,
+                    label: name.replace(/_(mm|cm|in|inches|deg|pct|percent)\b/gi, ''),
+                    isMagic: false
+                });
+
+                continue; // Skip Strategy B if we successfully matched a named variable
             }
-
-            // Range comments
-            let min, max, step;
-            if (comment) {
-                const range = comment.match(/\[(-?[\d.]+):(-?[\d.]+)\]/);
-                if (range) { min = parseFloat(range[1]); max = parseFloat(range[2]); step = 1; type = 'range'; }
-            }
-
-            globalGroup.params.push({
-                name, type,
-                value: computedVal,
-                defaultVal: computedVal,
-                rawValue: val,
-                min, max, step,
-                lineIndex: i,
-                label: name.replace(/_(mm|cm|in|inches|deg|pct|percent)\b/gi, ''),
-                isMagic: false
-            });
-
-            continue;
         }
 
         // ── STRATEGY B: Magic Numbers ──
