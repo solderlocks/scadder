@@ -7,12 +7,12 @@ Scadder is a decentralized package manager and serverless web viewer that brings
 ## The Toolchain
 
 * **[Web Customizer & Viewer](https://solderlocks.github.io/scadder/web/):** A serverless, WASM-powered web frontend. 
-    * **URL State & Direct Editing:** Tweak parameters in the UI or directly edit the raw `.scad` code. The AST delta-diff is compressed and serialized directly into the URL, allowing backend-free sharing of custom geometric states.
-    * **Decentralized Metadata (Docblocks):** Parses JSDoc-style comment blocks (e.g., `@name`, `@author`, `@description`) at the top of files to natively hydrate the UI and secure the model's metadata against spoofed URL patches.
+    * **URL State & Direct Editing:** Tweak parameters in the UI or directly edit the raw `.scad` code. The diff is compressed and serialized directly into the URL, allowing backend-free sharing of custom configurations.
     * **Dependency Crawling:** It recursively fetches `include` and `use` files directly from GitHub repos so renders don't break.
     * **Mobile-Friendly:** Actually usable on a phone, so you can tweak parameters and export STLs while standing next to your printer.
 * **CLI Package Manager:** A lightweight Node.js utility that brings `npm`-style dependency resolution to local OpenSCAD development. It pulls cloud-hosted dependencies into your local workflow via a `library.json` config.
     * **Hybrid Dependency Resolution:** Standard components install locally to `.scadder_modules/`, while monolithic frameworks (like BOSL2) are treated as peer dependencies and routed directly to the OS-level OpenSCAD library folder via the `-g` flag. The CLI natively respects your `OPENSCADPATH` as a read-only search path to prevent redundant downloads.
+    * **Decentralized Metadata (Docblocks):** Parses JSDoc-style comment blocks (e.g., `@name`, `@author`, `@description`) at the top of files to display within the web UI.
 
 ## Project Structure
 * `/core`: Environment-agnostic dependency resolution and AST parsing logic.
