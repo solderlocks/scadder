@@ -202,6 +202,10 @@ header {
   .result-count {
     display: none;
   }
+
+  .control-group {
+    display: none;
+  }
 }
 
 /* ── GitHub Chips ──────────────────────────────────────────────────────────── */
