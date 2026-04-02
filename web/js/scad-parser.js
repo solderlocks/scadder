@@ -9,18 +9,13 @@ function parseScadParams(code) {
 
     const lines = code.split('\n');
 
-    // Helper for safe evaluation
+    // 1. Cleaned up evaluate helper (removed aggressive array flattening)
     const evaluate = (str) => {
         try {
-            let result = Function(`"use strict"; return (${str})`)();
-            if (Array.isArray(result) && result.length === 2 && typeof result[0] === 'number') {
-                return result[0];
-            }
-            return result;
+            return Function(`"use strict"; return (${str})`)();
         } catch (e) { return null; }
     };
 
-    // NEW: Flag to track when we cross out of the global parameter scope
     let blockNamedParams = false;
 
     for (let i = 0; i < lines.length; i++) {
@@ -28,14 +23,10 @@ function parseScadParams(code) {
         const t = line.trim();
         if (t.startsWith('//') || t.length === 0) continue;
 
-        // ── BOUNDARY DETECTION ──
-        // OpenSCAD stops parsing UI parameters at the first module, function, or [Hidden] tag.
         if (t.match(/^(module|function)\s+/) || t.includes('/* [Hidden] */')) {
             blockNamedParams = true;
         }
 
-        // ── STRATEGY A: Named Variables ──
-        // Only parse if we are still in the global parameter scope
         if (!blockNamedParams) {
             const varMatch = t.match(/^([ \t]*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*([^;]+?)\s*;(?:\s*\/\/\s*(.*))?/);
 
@@ -44,8 +35,6 @@ function parseScadParams(code) {
 
                 if (name === '$fn' || name === '$fa' || name === '$fs') continue;
 
-                // ── Help Text Extraction ──
-                // Capture the comment line immediately above this variable
                 let description = inlineComment ? inlineComment.trim() : null;
                 if (i > 0) {
                     const prevLine = lines[i - 1].trim();
@@ -66,16 +55,20 @@ function parseScadParams(code) {
                     computedVal = val.replace(/^["']|["']$/g, '');
                 } else {
                     const mathResult = evaluate(val);
-                    if (mathResult !== null && !isNaN(mathResult)) {
-                        computedVal = mathResult;
+                    // 2. Allow both Numbers and Arrays to pass through
+                    if (mathResult !== null && (!isNaN(mathResult) || Array.isArray(mathResult))) {
+                        if (Array.isArray(mathResult)) {
+                            // Convert back to string and set type to 'raw' to avoid sliders and quotes
+                            computedVal = JSON.stringify(mathResult);
+                            type = 'raw';
+                        } else {
+                            computedVal = mathResult;
+                        }
                     } else {
-                        // FIX: It failed to evaluate cleanly (likely a derived variable). 
-                        // Drop it entirely. Do not expose it to the UI.
                         continue;
                     }
                 }
 
-                // Range comments (Overrides generic 'number' type)
                 let min, max, step;
                 if (inlineComment) {
                     const range = inlineComment.match(/\[(-?[\d.]+):(-?[\d.]+)\]/);
@@ -87,18 +80,17 @@ function parseScadParams(code) {
                     value: computedVal,
                     defaultVal: computedVal,
                     rawValue: val,
-                    description, // Store help text
+                    description,
                     min, max, step,
                     lineIndex: i,
                     label: name.replace(/_(mm|cm|in|inches|deg|pct|percent)\b/gi, ''),
                     isMagic: false
                 });
 
-                continue; // Skip Strategy B if we successfully matched a named variable
+                continue;
             }
         }
 
-        // ── STRATEGY B: Magic Numbers ──
         const numberPattern = /(?<![\w$])(-?\d+\.?\d*)(?![\w$])/g;
         let match;
         while ((match = numberPattern.exec(line)) !== null) {

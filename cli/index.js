@@ -43,7 +43,7 @@ function getOpenSCADLibraryPath() {
 async function frameworkExistsGlobally(frameworkId) {
     const envPath = process.env.OPENSCADPATH || "";
     const searchPaths = envPath ? envPath.split(path.delimiter) : [];
-    
+
     // Add the default OS-specific path too
     searchPaths.push(getOpenSCADLibraryPath());
 
@@ -77,7 +77,7 @@ async function install(target, installGlobals = false) {
     let frameworksData = {};
     try {
         frameworksData = JSON.parse(await fs.readFile(FRAMEWORKS_JSON, 'utf8'));
-    } catch (e) {}
+    } catch (e) { }
 
     // CASE 1: BARE INSTALL (Install everything from scadder.json)
     if (!target) {
@@ -140,7 +140,7 @@ async function install(target, installGlobals = false) {
             }
             url = item.url;
             console.log(`> found ${target} at ${url}`);
-            
+
             if (item.requires) {
                 for (const fwId of item.requires) {
                     requiredFrameworks[fwId] = null;
@@ -170,7 +170,7 @@ async function install(target, installGlobals = false) {
     try {
         const foundFrameworks = await fetchAndSave(id, fetchUrl, frameworksData);
         Object.assign(requiredFrameworks, foundFrameworks || {});
-        
+
         for (const [fwId, tag] of Object.entries(requiredFrameworks)) {
             const fwConfig = await installFramework(fwId, tag, frameworksData, installGlobals);
             if (fwConfig) {
@@ -239,42 +239,42 @@ async function installFramework(fwId, tag, frameworksData, installGlobals = fals
     // --install-globals flag is present: download and extract to global dir
     const repo = frameworksData[fwId].repo;
     console.log(`\n> Resolving framework [${fwId}] from ${repo}...`);
-    
+
     let zipUrl = `https://api.github.com/repos/${repo}/zipball`;
     let commitHash = null;
-    
+
     if (tag && tag !== "latest") {
-         zipUrl = `https://api.github.com/repos/${repo}/zipball/${tag}`;
-         commitHash = tag;
+        zipUrl = `https://api.github.com/repos/${repo}/zipball/${tag}`;
+        commitHash = tag;
     } else {
-         try {
-             const releaseRes = await fetch(`https://api.github.com/repos/${repo}/releases/latest`, { headers: { 'User-Agent': 'Scadder-CLI' } });
-             if (releaseRes.ok) {
-                 const relData = await releaseRes.json();
-                 zipUrl = relData.zipball_url;
-                 commitHash = relData.tag_name;
-             } else {
-                 zipUrl = `https://api.github.com/repos/${repo}/zipball`;
-             }
-         } catch (e) {
-             console.warn(`  Failed checking releases API: ${e.message}`);
-         }
+        try {
+            const releaseRes = await fetch(`https://api.github.com/repos/${repo}/releases/latest`, { headers: { 'User-Agent': 'Scadder-CLI' } });
+            if (releaseRes.ok) {
+                const relData = await releaseRes.json();
+                zipUrl = relData.zipball_url;
+                commitHash = relData.tag_name;
+            } else {
+                zipUrl = `https://api.github.com/repos/${repo}/zipball`;
+            }
+        } catch (e) {
+            console.warn(`  Failed checking releases API: ${e.message}`);
+        }
     }
-    
+
     const globalLibPath = getOpenSCADLibraryPath();
     const targetDir = path.join(globalLibPath, fwId);
     console.log(`> downloading monolithic zip payload: ${zipUrl}`);
-    
+
     try {
         const res = await fetch(zipUrl, { headers: { 'User-Agent': 'Scadder-CLI' }, redirect: 'follow' });
         if (!res.ok) throw new Error(`Failed to map zip URL: ${res.status}`);
-        
+
         const buffer = Buffer.from(await res.arrayBuffer());
         const zip = new AdmZip(buffer);
-        
+
         const zipEntries = zip.getEntries();
         await fs.mkdir(targetDir, { recursive: true });
-        
+
         let rootPrefix = null;
         for (const entry of zipEntries) {
             if (!rootPrefix) {
@@ -282,12 +282,12 @@ async function installFramework(fwId, tag, frameworksData, installGlobals = fals
                 break;
             }
         }
-        
+
         for (const entry of zipEntries) {
             if (entry.entryName.startsWith(rootPrefix)) {
                 const newPath = entry.entryName.substring(rootPrefix.length);
                 if (!newPath) continue;
-                
+
                 const destPath = path.join(targetDir, newPath);
                 if (entry.isDirectory) {
                     await fs.mkdir(destPath, { recursive: true });
@@ -297,7 +297,7 @@ async function installFramework(fwId, tag, frameworksData, installGlobals = fals
                 }
             }
         }
-        
+
         console.log(`> 🌐 Installed framework [${fwId}] globally to ${targetDir}/`);
         return { source: zipUrl, commitHash: commitHash };
     } catch (e) {
@@ -368,16 +368,19 @@ async function updateCmd(target) {
 async function processSingleUpdate(target, val) {
     let frameworksData = {};
     try {
-        frameworksData = JSON.parse(await fs.readFile(FRAMEWORKS_JSON, 'utf8'));
-    } catch (e) {}
+        const fwRes = await fetch('https://raw.githubusercontent.com/solderlocks/scadder/main/core/frameworks.json');
+        if (fwRes.ok) frameworksData = await fwRes.json();
+    } catch (e) {
+        console.warn(`> Warning: Could not fetch live frameworks.json. Framework resolution may fail.`);
+    }
 
     if (frameworksData[target]) {
-         console.log(`\n> Updating monolithic framework ${target}...`);
-         const fwConfig = await installFramework(target, "latest", frameworksData);
-         if (fwConfig) {
-             await updateConfig(target, fwConfig.source, fwConfig.commitHash);
-         }
-         return;
+        console.log(`\n> Updating monolithic framework ${target}...`);
+        const fwConfig = await installFramework(target, "latest", frameworksData);
+        if (fwConfig) {
+            await updateConfig(target, fwConfig.source, fwConfig.commitHash);
+        }
+        return;
     }
 
     let sourceUrl = typeof val === 'string' ? val : val.source;
