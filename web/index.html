@@ -12,6 +12,7 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Fascinate&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&family=Orbit&family=Permanent+Marker&family=Playfair+Display:wght@600&display=swap"
     rel="stylesheet">
+  <script src="./js/coi-serviceworker.js"></script>
   <script data-goatcounter="https://scadder.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
   <!-- 3D Engine (stlViewer requires jQuery) -->
@@ -373,9 +374,9 @@
   </footer>
 
   <!-- OpenSCAD WASM Worker -->
+  <!-- OpenSCAD WASM Worker -->
   <script type="module">
     const consoleEl = document.getElementById("consoleOutput");
-    let worker = null;
 
     window.runAndShowScad = async function () {
       if (!window.isWasmSupported) return;
@@ -419,154 +420,15 @@
       document.getElementById('renderOverlay').classList.remove('hidden');
       setProgress(5);
 
-      document.getElementById('renderStatus').textContent = 'Resolving frameworks...';
+      document.getElementById('renderStatus').textContent = 'Initializing engine...';
       consoleEl.textContent = '';
 
-      // --- PIECEMEAL FRAMEWORK RESOLUTION ---
-      let scadderConfig = null;
-      const loadedFileUrl = document.getElementById('urlInput').value;
-
-      if (loadedFileUrl.startsWith('http')) {
-        let baseUrl = loadedFileUrl.substring(0, loadedFileUrl.lastIndexOf('/') + 1);
-
-        // Convert standard github URLs to raw CDN URLs to bypass CORS
-        if (baseUrl.includes('github.com')) {
-          baseUrl = baseUrl.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
-        }
-
-        try {
-          const res = await fetch(baseUrl + 'scadder.json');
-          if (res.ok) scadderConfig = await res.json();
-        } catch (e) { }
-      }
-
-      let frameworksMeta = {};
-      try {
-        // let fmRes = await fetch('core/frameworks.json');
-        // if (!fmRes.ok) {
-        //   fmRes = await fetch('../core/frameworks.json');
-        // }
-        let fmRes = await fetch('https://raw.githubusercontent.com/solderlocks/scadder/main/core/frameworks.json');
-        if (fmRes.ok) {
-          frameworksMeta = await fmRes.json();
-        } else {
-          console.warn('Could not load frameworks.json for piecemeal crawling (404)');
-        }
-      } catch (e) {
-        console.warn('Could not load frameworks.json for piecemeal crawling (Network Error)');
-      }
-
-      const crawledRegistry = new Set();
-
-      async function crawlFrameworkDependencies(code, currentFwId = null, currentFileDir = '') {
-        const importsRegex = /^\s*(?:include|use)\s*[<"](.*?)[>"]/gm;
-        let match;
-        const promises = [];
-
-        while ((match = importsRegex.exec(code)) !== null) {
-          const fullImportPath = match[1];
-          let fwId = currentFwId;
-          let relativeFile = fullImportPath;
-
-          if (window.frameworksMeta && window.frameworksMeta[fullImportPath]) {
-            continue;
-          }
-
-          // --- STEP 1: RESOLVE FRAMEWORK CONTEXT ---
-          if (!currentFwId) {
-            // We are scanning the user's root model. Try to intercept a global framework.
-            const segments = fullImportPath.split('/');
-            const possibleFwId = segments[0]; // e.g., "MCAD"
-
-            if (frameworksMeta[possibleFwId]) {
-              fwId = possibleFwId;
-              relativeFile = segments.slice(1).join('/'); // e.g., "shapes.scad"
-              console.log(`[Piecemeal] Intercepted framework: ${fwId}, file: ${relativeFile}`);
-            } else {
-              // Not a framework (or dictionary failed to load). 
-              // Let the native user-repo crawler handle this file.
-              continue;
-            }
-          } else {
-            // We are recursively deep inside a framework. 
-            // Resolve relative internal imports (e.g., '../math.scad') against current directory.
-            if (relativeFile.startsWith('/')) relativeFile = relativeFile.substring(1);
-
-            let parts = currentFileDir ? currentFileDir.split('/') : [];
-            const newParts = relativeFile.split('/');
-
-            for (const p of newParts) {
-              if (p === '..') parts.pop();
-              else if (p !== '.' && p !== '') parts.push(p);
-            }
-            relativeFile = parts.join('/');
-          }
-
-          // Safety check
-          if (!fwId || !frameworksMeta[fwId]) continue;
-
-          // --- STEP 2: VFS DEDUPLICATION ---
-          const vfsPath = `${fwId}/${relativeFile}`;//`.scadder_modules/${fwId}/${relativeFile}`;
-          if (crawledRegistry.has(vfsPath)) continue;
-          crawledRegistry.add(vfsPath);
-
-          const newFileDir = relativeFile.includes('/') ? relativeFile.substring(0, relativeFile.lastIndexOf('/')) : '';
-
-          // --- STEP 3: ASYNC FETCH & RECURSE ---
-          promises.push((async () => {
-            let commitHash = 'master'; // Fallback
-
-            // 1. Check if version is strictly locked in project's scadder.json
-            if (scadderConfig && scadderConfig.dependencies && scadderConfig.dependencies[fwId]) {
-              const fwLock = scadderConfig.dependencies[fwId];
-              if (typeof fwLock === 'object' && fwLock.commit_hash) {
-                commitHash = fwLock.commit_hash;
-              }
-            }
-            // 2. If no lockfile, check for inline pragma on the root include
-            else if (!currentFwId) {
-              const lineEndIdx = code.indexOf('\n', match.index);
-              const lineStr = code.substring(match.index, lineEndIdx !== -1 ? lineEndIdx : code.length);
-              const reqMatch = lineStr.match(/\/\/\s*@requires:\s*([^\s]+)/);
-              if (reqMatch) commitHash = reqMatch[1];
-            }
-
-            // Construct the CDN API endpoint
-            const repo = frameworksMeta[fwId].repo;
-            const rawUrl = `https://raw.githubusercontent.com/${repo}/${commitHash}/${relativeFile}`;
-
-            try {
-              // Update UI State
-              const statusEl = document.getElementById('renderStatus');
-              if (statusEl) statusEl.textContent = `Fetching ${fwId}/${relativeFile}...`;
-
-              const req = await fetch(rawUrl);
-              if (!req.ok) throw new Error(`HTTP ${req.status}`);
-
-              const text = await req.text();
-
-              // Write directly to Emscripten's target array
-              workerVFS.push({ name: vfsPath, txt: text });
-
-              // Recursively crawl the newly fetched framework file
-              if (relativeFile.toLowerCase().endsWith('.scad')) {
-                await crawlFrameworkDependencies(text, fwId, newFileDir);
-              }
-            } catch (e) {
-              console.error(`[Piecemeal] Fetch failed for ${rawUrl}`, e);
-            }
-          })());
-        }
-
-        // Await all parallel fetches for this depth level before returning
-        await Promise.all(promises);
-      }
-      await crawlFrameworkDependencies(modifiedCode);
-
       // 4. Lifecycle Management
-      document.getElementById('renderStatus').textContent = 'Initializing engine...';
-      if (worker) worker.terminate();
-      worker = new Worker('./scad-worker.js', { type: "module" });
+      if (ScadWorker.worker) ScadWorker.worker.terminate();
+      ScadWorker.worker = new Worker('./scad-worker.js', { type: "module" });
+
+      // Resync frameworks immediately with new worker
+      ScadWorker.setFrameworks(ScadWorker.frameworks);
 
       // Reassurance messages for long renders
       const reassuranceMessages = [
@@ -595,10 +457,13 @@
         document.getElementById('renderStatus').classList.remove('reassuring');
       }
 
-      worker.onmessage = function (e) {
+      ScadWorker.worker.onmessage = function (e) {
         const msg = e.data;
         if (msg.type === 'log') {
-          if (msg.text.includes('Writing')) {
+          if (msg.text.includes('[Piecemeal] Fetching')) {
+            document.getElementById('renderStatus').textContent = msg.text.replace('   ', '');
+            setProgress(10);
+          } else if (msg.text.includes('Writing')) {
             document.getElementById('renderStatus').textContent = 'Preparing files...';
             setProgress(20);
           } else if (msg.text.includes('Starting Main Render')) {
@@ -626,7 +491,7 @@
         }
       };
 
-      worker.postMessage({ command: 'render', vfs: workerVFS });
+      ScadWorker.worker.postMessage({ command: 'render', vfs: workerVFS });
     };
 
     // Auto-load on boot

@@ -120,6 +120,18 @@ function buildParamItem(p) {
     const lbl = document.createElement('label');
     lbl.className = 'param-label';
     lbl.textContent = p.label;
+
+    // ── Tooltip ──
+    if (p.description && p.description.trim()) {
+        const tip = document.createElement('span');
+        tip.className = 'info-tip';
+        tip.textContent = '?';
+        const tipContent = document.createElement('span');
+        tipContent.className = 'tip-content';
+        tipContent.textContent = p.description;
+        tip.appendChild(tipContent);
+        lbl.appendChild(tip);
+    }
     item.appendChild(lbl);
 
     // ── RANGE SLIDER ──
@@ -133,6 +145,16 @@ function buildParamItem(p) {
         slider.min = p.min; slider.max = p.max;
         slider.step = p.step || 1;
         slider.value = p.value;
+
+        // Detent for default value
+        const dl = document.createElement('datalist');
+        const dlId = `dl_${p.name.replace(/[^a-zA-Z0-9]/g, '_')}`;
+        dl.id = dlId;
+        const opt = document.createElement('option');
+        opt.value = p.defaultVal;
+        dl.appendChild(opt);
+        row.appendChild(dl);
+        slider.setAttribute('list', dlId);
 
         const numbox = document.createElement('input');
         numbox.type = 'number';
@@ -158,8 +180,9 @@ function buildParamItem(p) {
 
         // ── CHECKBOX ──
     } else if (p.type === 'boolean') {
-        const row = document.createElement('div');
+        const row = document.createElement('label'); // Use <label> for entire row
         row.className = 'param-check-row';
+        row.style.cursor = 'pointer';
 
         const cb = document.createElement('input');
         cb.type = 'checkbox';
@@ -167,7 +190,7 @@ function buildParamItem(p) {
         cb.checked = p.value;
 
         const lbl2 = document.createElement('span');
-        lbl2.style.cssText = 'font-family:var(--mono);font-size:0.78rem;color:var(--text-mid)';
+        lbl2.style.cssText = 'font-family:var(--mono);font-size:0.78rem;color:var(--text-mid);';
         lbl2.textContent = p.value ? 'true' : 'false';
 
         cb.onchange = () => {
@@ -197,16 +220,65 @@ function buildParamItem(p) {
 
         // ── STANDARD INPUT (Number/Text/Magic) ──
     } else {
-        const inp = document.createElement('input');
-        inp.type = (p.type === 'string' || p.type === 'raw') ? 'text' : 'number';
-        inp.className = 'param-input';
-        inp.value = p.value;
+        const isNumeric = (p.type === 'number' || (!p.type && typeof p.value === 'number'));
 
-        inp.oninput = () => {
-            p.value = inp.type === 'number' ? parseFloat(inp.value) : inp.value;
-            updateUrlState();
-        };
-        item.appendChild(inp);
+        if (isNumeric) {
+            // Intelligent Auto-Sliders
+            const row = document.createElement('div');
+            row.className = 'param-range-row';
+
+            const min = 0;
+            const max = p.value === 0 ? 100 : p.value * 2;
+
+            const slider = document.createElement('input');
+            slider.type = 'range';
+            slider.className = 'param-slider';
+            slider.min = min; slider.max = max;
+            slider.step = 0.1;
+            slider.value = p.value;
+
+            // Detent for default value
+            const dl = document.createElement('datalist');
+            const dlId = `dl_${p.name.replace(/[^a-zA-Z0-9]/g, '_')}`;
+            dl.id = dlId;
+            const opt = document.createElement('option');
+            opt.value = p.defaultVal;
+            dl.appendChild(opt);
+            row.appendChild(dl);
+            slider.setAttribute('list', dlId);
+
+            const numbox = document.createElement('input');
+            numbox.type = 'number';
+            numbox.className = 'param-numbox';
+            numbox.step = 0.1;
+            numbox.value = p.value;
+
+            slider.oninput = () => {
+                numbox.value = slider.value;
+                p.value = parseFloat(slider.value);
+                updateUrlState();
+            };
+            numbox.oninput = () => {
+                slider.value = numbox.value;
+                p.value = parseFloat(numbox.value);
+                updateUrlState();
+            };
+
+            row.appendChild(slider);
+            row.appendChild(numbox);
+            item.appendChild(row);
+        } else {
+            const inp = document.createElement('input');
+            inp.type = (p.type === 'string' || p.type === 'raw') ? 'text' : 'number';
+            inp.className = 'param-input';
+            inp.value = p.value;
+
+            inp.oninput = () => {
+                p.value = inp.type === 'number' ? parseFloat(inp.value) : inp.value;
+                updateUrlState();
+            };
+            item.appendChild(inp);
+        }
     }
 
     return item;
@@ -269,7 +341,7 @@ function applyUrlState() {
                 p.value = cleanValue(state[p.name]);
             }
         }
-        
+
         // Prune orphaned variables out of the URL
         updateUrlState();
     } catch (e) {

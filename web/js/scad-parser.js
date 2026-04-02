@@ -40,9 +40,19 @@ function parseScadParams(code) {
             const varMatch = t.match(/^([ \t]*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*=\s*([^;]+?)\s*;(?:\s*\/\/\s*(.*))?/);
 
             if (varMatch) {
-                const [, indent, name, rawVal, comment] = varMatch;
+                const [, indent, name, rawVal, inlineComment] = varMatch;
 
                 if (name === '$fn' || name === '$fa' || name === '$fs') continue;
+
+                // ── Help Text Extraction ──
+                // Capture the comment line immediately above this variable
+                let description = inlineComment ? inlineComment.trim() : null;
+                if (i > 0) {
+                    const prevLine = lines[i - 1].trim();
+                    if (prevLine.startsWith('//')) {
+                        description = prevLine.substring(2).trim();
+                    }
+                }
 
                 let type = 'number';
                 let val = rawVal.trim();
@@ -65,10 +75,10 @@ function parseScadParams(code) {
                     }
                 }
 
-                // Range comments
+                // Range comments (Overrides generic 'number' type)
                 let min, max, step;
-                if (comment) {
-                    const range = comment.match(/\[(-?[\d.]+):(-?[\d.]+)\]/);
+                if (inlineComment) {
+                    const range = inlineComment.match(/\[(-?[\d.]+):(-?[\d.]+)\]/);
                     if (range) { min = parseFloat(range[1]); max = parseFloat(range[2]); step = 1; type = 'range'; }
                 }
 
@@ -77,6 +87,7 @@ function parseScadParams(code) {
                     value: computedVal,
                     defaultVal: computedVal,
                     rawValue: val,
+                    description, // Store help text
                     min, max, step,
                     lineIndex: i,
                     label: name.replace(/_(mm|cm|in|inches|deg|pct|percent)\b/gi, ''),

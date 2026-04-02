@@ -5,6 +5,17 @@ var parsedParams = [];
 var baseScadState = "";
 var patchTimeout = null;
 
+var ScadWorker = {
+    worker: null,
+    frameworks: {},
+    setFrameworks(data) {
+        this.frameworks = data;
+        if (this.worker) {
+            this.worker.postMessage({ command: 'setFrameworks', frameworks: data });
+        }
+    }
+};
+
 // ── Load Model from URL ───────────────────────────────────────────────────────
 
 async function loadScadFromUrl(url) {
@@ -57,8 +68,11 @@ async function loadScadFromUrl(url) {
         // ── NEW: Fetch Frameworks config to prevent VFS poisoning ──
         let frameworksData = {};
         try {
-            const fwRes = await fetch('../core/frameworks.json');
-            if (fwRes.ok) frameworksData = await fwRes.json();
+            const fwRes = await fetch('https://raw.githubusercontent.com/solderlocks/scadder/main/core/frameworks.json');
+            if (fwRes.ok) {
+                frameworksData = await fwRes.json();
+                ScadWorker.setFrameworks(frameworksData);
+            }
         } catch (e) {
             console.warn('Failed to load frameworks.json:', e);
         }

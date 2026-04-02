@@ -1,10 +1,106 @@
 import OpenScad from "./openscad.js";
 
+let frameworksData = {};
+
 self.onmessage = async (e) => {
-  const { command, vfs } = e.data;
+  const { command, vfs, frameworks } = e.data;
+
+  if (command === 'setFrameworks') {
+    frameworksData = frameworks;
+    return;
+  }
 
   if (command === 'render') {
     try {
+      self.postMessage({ type: 'log', text: '0. Resolving Frameworks (Piecemeal)...' });
+
+      // --- PIECEMEAL FRAMEWORK RESOLUTION ---
+      const crawledRegistry = new Set(vfs.map(f => f.name));
+      const inFlightFetches = new Map(); // New: In-Flight Registry for concurrent requests
+      
+      async function crawlFrameworkDependencies(code, currentFwId = null, currentFileDir = '') {
+        // Yield to prevent stack overflow on deep recursion
+        await Promise.resolve();
+
+        const importsRegex = /^\s*(?:include|use)\s*[<"](.*?)[>"]/gm;
+        let match;
+        const promises = [];
+
+        while ((match = importsRegex.exec(code)) !== null) {
+          const fullImportPath = match[1];
+          let fwId = currentFwId;
+          let relativeFile = fullImportPath;
+
+          // 1. Resolve framework context
+          if (!currentFwId) {
+            const segments = fullImportPath.split('/');
+            const possibleFwId = segments[0];
+            if (frameworksData[possibleFwId]) {
+              fwId = possibleFwId;
+              relativeFile = segments.slice(1).join('/');
+            } else {
+              continue; // Not a managed framework
+            }
+          } else {
+            // Internal framework import
+            if (relativeFile.startsWith('/')) relativeFile = relativeFile.substring(1);
+            let parts = currentFileDir ? currentFileDir.split('/') : [];
+            const newParts = relativeFile.split('/');
+            for (const p of newParts) {
+              if (p === '..') parts.pop();
+              else if (p !== '.' && p !== '') parts.push(p);
+            }
+            relativeFile = parts.join('/');
+          }
+
+          if (!fwId || !frameworksData[fwId]) continue;
+
+          const vfsPath = `${fwId}/${relativeFile}`;
+          
+          // 2. VFS-First Resolution
+          if (crawledRegistry.has(vfsPath)) continue;
+
+          // 3. In-Flight Protection (Deduplication)
+          if (inFlightFetches.has(vfsPath)) {
+            promises.push(inFlightFetches.get(vfsPath));
+            continue;
+          }
+
+          const newFileDir = relativeFile.includes('/') ? relativeFile.substring(0, relativeFile.lastIndexOf('/')) : '';
+
+          const fetchPromise = (async () => {
+            const repo = frameworksData[fwId].repo;
+            const rawUrl = `https://raw.githubusercontent.com/${repo}/master/${relativeFile}`;
+
+            try {
+              self.postMessage({ type: 'log', text: `   [Piecemeal] Fetching ${fwId}/${relativeFile}...` });
+              const res = await fetch(rawUrl);
+              if (!res.ok) throw new Error(`HTTP ${res.status}`);
+              const text = await res.text();
+              vfs.push({ name: vfsPath, txt: text });
+              crawledRegistry.add(vfsPath);
+
+              if (relativeFile.toLowerCase().endsWith('.scad')) {
+                await crawlFrameworkDependencies(text, fwId, newFileDir);
+              }
+            } catch (e) {
+              self.postMessage({ type: 'log', text: `   ⚠️ [Piecemeal] Fetch failed for ${fwId}/${relativeFile}: ${e.message}` });
+            } finally {
+              inFlightFetches.delete(vfsPath);
+            }
+          })();
+
+          inFlightFetches.set(vfsPath, fetchPromise);
+          promises.push(fetchPromise);
+        }
+        await Promise.all(promises);
+      }
+
+      const mainFile = vfs.find(f => f.name === 'main.scad');
+      if (mainFile) {
+        await crawlFrameworkDependencies(mainFile.txt);
+      }
+
       self.postMessage({ type: 'log', text: '1. Initializing Engine...' });
 
       const instance = await OpenScad({

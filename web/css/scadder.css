@@ -532,6 +532,9 @@ header {
   font-size: 0.72rem;
   color: var(--text-mid);
   font-family: var(--mono);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 
