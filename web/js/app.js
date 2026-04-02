@@ -54,13 +54,24 @@ async function loadScadFromUrl(url) {
     document.getElementById('renderStatus').textContent = 'Crawling project dependencies…';
 
     try {
+        // ── NEW: Fetch Frameworks config to prevent VFS poisoning ──
+        let frameworksData = {};
+        try {
+            const fwRes = await fetch('../core/frameworks.json');
+            if (fwRes.ok) frameworksData = await fwRes.json();
+        } catch (e) {
+            console.warn('Failed to load frameworks.json:', e);
+        }
+
         const { resolveDependencies } = await import('../../core/crawler.js');
+        // ── UPDATED: Pass frameworksData into the crawler ──
         virtualFileSystem = await resolveDependencies(rawUrl, {
             onLog: (msg) => console.log(msg),
             onError: (msg) => {
                 document.getElementById('consoleOutput').textContent += msg + "\n";
                 console.error(msg);
-            }
+            },
+            frameworks: frameworksData // Intercept frameworks here
         });
 
         const mainFile = virtualFileSystem.find(f => f.name === "main.scad");
@@ -88,7 +99,7 @@ async function loadScadFromUrl(url) {
 
         const urlParams = new URLSearchParams(window.location.search);
         const patchParam = urlParams.get('patch');
-        
+
         if (patchParam) {
             try {
                 const decompressedPatch = LZString.decompressFromEncodedURIComponent(patchParam);
@@ -127,9 +138,7 @@ async function loadScadFromUrl(url) {
             clearTimeout(patchTimeout);
             patchTimeout = setTimeout(() => {
                 const patch = Diff.createPatch('main.scad', baseScadState, currentText);
-                
-                // Diff.createPatch returns a full patch text. If no differences, the diff might be empty or 
-                // just headers. A simple check is if currentText === baseScadState.
+
                 const u = new URL(window.location.href);
                 if (currentText === baseScadState) {
                     u.searchParams.delete('patch');
@@ -176,22 +185,22 @@ async function loadScadFromUrl(url) {
 
 // ── Drop Patch Logic ──────────────────────────────────────────────────────────
 
-window.dropPatch = function() {
+window.dropPatch = function () {
     const editor = document.getElementById('sourceDisplay');
     editor.value = baseScadState;
     editor.textContent = baseScadState;
-    
+
     const mf = virtualFileSystem.find(f => f.name === "main.scad");
     if (mf) mf.txt = baseScadState;
 
     const u = new URL(window.location.href);
     u.searchParams.delete('patch');
     window.history.replaceState({}, '', u.toString());
-    
+
     document.getElementById('patchBadge').classList.remove('visible');
     const modBadge = document.getElementById('modifiedBadge');
     if (modBadge) modBadge.style.display = 'none';
-    
+
     window.runAndShowScad();
 };
 
