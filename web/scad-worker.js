@@ -22,11 +22,16 @@ self.onmessage = async (e) => {
         // Yield to prevent stack overflow on deep recursion
         await Promise.resolve();
 
+        // Pre-clean code for parsing: remove comments to avoid false-positives
+        const cleanCode = code
+          .replace(/\/\*[\s\S]*?\*\//g, '')  // Block comments
+          .replace(/\/\/.*/g, '');           // Single-line comments
+
         const importsRegex = /^\s*(?:include|use)\s*[<"](.*?)[>"]/gm;
         let match;
         const promises = [];
 
-        while ((match = importsRegex.exec(code)) !== null) {
+        while ((match = importsRegex.exec(cleanCode)) !== null) {
           const fullImportPath = match[1];
           let fwId = currentFwId;
           let relativeFile = fullImportPath;
@@ -70,24 +75,34 @@ self.onmessage = async (e) => {
 
           const fetchPromise = (async () => {
             const repo = frameworksData[fwId].repo;
-            const rawUrl = `https://raw.githubusercontent.com/${repo}/master/${relativeFile}`;
+            const branches = ['master', 'main'];
+            let text = null;
 
-            try {
-              self.postMessage({ type: 'log', text: `   [Piecemeal] Fetching ${fwId}/${relativeFile}...` });
-              const res = await fetch(rawUrl);
-              if (!res.ok) throw new Error(`HTTP ${res.status}`);
-              const text = await res.text();
+            for (const branch of branches) {
+              const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${relativeFile}`;
+              try {
+                const res = await fetch(rawUrl);
+                if (res.ok) {
+                  text = await res.text();
+                  break;
+                }
+              } catch (e) {}
+            }
+
+            if (text !== null) {
+              // self.postMessage({ type: 'log', text: `   [Piecemeal] Fetched ${vfsPath}` });
               vfs.push({ name: vfsPath, txt: text });
               crawledRegistry.add(vfsPath);
 
               if (relativeFile.toLowerCase().endsWith('.scad')) {
+                // Throttle for deep libraries to maintain stable event loop
+                await new Promise(r => setTimeout(r, 20));
                 await crawlFrameworkDependencies(text, fwId, newFileDir);
               }
-            } catch (e) {
-              self.postMessage({ type: 'log', text: `   ⚠️ [Piecemeal] Fetch failed for ${fwId}/${relativeFile}: ${e.message}` });
-            } finally {
-              inFlightFetches.delete(vfsPath);
+            } else {
+              self.postMessage({ type: 'log', text: `   ⚠️ [Piecemeal] Not found: ${vfsPath}` });
             }
+            inFlightFetches.delete(vfsPath);
           })();
 
           inFlightFetches.set(vfsPath, fetchPromise);
@@ -98,115 +113,100 @@ self.onmessage = async (e) => {
 
       const mainFile = vfs.find(f => f.name === 'main.scad');
       if (mainFile) {
+        self.postMessage({ type: 'log', text: '   🔍 Analyzing dependencies in main.scad...' });
         await crawlFrameworkDependencies(mainFile.txt);
       }
 
-      self.postMessage({ type: 'log', text: '1. Initializing Engine...' });
+      // --- ENGINE INITIALIZATION HELPER ---
+      async function createAndWriteEngine(vfsData) {
+        const instance = await OpenScad({
+          noInitialRun: true,
+          arguments: ["--enable=all"],
+          print: text => self.postMessage({ type: 'log', text }),
+          printErr: text => self.postMessage({ type: 'log', text }),
+        });
 
-      const instance = await OpenScad({
-        noInitialRun: true,
-        arguments: ["--enable=all"],
-        print: text => self.postMessage({ type: 'log', text }),
-        printErr: text => self.postMessage({ type: 'log', text }),
-      });
-
-      // ── Helper: recursively create directories ──
-      const mkdir_p = (path) => {
-        const parts = path.split('/').filter(p => p.length > 0);
-        let current = "";
-        for (const part of parts) {
-          current += "/" + part;
-          const analysis = instance.FS.analyzePath(current);
-          if (!analysis.exists) {
-            try { instance.FS.mkdir(current); } catch (e) { if (e.code !== 'EEXIST') throw e; }
+        // Setup FS
+        const mkdir_p = (path) => {
+          const parts = path.split('/').filter(p => p.length > 0);
+          let current = "";
+          for (const part of parts) {
+            current += "/" + part;
+            const analysis = instance.FS.analyzePath(current);
+            if (!analysis.exists) instance.FS.mkdir(current);
           }
-        }
-      };
+        };
 
-      // ── Load fonts ──
-      try {
-        const fontPath = '/fonts/LiberationSans-Regular.ttf';
-
-        if (!instance.FS.analyzePath(fontPath).exists) {
-          self.postMessage({ type: 'log', text: '   🔤 Loading fonts...' });
-
-          if (!instance.FS.analyzePath('/fonts').exists) instance.FS.mkdir('/fonts');
-
-          let response = await fetch('fonts/LiberationSans-Regular.ttf');
-
-          if (!response.ok) {
-            self.postMessage({ type: 'log', text: '   ⚠️ Local font missing, trying CDN...' });
-            response = await fetch('https://raw.githubusercontent.com/openscad/openscad/master/fonts/Liberation-2.00.1/ttf/LiberationSans-Regular.ttf');
-          }
-
-          if (response.ok) {
-            const fontData = await response.arrayBuffer();
-            instance.FS.writeFile(fontPath, new Uint8Array(fontData));
-
-            const fontConf = `<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig><dir>/fonts</dir><cachedir>/fonts/cache</cachedir></fontconfig>`;
-            instance.FS.writeFile('/fonts/fonts.conf', fontConf);
-
-            self.postMessage({ type: 'log', text: '   ✅ Font loaded.' });
-          } else {
-            throw new Error("Could not fetch LiberationSans-Regular.ttf");
-          }
-        }
-      } catch (e) {
-        self.postMessage({ type: 'log', text: '⚠️ Font load warning: ' + e.message });
-      }
-
-      // ── Write VFS files ──
-      self.postMessage({ type: 'log', text: `2. Writing files (${vfs.length} total)...` });
-
-      const fileList = vfs.map(f => f.name).join(', ');
-      self.postMessage({ type: 'log', text: `   📂 VFS Payload: ${fileList}` });
-
-      for (const f of vfs) {
-        const fullPath = f.name.startsWith('/') ? f.name : '/' + f.name;
-        let content = f.txt;
-
-        // 🩹 PATCH 1: Convert assert() to echo() for Gridfinity compatibility
-        if (content.includes('version()') && content.includes('assert')) {
-          content = content.replace(
-            /assert\s*\(\s*(?=.*version\()/g,
-            'echo("PATCHED_ASSERT", '
-          );
-          self.postMessage({ type: 'log', text: `   🩹 Converted assert to echo in: ${fullPath}` });
-        }
-
-        // 🩹 PATCH 2: Convert legacy 'assign()' to 'let()'
-        if (content.includes('assign')) {
-          content = content.replace(/assign\s*\(/g, 'let(');
-          self.postMessage({ type: 'log', text: `   🩹 Patched legacy 'assign' in: ${fullPath}` });
-        }
-
-        const dir = fullPath.substring(0, fullPath.lastIndexOf('/'));
-        if (dir) mkdir_p(dir);
-
+        // Load fonts
         try {
+          const fontPath = '/fonts/LiberationSans-Regular.ttf';
+          if (!instance.FS.analyzePath('/fonts').exists) instance.FS.mkdir('/fonts');
+          let res = await fetch('fonts/LiberationSans-Regular.ttf');
+          if (!res.ok) res = await fetch('https://raw.githubusercontent.com/openscad/openscad/master/fonts/Liberation-2.00.1/ttf/LiberationSans-Regular.ttf');
+          if (res.ok) instance.FS.writeFile(fontPath, new Uint8Array(await res.arrayBuffer()));
+          instance.FS.writeFile('/fonts/fonts.conf', `<?xml version="1.0"?><!DOCTYPE fontconfig SYSTEM "fonts.dtd"><fontconfig><dir>/fonts</dir><cachedir>/fonts/cache</cachedir></fontconfig>`);
+        } catch(e) {}
+
+        // Write files
+        for (const f of vfsData) {
+          const fullPath = f.name.startsWith('/') ? f.name : '/' + f.name;
+          const dir = fullPath.substring(0, fullPath.lastIndexOf('/'));
+          if (dir) mkdir_p(dir);
+          
+          let content = f.txt;
+          // Apply standard patches (assign, assert)
+          content = content.replace(/assign\s*\(/g, 'let(');
+          if (content.includes('version()') && content.includes('assert')) {
+            content = content.replace(/assert\s*\(\s*(?=.*version\()/g, 'echo("PATCHED_ASSERT", ');
+          }
+          
           instance.FS.writeFile(fullPath, content);
-        } catch (err) {
-          throw new Error(`Failed to write ${fullPath}: ${err.message}`);
         }
+        return instance;
       }
 
-      // ── Render ──
-      self.postMessage({ type: 'log', text: `3. Starting Main Render...` });
+      // ── RENDER PHASE ──
+      self.postMessage({ type: 'log', text: '1. Initializing Primary Engine (STL Pass)...' });
+      let engine = await createAndWriteEngine(vfs);
+      
+      self.postMessage({ type: 'log', text: `   📊 VFS Audit: ${vfs.length} files loaded.` });
+      self.postMessage({ type: 'log', text: `3. Starting Render Pass 1 (STL)...` });
 
-      instance.callMain(["/main.scad", "-o", "out.stl"]);
+      try {
+        engine.callMain(["/main.scad", "-o", "out.stl"]);
+      } catch (e) {
+        const err = (typeof e === 'number' ? `Code ${e}` : e.toString());
+        self.postMessage({ type: 'log', text: `   ⚠️ STL Pass failed: ${err}` });
+      }
 
-      if (instance.FS.analyzePath("/out.stl").exists) {
-        const output = instance.FS.readFile("/out.stl");
-        self.postMessage({ type: 'done', stl: output }, [output.buffer]);
+      if (engine.FS.analyzePath("/out.stl").exists && engine.FS.stat("/out.stl").size > 0) {
+        const output = engine.FS.readFile("/out.stl");
+        self.postMessage({ type: 'done', format: 'stl', data: output }, [output.buffer]);
       } else {
-        throw new Error("Render produced no geometry (Empty Scene).");
+        // --- FALLBACK (SVG) ---
+        self.postMessage({ type: 'log', text: `🎨 Pass 1 produced no geometry. Spawning fresh engine for Pass 2 (SVG)...` });
+        
+        // Destroy/Reset is done by just letting GC take the old instance and creating a new one
+        engine = null; 
+        let engine2 = await createAndWriteEngine(vfs);
+        
+        try {
+          engine2.callMain(["/main.scad", "-o", "out.svg"]);
+        } catch (e) {
+          const err = (typeof e === 'number' ? `Code ${e}` : e.toString());
+          throw new Error(`SVG Fallback failed: ${err}`);
+        }
+
+        if (engine2.FS.analyzePath("/out.svg").exists && engine2.FS.stat("/out.svg").size > 0) {
+          const output = engine2.FS.readFile("/out.svg", { encoding: "utf8" });
+          self.postMessage({ type: 'done', format: 'svg', data: output });
+        } else {
+          throw new Error("Render produced no geometry (Empty Scene).");
+        }
       }
 
     } catch (error) {
-      const errText = (typeof error === 'number')
-        ? `WASM Crash (Code ${error}).`
-        : error.toString();
-      self.postMessage({ type: 'error', error: errText });
+      self.postMessage({ type: 'error', error: error.toString() });
     }
   }
 };

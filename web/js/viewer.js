@@ -55,6 +55,59 @@ async function ShowMeThatStinkingStlFile(currentSTL) {
     }
 }
 
+async function ShowMeThatStinkingSvgFile(svgText) {
+    try {
+        SceneHandler.getScene("scene-0").scene.children =
+            [SceneHandler.getScene("scene-0").scene.children[0]];
+    } catch (e) { }
+
+    const loader = new THREE.SVGLoader();
+    const data = loader.parse(svgText);
+    const paths = data.paths;
+    const group = new THREE.Group();
+
+    for (let i = 0; i < paths.length; i++) {
+        const path = paths[i];
+        const shapes = THREE.SVGLoader.createShapes(path);
+
+        for (let j = 0; j < shapes.length; j++) {
+            const shape = shapes[j];
+            const geometry = new THREE.ExtrudeGeometry(shape, {
+                depth: 1,
+                bevelEnabled: false
+            });
+            const mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
+            group.add(mesh);
+        }
+    }
+
+    // SVG coordinates are typically inverted in Y relative to Three.js
+    // Also, like the STL renderer, we rotate -90 deg on X to lay it flat on the ground (X/Z plane)
+    group.scale.y = -1;
+    group.rotateX(-Math.PI / 2);
+
+    // Center the group and sit it on the floor
+    const box = new THREE.Box3().setFromObject(group);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
+
+    group.position.x = -center.x;
+    group.position.z = -center.z;
+    group.position.y = (size.y / 2); // Sit exactly on the floor
+
+    // We assign to meshSolid so existing UI toggles (wireframe, etc) have something to reference
+    // although SVG rendering in this pass is simplified
+    meshSolid = group;
+    meshWire = new THREE.Group(); // Empty placeholder to avoid null refs
+
+    await Engine.addToScene(group, 'scene-0');
+
+    document.getElementById('downloadBtn').disabled = true; // SVG not yet exportable as STL
+    document.getElementById('renderOverlay').classList.add('hidden');
+}
+
 function downloadSTL() {
     if (!window.currentSTL) return;
     const name = (document.getElementById('modelTitle').textContent || 'model')

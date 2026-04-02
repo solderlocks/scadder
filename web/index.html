@@ -23,6 +23,7 @@
   <script src="./stlViewer/engine/parts/engine-render/sceneHandler.js"></script>
   <script src="./stlViewer/engine/parts/engine-render/renderHandler.js"></script>
   <script src='./stlViewer/engine/engine.js'></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.140.0/examples/js/loaders/SVGLoader.js"></script>
 
   <!-- Patching / Serialization Libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.5.0/lz-string.min.js"></script>
@@ -425,7 +426,7 @@
 
       // 4. Lifecycle Management
       if (ScadWorker.worker) ScadWorker.worker.terminate();
-      ScadWorker.worker = new Worker('./scad-worker.js', { type: "module" });
+      ScadWorker.worker = new Worker('./scad-worker.js?v=' + Date.now(), { type: "module" });
 
       // Resync frameworks immediately with new worker
       ScadWorker.setFrameworks(ScadWorker.frameworks);
@@ -479,7 +480,11 @@
           setProgress(100);
           document.getElementById('renderStatus').textContent = 'Complete';
           setTimeout(() => {
-            ShowMeThatStinkingStlFile(msg.stl.buffer);
+            if (msg.format === 'stl') {
+              ShowMeThatStinkingStlFile(msg.data.buffer);
+            } else if (msg.format === 'svg') {
+              ShowMeThatStinkingSvgFile(msg.data);
+            }
           }, 100);
         }
         else if (msg.type === 'error') {
