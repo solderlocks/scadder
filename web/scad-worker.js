@@ -90,7 +90,7 @@ self.onmessage = async (e) => {
             }
 
             if (text !== null) {
-              // self.postMessage({ type: 'log', text: `   [Piecemeal] Fetched ${vfsPath}` });
+              self.postMessage({ type: 'log', text: `   [Piecemeal] Fetched ${vfsPath}` });
               vfs.push({ name: vfsPath, txt: text });
               crawledRegistry.add(vfsPath);
 

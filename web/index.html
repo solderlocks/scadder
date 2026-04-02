@@ -461,13 +461,13 @@
       ScadWorker.worker.onmessage = function (e) {
         const msg = e.data;
         if (msg.type === 'log') {
-          if (msg.text.includes('[Piecemeal] Fetching')) {
-            document.getElementById('renderStatus').textContent = msg.text.replace('   ', '');
-            setProgress(10);
-          } else if (msg.text.includes('Writing')) {
-            document.getElementById('renderStatus').textContent = 'Preparing files...';
-            setProgress(20);
-          } else if (msg.text.includes('Starting Main Render')) {
+          if (msg.text.includes('Analyzing dependencies') || msg.text.includes('Fetched')) {
+            document.getElementById('renderStatus').textContent = msg.text.trim();
+            setProgress(15);
+          } else if (msg.text.includes('Initializing')) {
+            document.getElementById('renderStatus').textContent = 'Preparing engine...';
+            setProgress(30);
+          } else if (msg.text.includes('Starting Render') || msg.text.includes('Attempting 2D')) {
             document.getElementById('renderStatus').textContent = 'Calculating geometry…';
             setProgress(95, true);
             startReassurance();
