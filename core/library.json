@@ -1557,16 +1557,6 @@
     ]
   },
   {
-    "id": "franpoli-import-coordonate-files-demo",
-    "title": "Import Coordonate Files Demo",
-    "description": "A python script/demo to convert simple SVG files into a list of coordinates.",
-    "author": "franpoli",
-    "url": "https://raw.githubusercontent.com/franpoli/OpenSCADutil/master/utilities/svg_to_scad/demo/import_coordonate_files_demo.scad",
-    "tags": [
-      "OpenSCADutil"
-    ]
-  },
-  {
     "id": "belfryscad-jigsaw-puzzle",
     "title": "Jigsaw Puzzle",
     "description": "A parametric jigsaw puzzle generator.",
