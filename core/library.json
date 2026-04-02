@@ -1561,7 +1561,7 @@
     "title": "Jigsaw Puzzle",
     "description": "A parametric jigsaw puzzle generator.",
     "author": "belfryscad",
-    "url": "https://raw.githubusercontent.com/BelfrySCAD/BOSL2/blob/master/examples/jigsaw_puzzle.scad",
+    "url": "https://raw.githubusercontent.com/BelfrySCAD/BOSL2/master/examples/jigsaw_puzzle.scad",
     "tags": [
       "BOSL2",
       "jigsaw",
