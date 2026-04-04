@@ -59,7 +59,7 @@ function buildParamUI(groups) {
             if (tooltip) {
                 const tip = document.createElement('span');
                 tip.className = 'info-tip';
-                tip.textContent = '?';
+                tip.textContent = 'i';
                 const tipContent = document.createElement('span');
                 tipContent.className = 'tip-content';
                 tipContent.textContent = tooltip;
@@ -125,7 +125,7 @@ function buildParamItem(p) {
     if (p.description && p.description.trim()) {
         const tip = document.createElement('span');
         tip.className = 'info-tip';
-        tip.textContent = '?';
+        tip.textContent = 'i';
         const tipContent = document.createElement('span');
         tipContent.className = 'tip-content';
         tipContent.textContent = p.description;
