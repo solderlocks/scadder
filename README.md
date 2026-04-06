@@ -2,7 +2,7 @@
 
 **A serverless customizer, viewer, and dependency manager for OpenSCAD.**
 
-<img width="600" height="601" alt="scadder-screenshot-3b" src="https://github.com/user-attachments/assets/b93c23d6-9f6b-4b54-b9f0-923d7352636a" />
+<img width="600" height="601" alt="scadder-screenshot-3b" src="https://github.com/user-attachments/assets/3ce2b7b9-f751-435e-98cc-0f00df068e15" />
 
 <br><br>
 
