@@ -2,6 +2,8 @@
 
 **A serverless customizer, viewer, and dependency manager for OpenSCAD.**
 
+<img width="1733" height="1735" alt="scadder-screenshot-3b" src="https://github.com/user-attachments/assets/b93c23d6-9f6b-4b54-b9f0-923d7352636a" />
+
 Scadder is a decentralized package manager and serverless web viewer that brings NPM-style dependency resolution and browser-based customization to OpenSCAD.
 
 ## The Toolchain
