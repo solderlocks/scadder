@@ -71,8 +71,22 @@ function parseScadParams(code) {
 
                 let min, max, step;
                 if (inlineComment) {
-                    const range = inlineComment.match(/\[(-?[\d.]+):(-?[\d.]+)\]/);
-                    if (range) { min = parseFloat(range[1]); max = parseFloat(range[2]); step = 1; type = 'range'; }
+                    const rangeWithStep = inlineComment.match(/\[(-?[\d.]+):(-?[\d.]+):(-?[\d.]+)\]/);
+                    const rangeNoStep = inlineComment.match(/\[(-?[\d.]+):(-?[\d.]+)\]/);
+                    
+                    if (rangeWithStep) {
+                        min = parseFloat(rangeWithStep[1]);
+                        step = parseFloat(rangeWithStep[2]);
+                        max = parseFloat(rangeWithStep[3]);
+                        type = 'range';
+                    } else if (rangeNoStep) {
+                        min = parseFloat(rangeNoStep[1]);
+                        max = parseFloat(rangeNoStep[2]);
+                        // Default step logic: if default value is float, use 0.1, else 1
+                        const isFloat = String(val).includes('.') || !Number.isInteger(computedVal);
+                        step = isFloat ? 0.1 : 1;
+                        type = 'range';
+                    }
                 }
 
                 globalGroup.params.push({
@@ -110,6 +124,7 @@ function parseScadParams(code) {
                 type: 'number',
                 value: val,
                 defaultVal: val,
+                rawValue: valStr, // Keep the raw string for float detection
                 lineIndex: i,
                 charIndex: match.index,
                 strLength: valStr.length,

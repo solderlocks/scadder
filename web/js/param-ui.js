@@ -242,9 +242,9 @@ function buildParamItem(p) {
                 max = p.defaultVal + spread;
             }
 
-            // FIX 2: Float vs Integer detection via raw string parsing
-            const isExplicitFloat = String(p.rawValue).includes('.');
-            const stepSize = isExplicitFloat ? 0.1 : 1;
+            // FIX 2: Float vs Integer detection via raw string parsing or value check
+            const isFloat = String(p.rawValue || p.defaultVal).includes('.') || !Number.isInteger(p.defaultVal);
+            const stepSize = isFloat ? 0.1 : 1;
 
             const slider = document.createElement('input');
             slider.type = 'range';

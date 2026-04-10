@@ -23,6 +23,14 @@ if (typeof window === 'undefined') {
 
     self.addEventListener("fetch", function (event) {
         const r = event.request;
+
+        // ── SCADDER BYPASS ──
+        // Let the browser handle raw GitHub files natively to avoid Firefox tracking protection blocks.
+        // We explicitly DO NOT bypass Giscus here, so the worker can staple CORP headers to it below.
+        if (r.url.includes("githubusercontent.com") || r.url.includes("api.github.com")) {
+            return;
+        }
+
         if (r.cache === "only-if-cached" && r.mode !== "same-origin") {
             return;
         }
