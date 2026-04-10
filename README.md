@@ -2,6 +2,10 @@
 
 **A serverless customizer, viewer, and dependency manager for OpenSCAD.**
 
+<img width="600" height="601" alt="scadder-screenshot-3b" src="https://github.com/user-attachments/assets/3ce2b7b9-f751-435e-98cc-0f00df068e15" />
+
+<br><br>
+
 Scadder is a decentralized package manager and serverless web viewer that brings NPM-style dependency resolution and browser-based customization to OpenSCAD.
 
 ## The Toolchain
@@ -75,7 +79,4 @@ If you use Scadder in your own projects, I kindly request that you attribute the
 
 This project relies on the incredible work of the OpenSCAD community. Specifically, the web viewer architecture is heavily indebted to the foundational WebAssembly (WASM) porting and compilation logic developed by the [OpenSCAD.cloud](https://openscad.cloud/) team. Scadder builds upon their shoulders to provide this decentralized distribution pipeline.
 
----
-
 **AI Disclosure:** This repository and its associated tools were developed with assistance from AI coding agents (Antigravity) to accelerate implementation, documentation, and logic refinement.
-
