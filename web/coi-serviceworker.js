@@ -24,7 +24,8 @@ if (typeof window === 'undefined') {
     self.addEventListener("fetch", function (event) {
         const r = event.request;
 
-        // 1. Bypass GitHub APIs to avoid Firefox tracking protection blocks
+        // 1. SCADDER BYPASS: Let the browser handle raw GitHub files natively 
+        // to avoid Firefox tracking protection blocks.
         if (r.url.includes("githubusercontent.com") || r.url.includes("api.github.com")) {
             return;
         }
@@ -33,25 +34,15 @@ if (typeof window === 'undefined') {
             return;
         }
 
-        // 2. The Firefox Opaque Response Bypass for Giscus
-        let request;
-        if (r.url.includes("giscus.app") && r.mode === "no-cors") {
-            // Force CORS so we get a 200 status instead of 0, allowing us to attach headers
-            request = new Request(r.url, {
-                mode: "cors",
-                credentials: "omit"
-            });
-        } else {
-            request = (coepCredentialless && r.mode === "no-cors")
-                ? new Request(r, { credentials: "omit" })
-                : r;
-        }
+        const request = (coepCredentialless && r.mode === "no-cors")
+            ? new Request(r, { credentials: "omit" })
+            : r;
 
         event.respondWith(
             fetch(request)
                 .then((response) => {
                     if (response.status === 0) {
-                        return response; // Opaque responses bypass header injection
+                        return response;
                     }
 
                     const newHeaders = new Headers(response.headers);
