@@ -227,30 +227,36 @@ function buildParamItem(p) {
             const row = document.createElement('div');
             row.className = 'param-range-row';
 
-            const min = 0;
-            const max = p.value === 0 ? 100 : p.value * 2;
+            // FIX 1: Centered symmetric range
+            let min, max;
+            
+            if (p.defaultVal === 0) {
+                // Fallback for zero values (creates a -50 to 50 range, centered on 0)
+                min = -50;
+                max = 50;
+            } else {
+                // Calculate an equal spread on both sides of the value.
+                // Multiplying by 2 means the total range is 4x the default value.
+                const spread = Math.abs(p.defaultVal) * 2;
+                min = p.defaultVal - spread;
+                max = p.defaultVal + spread;
+            }
+
+            // FIX 2: Float vs Integer detection via raw string parsing
+            const isExplicitFloat = String(p.rawValue).includes('.');
+            const stepSize = isExplicitFloat ? 0.1 : 1;
 
             const slider = document.createElement('input');
             slider.type = 'range';
             slider.className = 'param-slider';
             slider.min = min; slider.max = max;
-            slider.step = 0.1;
+            slider.step = stepSize;
             slider.value = p.value;
-
-            // Detent for default value
-            const dl = document.createElement('datalist');
-            const dlId = `dl_${p.name.replace(/[^a-zA-Z0-9]/g, '_')}`;
-            dl.id = dlId;
-            const opt = document.createElement('option');
-            opt.value = p.defaultVal;
-            dl.appendChild(opt);
-            row.appendChild(dl);
-            slider.setAttribute('list', dlId);
 
             const numbox = document.createElement('input');
             numbox.type = 'number';
             numbox.className = 'param-numbox';
-            numbox.step = 0.1;
+            numbox.step = stepSize;
             numbox.value = p.value;
 
             slider.oninput = () => {

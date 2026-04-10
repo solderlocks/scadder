@@ -79,3 +79,7 @@ scadder update <package-name>
 Scadder is released under the **GPLv3 License**.
 
 If you use or modify this code, your version must also remain open. If you use Scadder in your own projects, I kindly request that you attribute the original work by linking back to the [GitHub repository](https://github.com/solderlocks/scadder) and my portfolio: [jscottk.net](https://jscottk.net/).
+
+---
+
+**AI Disclosure:** This repository and its associated tools were developed with significant assistance from AI coding agents (Claude/Antigravity) to accelerate implementation, documentation, and logic refinement.

@@ -65,6 +65,7 @@ async function ShowMeThatStinkingSvgFile(svgText) {
     const data = loader.parse(svgText);
     const paths = data.paths;
     const group = new THREE.Group();
+    window.svgGroup = group;
 
     for (let i = 0; i < paths.length; i++) {
         const path = paths[i];
@@ -72,12 +73,22 @@ async function ShowMeThatStinkingSvgFile(svgText) {
 
         for (let j = 0; j < shapes.length; j++) {
             const shape = shapes[j];
-            const geometry = new THREE.ExtrudeGeometry(shape, {
-                depth: 1,
-                bevelEnabled: false
-            });
-            const mesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
-            group.add(mesh);
+            const geometry = new THREE.ExtrudeGeometry(shape, { depth: 1, bevelEnabled: false });
+
+            // 1. The Solid Mesh
+            const solidMesh = new THREE.Mesh(geometry, new THREE.MeshNormalMaterial());
+            solidMesh.userData.isSvgSolid = true; // Tag it for the toggle function
+
+            // 2. The Wireframe Mesh (Yellow)
+            const wireMesh = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({
+                color: 0xc8922a,
+                wireframe: true
+            }));
+            wireMesh.userData.isSvgWire = true; // Tag it
+            wireMesh.visible = false;           // Hide by default
+
+            group.add(solidMesh);
+            group.add(wireMesh);
         }
     }
 
@@ -119,17 +130,40 @@ function downloadSTL() {
 }
 
 function toggleWireframeMode() {
-    if (!meshWire || !meshSolid) return;
-    const isWireframeVisible = meshWire.visible;
-    if (isWireframeVisible) {
-        meshWire.visible = false;
-        meshSolid.visible = true;
-    } else {
-        meshWire.visible = true;
-        meshSolid.visible = false;
+    const btnWire = document.getElementById('btnWireframeToggle');
+    if (!btnWire) return;
+
+    // 1. Determine the exact state we want to switch TO
+    const isNowWireframe = !btnWire.classList.contains('active');
+
+    // 2. Enforce state on standard 3D STL meshes
+    if (typeof meshSolid !== 'undefined' && meshSolid && typeof meshWire !== 'undefined' && meshWire) {
+        meshSolid.visible = !isNowWireframe;
+        meshWire.visible = isNowWireframe;
     }
-    const btn = document.getElementById('btnWireframeToggle');
-    if (btn) btn.classList.toggle('active', meshWire.visible);
+
+    // 3. Enforce state on 2D SVG extruded meshes
+    if (window.svgGroup) {
+        window.svgGroup.traverse((child) => {
+            if (child.userData.isSvgSolid) {
+                child.visible = !isNowWireframe;
+            }
+            if (child.userData.isSvgWire) {
+                child.visible = isNowWireframe;
+            }
+        });
+    }
+
+    // 4. Update the button's UI class
+    if (isNowWireframe) {
+        btnWire.classList.add('active');
+    } else {
+        btnWire.classList.remove('active');
+    }
+
+    // 5. Force a frame render (CRITICAL if you aren't using a continuous animation loop)
+    // Adjust this line to match whatever your manual render function is called (e.g., render(), renderer.render(scene, camera))
+    if (typeof render === 'function') render();
 }
 
 function toggleOrthographic() {
@@ -161,7 +195,7 @@ function toggleOrthographic() {
     if (camControl) {
         camControl.object = s.camera;
     }
-    
+
     SceneHandler.adjustCamera("scene-0");
 }
 

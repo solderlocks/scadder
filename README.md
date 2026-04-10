@@ -74,3 +74,8 @@ Scadder is released under the **[GPLv3 License](LICENSE)**.
 If you use Scadder in your own projects, I kindly request that you attribute the original work by linking back to this repository and my portfolio: [jscottk.net](https://jscottk.net/).
 
 This project relies on the incredible work of the OpenSCAD community. Specifically, the web viewer architecture is heavily indebted to the foundational WebAssembly (WASM) porting and compilation logic developed by the [OpenSCAD.cloud](https://openscad.cloud/) team. Scadder builds upon their shoulders to provide this decentralized distribution pipeline.
+
+---
+
+**AI Disclosure:** This repository and its associated tools were developed with assistance from AI coding agents (Antigravity) to accelerate implementation, documentation, and logic refinement.
+
