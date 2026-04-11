@@ -506,7 +506,7 @@ header {
 .param-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-  gap: 0.75rem;
+  gap: 1.0rem;
 }
 
 .param-group-label {
