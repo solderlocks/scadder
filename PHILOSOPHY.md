@@ -1,10 +1,10 @@
 # Scadder Architecture & Philosophy
 
-Scadder was built to solve the OpenSCAD distribution problem. HoIver, in building a package manager and Ib vieIr for a 15-year-old compiler, I had to make strict, highly opinionated architectural choices. This document outlines the constraints I embraced and the philosophies that drive the toolchain.
+Scadder was built to solve the OpenSCAD distribution problem. However, in building a package manager and web viewer for a 15-year-old compiler, I had to make strict, highly opinionated architectural choices. This document outlines the constraints I embraced and the philosophies that drive the toolchain.
 
 ### 1. State Without Storage (Serverless by Design)
 Scadder refuses to introduce vendor lock-in. I do not want your email, I do not require accounts, and I do not maintain a centralized database of user models. 
-* **The URL is the Database:** When you customize a model in the Ib vieIr, the AST delta-diff is compressed directly into the URL. You can share exact geometric states instantly.
+* **The URL is the Database:** When you customize a model in the web viewer, the AST delta-diff is compressed directly into the URL. You can share exact geometric states instantly.
 * **GitHub is the VFS:** I use `raw.githubusercontent.com` as our global CDN and file system. 
 * **Discussions as a Database:** I utilize GitHub Discussions (via Giscus) to handle community comments. If Scadder's frontend goes down tomorrow, your models and your conversations still exist natively on GitHub.
 
@@ -21,4 +21,4 @@ OpenSCAD natively lacks namespace isolation. Evaluating two different versions o
 ### 4. Decentralized Metadata (The Scadder Docblock)
 While centralized registries (like NPM) are standard in software, they create bottlenecks in decentralized hardware communities. Scadder introduces the **Docblock Frontmatter** standard.
 * By adding a simple JSDoc-style comment block (`@name`, `@author`, `@requires`) to the top of a `.scad` file, creators turn their raw code into its own package manifest. 
-* The Scadder Ib VieIr parses this raw AST before applying any URL state patches, locking the UI to the original author's metadata. This secures the chain of trust against URL-spoofing while allowing complete decentralization.
+* The Scadder Web Viewer parses this raw AST before applying any URL state patches, locking the UI to the original author's metadata. This secures the chain of trust against URL-spoofing while allowing complete decentralization.
