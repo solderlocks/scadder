@@ -83,7 +83,7 @@ scadder update <package-name>
 
 <img width="2074" height="2075" alt="scadder-screenshot-3b" src="https://github.com/user-attachments/assets/3ce2b7b9-f751-435e-98cc-0f00df068e15" />
 
-A fully serverless, WASM-powered customizer. Paste a GitHub URL to any `.scad` file, tweak its parameters, and export an STL. No install, account, or server required.
+Scadder.dev is a fully serverless, WASM-powered customizer. Paste a GitHub URL to any `.scad` file, tweak its parameters, and export an STL. No install, account, or server required.
 
 **URL-serialized state.** Adjust a slider or edit the raw `.scad` directly. The diff is compressed and written into the URL so you can share an exact configuration with someone and they'll see what you see.
 
