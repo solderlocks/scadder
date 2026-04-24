@@ -91,7 +91,7 @@ A fully serverless, WASM-powered customizer. Paste a GitHub URL to any `.scad` f
 
 **Intelligent parameter controls.** Parameters are rendered as sliders, text inputs, dropdowns, or checkboxes based on their type and the inline comments in the `.scad` source. Ranges and step sizes are inferred automatically. JSDoc-style docblock comments (`@name`, `@description`) are surfaced in the UI as field labels and tooltips.
 
-**Discussion, no database.** Comments are handled by [Giscus](https://giscus.app/), which backs the discussion thread onto GitHub Discussions. No database to maintain.
+**Discuss any model.** Comments are handled by [Giscus](https://giscus.app/), which backs the discussion thread onto GitHub Discussions. No database to maintain.
 
 **Mobile-friendly.** Actually usable on a phone. Tweak parameters and export STLs while standing next to your printer.
 
