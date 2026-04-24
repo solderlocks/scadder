@@ -5,7 +5,7 @@ Scadder was built to solve the OpenSCAD distribution problem. However, in buildi
 ### 1. State Without Storage (Serverless by Design)
 Scadder refuses to introduce vendor lock-in. I do not want your email, I do not require accounts, and I do not maintain a centralized database of user models. 
 * **The URL is the Database:** When you customize a model in the web viewer, the AST delta-diff is compressed directly into the URL. You can share exact geometric states instantly.
-* **GitHub is the VFS:** I use `raw.githubusercontent.com` as our global CDN and file system. 
+* **GitHub is the VFS:** I use `raw.githubusercontent.com` as the global CDN and file system. 
 * **Discussions as a Database:** I utilize GitHub Discussions (via Giscus) to handle community comments. If Scadder's frontend goes down tomorrow, your models and your conversations still exist natively on GitHub.
 
 ### 2. Zero Side-Effects (Respecting the Host)
