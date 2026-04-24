@@ -6,7 +6,7 @@
 [![npm downloads](https://img.shields.io/npm/dt/scadder)](https://www.npmjs.com/package/scadder)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
- Scadder brings `npm`-style dependency resolution to OpenSCAD. Install models and their full dependency trees with one command, lock them to a commit hash, and update on demand. The companion [web viewer](https://scadder.dev) lets you customize, render, and share models directly in a browser, no account required.
+Scadder brings `npm`-style dependency resolution to OpenSCAD. Install models and their full dependency trees with one command, lock them to a commit hash, and update on demand. The [web viewer](https://scadder.dev) lets you customize, render, and share models directly in a browser, no account required.
 
 ```bash
 npm install -g scadder
