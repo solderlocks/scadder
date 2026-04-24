@@ -1,4 +1,4 @@
-# Scadder ⚡
+# Scadder 
 
 **A serverless customizer, viewer, and dependency manager for OpenSCAD.**
 
