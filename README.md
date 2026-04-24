@@ -1,82 +1,139 @@
-# Scadder 
+# Scadder
 
-**A serverless customizer, viewer, and dependency manager for OpenSCAD.**
+**npm for OpenSCAD — plus a serverless browser-based customizer and viewer.**
 
-<img width="600" height="601" alt="scadder-screenshot-3b" src="https://github.com/user-attachments/assets/3ce2b7b9-f751-435e-98cc-0f00df068e15" />
+[![npm version](https://img.shields.io/npm/v/scadder)](https://www.npmjs.com/package/scadder)
+[![npm downloads](https://img.shields.io/npm/dt/scadder)](https://www.npmjs.com/package/scadder)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
-<br><br>
+ Scadder brings `npm`-style dependency resolution to OpenSCAD. Install models and their full dependency trees with one command, lock them to a commit hash, and update on demand. The companion [web viewer](https://scadder.dev) lets you customize, render, and share models directly in a browser, no account required.
 
-Scadder is a decentralized package manager and serverless web viewer that brings NPM-style dependency resolution and browser-based customization to OpenSCAD.
-
-## The Toolchain
-
-* **[Web Customizer & Viewer](https://solderlocks.github.io/scadder/web/):** A serverless, WASM-powered web frontend. 
-    * **URL State & Direct Editing:** Tweak parameters in the UI or directly edit the raw `.scad` code. The diff is compressed and serialized directly into the URL, allowing backend-free sharing of custom configurations.
-    * **Dependency Crawling:** It recursively fetches `include` and `use` files directly from GitHub repos so renders don't break.
-    * **Mobile-Friendly:** Actually usable on a phone, so you can tweak parameters and export STLs while standing next to your printer.
-* **CLI Package Manager:** A lightweight Node.js utility that brings `npm`-style dependency resolution to local OpenSCAD development. It pulls cloud-hosted dependencies into your local workflow via a `library.json` config.
-    * **Hybrid Dependency Resolution:** Standard components install locally to `.scadder_modules/`, while monolithic frameworks (like BOSL2) are treated as peer dependencies and routed directly to the OS-level OpenSCAD library folder via the `-g` flag. The CLI natively respects your `OPENSCADPATH` as a read-only search path to prevent redundant downloads.
-    * **Decentralized Metadata (Docblocks):** Parses JSDoc-style comment blocks (e.g., `@name`, `@author`, `@description`) at the top of files to display within the web UI.
-
-## Project Structure
-* `/core`: Environment-agnostic dependency resolution and AST parsing logic.
-* `/web`: The frontend web application.
-* `/cli`: The local package manager and terminal utility.
-
-## Why serverless?
-Scadder is designed to be completely decentralized. There is no central database to go down, no compute limits, and no server costs to maintain. 
-* **No Accounts:** I don't want your email. Just tweak the model and download the STL.
-* **Client-Side Rendering:** Models are fetched directly from GitHub and compiled in your browser using OpenSCAD WASM. 
-* **Zero-Maintenance DB:** Model discussion and comments are handled by hijacking GitHub Discussions via Giscus, turning a designated repo into a free relational database. 
-
-You can easily fork this repo and point it at your own `config.json` to host your own standalone viewer and discussion board.
-
-## Using Scadder
-
-### The Web Viewer
-You don't need to install anything to use the viewer. Just visit the live site. However, if you want to run the viewer locally or host your own instance:
-
-1. Clone the repository: `git clone https://github.com/solderlocks/scadder.git`
-2. Install dependencies: `npm install`
-3. Start the local server: `npm run dev`
-4. Open `http://localhost:3001/web/` in your browser.
-
-### The CLI Package Manager
-Scadder brings `npm`-style dependency management to OpenSCAD, allowing you to pull cloud-hosted models into your local projects with deterministic lockfiles.
-
-Install the CLI globally:
 ```bash
 npm install -g scadder
+scadder install parametric-sign
 ```
 
-Navigate to any OpenSCAD project directory on your computer and run:
+---
+
+## CLI Package Manager
+
+> The full CLI reference is in [README-npm.md](README-npm.md). What follows is the essentials.
+
+<img width="2074" height="885" alt="scadder-cli-screenshot-cropped-scaled" src="https://github.com/user-attachments/assets/7413723c-e9d5-489e-8999-ad885aa14af0" />
+
+*Installing a Gridfinity model and its 41 nested dependencies in a single command.*
+
+### Install a model
+
+Navigate to any OpenSCAD project directory and run:
+
 ```bash
 scadder install parametric-sign
 ```
 
-This fetches the model and its nested `include` and `use` dependencies, dropping them into a `.scadder_modules` folder. It also generates a `scadder.json` file, locking the dependency to its specific GitHub commit hash so your project won't break if the upstream author pushes changes.
+Scadder fetches the model and recursively resolves every `include` and `use` dependency, dropping them into a `.scadder_modules/` folder — the same pattern as `node_modules`. A `scadder.json` lockfile is generated automatically, pinning each dependency to a specific GitHub commit SHA so your project never breaks from an upstream change.
 
-To update your locked packages to the latest commits:
-```bash
-scadder update all
-```
+### Install from any URL
 
-### Install via Direct URL
-Scadder isn't restricted to the community library. You can pass a direct URL to any `.scad` file, and the crawler will recursively resolve and download all nested files. 
-
-*(Note: The host must have a permissive CORS policy, such as `raw.githubusercontent.com` or a standard static file server).*
+Not restricted to the community library. Pass any `.scad` URL and the crawler handles the rest:
 
 ```bash
 scadder install https://github.com/openscad/openscad/blob/master/examples/Parametric/sign.scad
 ```
 
+*(The host must have a permissive CORS policy — `raw.githubusercontent.com` and most static file servers work fine.)*
+
+### Monolithic frameworks (BOSL2, NopSCADlib, etc.)
+
+Standard components install locally to `.scadder_modules/`. Massive monolithic frameworks are treated as **peer dependencies** — installing them per-project would create multi-megabyte duplicates and cause global namespace collisions inside OpenSCAD. Scadder expects them in your OS-level OpenSCAD libraries directory or `OPENSCADPATH`.
+
+If a missing framework is detected during a crawl:
+
+```
+⚠️ Missing Peer Dependency: [BOSL2]. Install it manually or re-run with --install-globals
+```
+
+To have Scadder automatically download and install missing frameworks into your OS-level libraries folder:
+
+```bash
+scadder install <model-id> -g
+```
+
+If the framework already exists globally, Scadder detects it and skips the download. It will never overwrite directories in your `OPENSCADPATH`.
+
+### Updating dependencies
+
+Fast-forward all locked dependencies to their latest upstream commits:
+
+```bash
+scadder update all
+```
+
+Or target a specific package:
+
+```bash
+scadder update <package-name>
+```
+
+---
+
+## Web Customizer & Viewer
+
+**[→ Open the live viewer](https://scadder.dev)**
+
+<img width="2074" height="2075" alt="scadder-screenshot-3b" src="https://github.com/user-attachments/assets/3ce2b7b9-f751-435e-98cc-0f00df068e15" />
+
+A fully serverless, WASM-powered customizer. Paste a GitHub URL to any `.scad` file, tweak its parameters, and export an STL. No install, account, or server required.
+
+**URL-serialized state.** Adjust a slider or edit the raw `.scad` directly. The diff is compressed and written into the URL so you can share an exact configuration with someone and they'll see what you see.
+
+**Recursive dependency crawling.** The same crawler powering the CLI runs in-browser, recursively fetching `include` and `use` files from GitHub so renders don't break on models with deep dependency trees.
+
+**Intelligent parameter controls.** Parameters are rendered as sliders, text inputs, dropdowns, or checkboxes based on their type and the inline comments in the `.scad` source. Ranges and step sizes are inferred automatically. JSDoc-style docblock comments (`@name`, `@description`) are surfaced in the UI as field labels and tooltips.
+
+**Discussion, no database.** Comments are handled by [Giscus](https://giscus.app/), which backs the discussion thread onto GitHub Discussions. No database to maintain.
+
+**Mobile-friendly.** Actually usable on a phone. Tweak parameters and export STLs while standing next to your printer.
+
+### Why serverless?
+
+There's no central database to go down, no compute limits, and no server costs to maintain. Models are fetched directly from GitHub and rendered in-browser via OpenSCAD WASM. You can fork this repo, point it at your own `config.json`, and have a standalone viewer and discussion board for your own library in minutes.
+
+---
+
+## Project Structure
+
+This is a monorepo. The dependency resolution and AST parsing logic is environment-agnostic and shared between the CLI and the web viewer via `/core/`.
+
+```
+/core   Environment-agnostic dependency resolution and AST parsing logic
+/web    The serverless web customizer and viewer
+/cli    The local package manager and terminal utility
+```
+
+---
+
+## Running Locally / Self-Hosting the Viewer
+
+You don't need to install anything to use the [live viewer](https://scadder.dev). To run it locally or host your own instance:
+
+```bash
+git clone https://github.com/solderlocks/scadder.git
+npm install
+npm run dev
+# → http://localhost:3001/web/
+```
+
+Fork the repo and update `config.json` to point to your own model library and GitHub Discussions repo.
+
+---
+
 ## Acknowledgements & Licensing
-Scadder is released under the **[GPLv3 License](LICENSE)**.
 
-**Open Source Philosophy:** I built this tool to be free and open for the community. The GPLv3 license means you are highly encouraged to fork, remix, and build upon this architecture. However, it explicitly prevents anyone from taking this code, closing the source, and putting it behind a proprietary paywall. If you use or modify this code, your version must also remain open. 
+Scadder is released under the **[GPLv3 License](LICENSE)**. Fork it, remix it, build on it — but keep it open. If you use or modify this code, your version must remain open source as well.
 
-If you use Scadder in your own projects, I kindly request that you attribute the original work by linking back to this repository and my portfolio: [jscottk.net](https://jscottk.net/).
+If you use Scadder in your own projects, please attribute the original work by linking back to this repository and [jscottk.net](https://jscottk.net/).
 
-This project relies on the incredible work of the OpenSCAD community. Specifically, the web viewer architecture is heavily indebted to the foundational WebAssembly (WASM) porting and compilation logic developed by the [OpenSCAD.cloud](https://openscad.cloud/) team. Scadder builds upon their shoulders to provide this decentralized distribution pipeline.
+The web viewer's WASM rendering layer builds directly on the foundational work of the [OpenSCAD.cloud](https://openscad.cloud/) team. This project would not exist without their work porting OpenSCAD to WebAssembly.
 
-**AI Disclosure:** This repository and its associated tools were developed with assistance from AI coding agents (Antigravity) to accelerate implementation, documentation, and logic refinement.
+**AI Disclosure:** This project was developed with assistance from AI coding agents (Antigravity / Claude) to accelerate implementation, documentation, and logic refinement.
