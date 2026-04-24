@@ -1,6 +1,6 @@
 # Scadder
 
-**npm for OpenSCAD — plus a serverless browser-based customizer and viewer.**
+**npm for OpenSCAD, plus a serverless browser-based customizer and viewer.**
 
 [![npm version](https://img.shields.io/npm/v/scadder)](https://www.npmjs.com/package/scadder)
 [![npm downloads](https://img.shields.io/npm/dt/scadder)](https://www.npmjs.com/package/scadder)
