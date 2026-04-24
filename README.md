@@ -93,7 +93,7 @@ A fully serverless, WASM-powered customizer. Paste a GitHub URL to any `.scad` f
 
 **Discuss any model.** Comments are handled by [Giscus](https://giscus.app/), which backs the discussion thread onto GitHub Discussions. No database to maintain.
 
-**Mobile-friendly.** Actually usable on a phone. Tweak parameters and export STLs while standing next to your printer.
+**Mobile-friendly.** Tweak parameters and export STLs while standing next to your printer.
 
 ### Why serverless?
 
