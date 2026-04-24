@@ -11,7 +11,7 @@ Scadder refuses to introduce vendor lock-in. I do not want your email, I do not 
 ### 2. Zero Side-Effects (Respecting the Host)
 The Scadder CLI operates on a strict "read-only" environment policy.
 * **`OPENSCADPATH` is Sacred:** When resolving global frameworks, the CLI reads your custom `OPENSCADPATH` to prevent redundant downloads, but it will *never* write to it.
-* **No Hidden Mutations:** I do not automatically edit your `.gitignore` files, nor do I alter your OS-level environment variables. If an installation requires OS-level placement, it goes strictly into the default OpenSCAD library directory.
+* **No Hidden Mutations:** Scadder does not automatically edit your `.gitignore` files, nor does it alter your OS-level environment variables. If an installation requires OS-level placement, it goes strictly into the default OpenSCAD library directory.
 
 ### 3. Hybrid Dependency Management
 OpenSCAD natively lacks namespace isolation. Evaluating two different versions of the same monolithic framework (like BOSL2) in the same project results in catastrophic memory collisions. 
