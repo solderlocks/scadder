@@ -1,6 +1,9 @@
+
 # Scadder 
 
 **A serverless customizer, viewer, and dependency manager for OpenSCAD.**
+
+<img width="2074" height="885" alt="scadder-cli-screenshot-cropped-scaled" src="https://github.com/user-attachments/assets/7413723c-e9d5-489e-8999-ad885aa14af0" />
 
 <img width="600" height="601" alt="scadder-screenshot-3b" src="https://github.com/user-attachments/assets/3ce2b7b9-f751-435e-98cc-0f00df068e15" />
 
