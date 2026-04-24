@@ -9,7 +9,7 @@ Scadder refuses to introduce vendor lock-in. I do not want your email, I do not 
 * **Discussions as a Database:** I utilize GitHub Discussions (via Giscus) to handle community comments. If Scadder's frontend goes down tomorrow, your models and your conversations still exist natively on GitHub.
 
 ### 2. Zero Side-Effects (Respecting the Host)
-A package manager should adapt to the developer, not force the developer to adapt to the package manager. The Scadder CLI operates on a strict "read-only" environment policy.
+The Scadder CLI operates on a strict "read-only" environment policy.
 * **`OPENSCADPATH` is Sacred:** When resolving global frameworks, the CLI reads your custom `OPENSCADPATH` to prevent redundant downloads, but it will *never* write to it.
 * **No Hidden Mutations:** I do not automatically edit your `.gitignore` files, nor do I alter your OS-level environment variables. If an installation requires OS-level placement, it goes strictly into the default OpenSCAD library directory.
 
