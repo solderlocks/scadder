@@ -2,20 +2,20 @@
 
 First off, thank you for considering contributing to Scadder! 
 
-Scadder is currently in a high-velocity `0.x.x` phase. While we love community involvement, we have very strict architectural constraints. Before you write any code or submit a Pull Request, please read this document to ensure your time isn't wasted.
+Scadder is currently in a high-velocity `0.x.x` phase. Before you write any code or submit a Pull Request, please read this document to ensure your time isn't wasted.
 
 ## The Golden Rule: Read the Philosophy
 Scadder is designed to be **Serverless** and have **Zero Side-Effects**. 
 
 Please read our [Architecture & Philosophy](philosophy.md) document before proposing features. 
-* **We will reject** any PR that introduces a centralized database, requires server-side compute, or adds user authentication. 
-* **We will reject** any CLI PR that writes to a user's `.gitignore` or forcefully modifies their OS-level `OPENSCADPATH`.
+* **I will reject** any PR that introduces a centralized database, requires server-side compute, or adds user authentication. 
+* **I will reject** any CLI PR that writes to a user's `.gitignore` or forcefully modifies their OS-level `OPENSCADPATH`.
 
 ## Scope of Current Development (v0.x.x)
 Right now, the focus is on stabilizing the core architecture across all platforms (macOS, Windows, Linux) and stress-testing the hybrid dependency manager. 
 
 * **Bug Fixes:** Highly encouraged! Especially edge cases involving Windows file paths or obscure OpenSCAD syntax parsing.
-* **Major Features:** Please open an Issue to discuss your idea *before* writing the code. We want to avoid merging massive feature creep before hitting `v1.0`.
+* **Major Features:** Please open an Issue to discuss your idea *before* writing the code. I want to avoid merging massive feature creep before hitting `v1.0`.
 
 ## Local Development Setup
 
