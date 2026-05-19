@@ -4,7 +4,23 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="utf-8">
-  <title>Scadder — OpenSCAD Web Viewer & Package Manager</title>
+  <meta name="title" content="Scadder — OpenSCAD Package Manager & Customizer">
+  <meta name="description"
+    content="View, customize, share, and download parametric OpenSCAD models directly from GitHub URLs.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://scadder.dev/">
+  <meta property="og:title" content="Scadder — OpenSCAD Package Manager & Customizer">
+  <meta property="og:description"
+    content="View, customize, share, and download parametric OpenSCAD models directly from GitHub URLs.">
+  <meta property="og:image" content="https://scadder.dev/assets/images/og-image.jpg">
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://scadder.dev/">
+  <meta property="twitter:title" content="Scadder — OpenSCAD Package Manager & Customizer">
+  <meta property="twitter:description"
+    content="View, customize, share, and download parametric OpenSCAD models directly from GitHub URLs.">
+  <meta property="twitter:image" content="https://scadder.dev/assets/images/og-image.jpg">
+
+  <title>Scadder — OpenSCAD Package Manager & Customizer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="icon"
@@ -31,7 +47,7 @@
   <!-- App Styles -->
   <link rel="stylesheet" href="css/scadder.css">
 
-  <!-- App Scripts (load order matters) -->
+  <!-- App Scripts  -->
   <script>
     window.isWasmSupported = (function () {
       try {
@@ -373,7 +389,6 @@
     <a href="https://jscottk.net" target="_blank">Scott Kuehnert</a>
   </footer>
 
-  <!-- OpenSCAD WASM Worker -->
   <!-- OpenSCAD WASM Worker -->
   <script type="module">
     const consoleEl = document.getElementById("consoleOutput");
