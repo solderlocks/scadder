@@ -21,7 +21,7 @@ scadder install parametric-sign
 
 <img width="2074" height="885" alt="scadder-cli-screenshot-cropped-scaled" src="https://github.com/user-attachments/assets/7413723c-e9d5-489e-8999-ad885aa14af0" />
 
-*Installing a Gridfinity model and its 41 nested dependencies in a single command.*
+*Installing a Gridfinity model and its 41 nested dependencies with a single command.*
 
 ### Install a model
 
